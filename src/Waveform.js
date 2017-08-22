@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import WaveSurfer from 'wavesurfer.js/src/wavesurfer.js'
+import { Sampler, Time, now } from 'tone'
 
-import { getBlob, addWaveform, getWaveform } from './mediaStore'
+import { getBlob, getBlobUrl, addWaveform, getWaveform } from './mediaStore'
 
 import AudioTrim from './AudioTrim'
 
@@ -54,11 +55,21 @@ export default class Waveform extends Component {
 	}
 
 	handleWaveformGeneration() {
+		console.log(this.WS)
 		if(!getWaveform(this.props.fileKey)) {
 			const waveformUri = this.WS.exportImage()
 			if(waveformUri) addWaveform(this.props.fileKey, waveformUri)
 		}
 		this.forceUpdate()
+	}
+
+	handlePlay() {
+		if(!this.sampler) this.sampler = new Sampler(getBlobUrl(this.props.fileKey), () => this.triggerPlay()).toMaster()
+		else this.triggerPlay()
+	}
+
+	triggerPlay(pitch = 0) {
+		this.sampler.triggerAttack(pitch, now(), 0.5)
 	}
 
 	render() {
@@ -69,7 +80,7 @@ export default class Waveform extends Component {
 		const { position } = this.state
 
 		return (
-			<div className="waveform" onClick={() => this.WS.play()}>
+			<div className="waveform" onClick={() => this.handlePlay()}>
 				<div className="waveform-renderer" ref={elem => this.waveformContainer = elem} />
 				{haveAudio && <div className="waveform-graphic" style={{backgroundImage: `url(${waveformUri})`}} />}
 				{haveAudio && <AudioTrim position={position} onChange={position => this.setState({position})} />}
