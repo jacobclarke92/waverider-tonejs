@@ -14,8 +14,8 @@ var options = {
 	},
 	devtool: 'cheap-module-eval-source-map',
 	plugins: [
-		new webpack.NoErrorsPlugin(),
-		// new ExtractTextPlugin('timbre.css', {allChunks: false}),
+		new webpack.NoEmitOnErrorsPlugin(),
+		new ExtractTextPlugin('styles.css'),
 		new webpack.DefinePlugin({
 		    'process.env.NODE_ENV': JSON.stringify('development')
 		}),
@@ -29,11 +29,26 @@ var options = {
 		}),
 	],
 	module: {
-		loaders: [
+		rules: [
+			{
+				test: /\.js$/,
+				include: [
+					path.join(__dirname, 'src'), 
+					path.join(__dirname, 'node_modules/wavesurfer.js/src'),
+				],
+				use: {
+					loader: 'babel-loader',
+					options: {
+						presets: ['react', 'es2015', 'stage-0'],
+					},
+				},
+			},
 			{
 				test: /\.js$/,
 				include: path.join(__dirname, 'node_modules', 'pixi.js'),
-				loader: 'transform?brfs',
+				use: {
+					loader: 'transform-loader?brfs',
+				},
 			},
 			{
 				test: /\.json$/,
@@ -41,20 +56,37 @@ var options = {
 					path.join(__dirname, 'node_modules', 'pixi.js'),
 					path.join(__dirname, 'node_modules', 'axios'),
 				],
-				loader: 'json',
+				use: {
+					loader: 'json-loader',
+				},
 			},
 			{
-				loader: 'babel-loader',
-				test: /\.js$/,
-				query: {presets: ['react', 'es2015', 'stage-0']},
+				test: /\.css$/,
 				include: [
 					path.join(__dirname, 'src'), 
-					path.join(__dirname, 'node_modules/wavesurfer.js/src'),
 				],
+				use: ExtractTextPlugin.extract({
+					fallback: 'style-loader',
+					use: [
+						'css-loader',
+						'postcss-loader'
+					]
+				}),
+			},
+			{
+				test: /\.(eot|woff|woff2|ttf|svg|png|jpe?g|gif)(\?\S*)?/,
+				use: [
+					{
+						loader: 'url',
+						options: {
+							limit: 8000, 
+							name: '[name].[ext]',
+						},
+					}
+				]
 			},
 		],
 	},
-	postcss: [ autoprefixer({ browsers: ['last 3 versions'] }) ],
 };
 
 module.exports = options;

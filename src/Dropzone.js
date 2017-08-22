@@ -17,11 +17,10 @@ class Dropzone extends Component {
 
 	render() {
 		const { children, canDrop, isOver, connectDropTarget } = this.props
-		const isActive = isOver && canDrop
 		return connectDropTarget(
 			<div 
-				className={classnames('dropzone', {'is-over': isOver, 'can-drop': canDrop, active: isActive})} 
-				data-drop-message={isActive ? 'Release to drop' : 'Drag here'}>
+				className={classnames('dropzone', {'is-over': isOver, 'can-drop': canDrop})} 
+				data-drop-message={isOver ? 'Release to drop' : 'Drag here'}>
 				{children}
 			</div>
 		)

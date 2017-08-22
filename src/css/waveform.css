@@ -1,0 +1,27 @@
+.waveform-container {
+    position: relative;
+    width: 600px;
+    height: 200px;
+}
+
+    .waveform {
+        background-color: grey;
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+
+        .waveform-graphic {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background-size: 100% 100%;
+        }
+
+        .waveform-renderer {
+            position: absolute;
+            width: 1000px;
+            height: 300px;
+            opacity: 0;
+            pointer-events: none;
+        }

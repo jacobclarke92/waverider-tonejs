@@ -1,0 +1,34 @@
+.dropzone {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+
+    &:after {
+        content: attr(data-drop-message);
+        opacity: 0;
+        position: absolute;
+        pointer-events: none;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        
+        vertical-align: middle;
+        text-align: center;
+        line-height: 100px;
+        
+        color: white;
+        background-color: rgba(0,0,0,0.5);
+        border: 5px dashed white;
+    }
+
+    &.can-drop:after {
+        opacity: 1;
+    }
+
+    &.is-over:after {
+        background-color: rgba(0,0,100,0.5);
+    }
+}
