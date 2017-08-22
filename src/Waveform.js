@@ -3,11 +3,23 @@ import WaveSurfer from 'wavesurfer.js/src/wavesurfer.js'
 
 import { getBlob, addWaveform, getWaveform } from './mediaStore'
 
+import AudioTrim from './AudioTrim'
+
 export default class Waveform extends Component {
 
 	static defaultProps = {
 		fileKey: null,
 		waveColor: '#FFF',
+	};
+
+	constructor(props) {
+		super(props)
+		this.state = {
+			position: {
+				start: 0,
+				end: 1,
+			}
+		}
 	}
 
 	componentDidMount() {
@@ -52,10 +64,16 @@ export default class Waveform extends Component {
 	render() {
 		const { fileKey } = this.props
 		const waveformUri = getWaveform(fileKey)
+		const haveAudio = !!waveformUri
+
+		const { position } = this.state
+
 		return (
 			<div className="waveform" onClick={() => this.WS.play()}>
 				<div className="waveform-renderer" ref={elem => this.waveformContainer = elem} />
-				<div className="waveform-graphic" style={{backgroundImage: waveformUri ? `url(${waveformUri})` : ''}} />
+				{haveAudio && <div className="waveform-graphic" style={{backgroundImage: `url(${waveformUri})`}} />}
+				{haveAudio && <AudioTrim position={position} onChange={position => this.setState({position})} />}
+				{fileKey && <label className="label-box">{fileKey}</label>}
 			</div>
 		)
 	}
