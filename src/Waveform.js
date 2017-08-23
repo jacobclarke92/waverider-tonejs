@@ -46,30 +46,44 @@ export default class Waveform extends Component {
 	}
 
 	loadFromFileKey(fileKey = this.props.fileKey) {
-		const file = getBlob(fileKey)
-		if(file) this.loadFile(file)
-	}
-
-	loadFile(file) {
-		this.WS.loadBlob(file)
+		const blob = getBlob(fileKey)
+		if(blob) this.WS.loadBlob(blob)
 	}
 
 	handleWaveformGeneration() {
-		console.log(this.WS)
 		if(!getWaveform(this.props.fileKey)) {
 			const waveformUri = this.WS.exportImage()
 			if(waveformUri) addWaveform(this.props.fileKey, waveformUri)
 		}
+		this.initSampler()
 		this.forceUpdate()
 	}
 
+	initSampler(callback = () => {}) {
+		if(!this.props.fileKey) return
+		const { start, end } = this.state.position
+		if(this.sampler) this.sampler.dispose();
+		this.sampler = new Sampler(getBlobUrl(this.props.fileKey), () => {
+			const duration = this.sampler.buffer.duration
+			if(!(start === 0 && end === 1)) {
+				this.sampler.buffer = this.sampler.buffer.slice(duration * start, duration * end)
+			}
+			callback()
+		}).toMaster()
+	}
+
 	handlePlay() {
-		if(!this.sampler) this.sampler = new Sampler(getBlobUrl(this.props.fileKey), () => this.triggerPlay()).toMaster()
+		if(!this.sampler) this.initSampler(() => this.triggerPlay());
 		else this.triggerPlay()
 	}
 
 	triggerPlay(pitch = 0) {
-		this.sampler.triggerAttack(pitch, now(), 0.5)
+		pitch = Math.round(Math.random()*20) - 10
+		if(this.sampler.buffer.loaded) this.sampler.triggerAttack(pitch, now(), 0.5)
+	}
+
+	handleTrim(newPos, oldPos) {
+		if(newPos.start !== oldPos.start || newPos.end !== oldPos.end) this.initSampler()
 	}
 
 	render() {
@@ -83,7 +97,11 @@ export default class Waveform extends Component {
 			<div className="waveform" onClick={() => this.handlePlay()}>
 				<div className="waveform-renderer" ref={elem => this.waveformContainer = elem} />
 				{haveAudio && <div className="waveform-graphic" style={{backgroundImage: `url(${waveformUri})`}} />}
-				{haveAudio && <AudioTrim position={position} onChange={position => this.setState({position})} />}
+				{haveAudio && 
+					<AudioTrim 
+						position={position} 
+						onChange={position => this.setState({position})} 
+						onAfterChange={(newPos, oldPos) => this.handleTrim(newPos, oldPos)} />}
 				{fileKey && <label className="label-box">{fileKey}</label>}
 			</div>
 		)

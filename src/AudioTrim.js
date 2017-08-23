@@ -3,6 +3,8 @@ import React, { Component } from 'react'
 export default class AudioTrim extends Component {
 
 	static defaultProps = {
+		onChange: () => {},
+		onAfterChange: () => {},
 		position: {
 			start: 0,
 			end: 1,
@@ -26,7 +28,13 @@ export default class AudioTrim extends Component {
 		document.removeEventListener('mousemove', this.handleMouseMove)
 	}
 
+	handleStartDrag(type) {
+		this.dragging = type
+		this.previousPosition = {...this.props.position}
+	}
+
 	handleMouseUp(e) {
+		if(this.dragging) this.props.onAfterChange(this.props.position, this.previousPosition)
 		this.dragging = false
 	}
 
@@ -41,6 +49,8 @@ export default class AudioTrim extends Component {
 		position[this.dragging] = relativePos
 
 		const tmpStart = position.start
+
+		// swap selectors if they cross over
 		if(position.start > position.end || position.end < position.start) {
 			position.start = position.end
 			position.end = tmpStart
@@ -57,8 +67,8 @@ export default class AudioTrim extends Component {
 		return (
 			<div className="audio-trim-container" ref={elem => this.container = elem}>
 				<div className="trim-area" style={{left: (start*100)+'%', width: (duration*100)+'%'}} />
-				<div className="trim-left" style={{left: (start*100)+'%'}} onMouseDown={() => this.dragging = 'start'} />
-				<div className="trim-right" style={{left: (end*100)+'%'}} onMouseDown={() => this.dragging = 'end'} />
+				<div className="trim-left" style={{left: (start*100)+'%'}} onMouseDown={() => this.handleStartDrag('start')} />
+				<div className="trim-right" style={{left: (end*100)+'%'}} onMouseDown={() => this.handleStartDrag('end')} />
 			</div>
 		)	
 	}

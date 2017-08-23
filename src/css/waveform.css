@@ -28,6 +28,10 @@
             height: 100%;
             background-size: 100% 100%;
             pointer-events: none;
+
+            &.reversed {
+                transform: scaleX(-1);
+            }
         }
 
         .waveform-renderer {
