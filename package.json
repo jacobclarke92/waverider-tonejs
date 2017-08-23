@@ -39,6 +39,7 @@
   "dependencies": {
     "babel-polyfill": "^6.16.0",
     "classname": "0.0.0",
+    "classnames": "^2.2.5",
     "jquery": "^3.0.0",
     "keycode": "^2.1.4",
     "react": "^15.3.0",
