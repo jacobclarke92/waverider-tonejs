@@ -3,6 +3,8 @@ const NOTE_OFF = 128
 
 let midi = null
 let listeners = []
+let noteDownListeners = []
+let noteUpListeners = []
 
 export function init() {
 	if (navigator.requestMIDIAccess) {
@@ -13,7 +15,11 @@ export function init() {
 }
 
 export const addListener = func => listeners.push(func)
+export const addNoteDownListener = func => noteDownListeners.push(func)
+export const addNoteUpListener = func => noteUpListeners.push(func)
 export const removeListener = func => listeners = listeners.filter(listener => listener != func)
+export const removeNoteDownListener = func => noteDownListeners = noteDownListeners.filter(listener => listener != func)
+export const removeNoteUpListener = func => noteUpListeners = noteUpListeners.filter(listener => listener != func)
 
 const handleMidiSuccess = midiAccess => {
     midi = midiAccess
@@ -37,7 +43,10 @@ const handleMidiMessage = ({data}) => {
 	if(type == NOTE_ON && velocity === 0) type = NOTE_OFF
 
 	switch(type) {
-		case NOTE_ON: console.log('Note on'); break
-		case NOTE_OFF: console.log('Note off'); break
+		case NOTE_ON: triggerNoteDownListeners(channel, note, velocity); break
+		case NOTE_OFF: triggerNoteUpListeners(channel, note, velocity); break
 	}
 }
+
+const triggerNoteDownListeners = (channel, note, velocity) => noteDownListeners.forEach(listener => listener(channel, note, velocity))
+const triggerNoteUpListeners = (channel, note, velocity) => noteUpListeners.forEach(listener => listener(channel, note, velocity))

@@ -3,6 +3,7 @@ import WaveSurfer from 'wavesurfer.js/src/wavesurfer.js'
 import { Sampler, Time, now } from 'tone'
 
 import { getBlob, getBlobUrl, addWaveform, getWaveform } from './mediaStore'
+import { addNoteDownListener, removeNoteDownListener } from './midi'
 
 import AudioTrim from './AudioTrim'
 
@@ -34,11 +35,14 @@ export default class Waveform extends Component {
 		})
 		this.WS.init()
 		this.WS.on('ready', this.handleWaveformGeneration.bind(this))
+		this.handleNoteDown = this.handleNoteDown.bind(this)
+		addNoteDownListener(this.handleNoteDown)
 		if(fileKey) this.loadFromFileKey()
 	}
 
 	componentWillUnmount() {
 		this.WS.destroy()
+		removeNoteDownListener(this.handleNoteDown)
 	}
 
 	componentWillReceiveProps(newProps) {
@@ -72,14 +76,19 @@ export default class Waveform extends Component {
 		}).toMaster()
 	}
 
+	handleNoteDown(channel, note, velocity) {
+		console.log(note, velocity)
+		this.triggerPlay(note-60, velocity)
+	}
+
 	handlePlay() {
 		if(!this.sampler) this.initSampler(() => this.triggerPlay());
 		else this.triggerPlay()
 	}
 
-	triggerPlay(pitch = 0) {
-		pitch = Math.round(Math.random()*20) - 10
-		if(this.sampler.buffer.loaded) this.sampler.triggerAttack(pitch, now(), 0.5)
+	triggerPlay(pitch = 0, velocity = 0.5) {
+		// pitch = Math.round(Math.random()*20) - 10
+		if(this.sampler.buffer.loaded) this.sampler.triggerAttack(pitch, now(), velocity)
 	}
 
 	handleTrim(newPos, oldPos) {
