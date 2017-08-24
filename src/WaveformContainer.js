@@ -27,7 +27,7 @@ export default class WaveformContainer extends Component {
 		return (
 			<div className="waveform-container">
 				<Dropzone onDrop={this.handleFileDrop}>
-					<Waveform fileKey={fileKey} />
+					<Waveform fileKey={fileKey} {...this.props} />
 				</Dropzone>
 			</div>
 		)

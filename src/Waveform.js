@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
 import WaveSurfer from 'wavesurfer.js/src/wavesurfer.js'
 import { Sampler, Time, now } from 'tone'
+import classnames from 'classnames'
 
 import { getBlob, getBlobUrl, addWaveform, getWaveform } from './mediaStore'
-import { addNoteDownListener, removeNoteDownListener } from './midi'
+import { addNoteDownListener, addNoteUpListener, removeNoteDownListener, removeNoteUpListener } from './midi'
 
 import AudioTrim from './AudioTrim'
 
@@ -12,6 +13,8 @@ export default class Waveform extends Component {
 	static defaultProps = {
 		fileKey: null,
 		waveColor: '#FFF',
+		reversed: false,
+		looped: false,
 	};
 
 	constructor(props) {
@@ -36,17 +39,30 @@ export default class Waveform extends Component {
 		this.WS.init()
 		this.WS.on('ready', this.handleWaveformGeneration.bind(this))
 		this.handleNoteDown = this.handleNoteDown.bind(this)
+		this.handleNoteUp = this.handleNoteUp.bind(this)
 		addNoteDownListener(this.handleNoteDown)
+		addNoteUpListener(this.handleNoteUp)
 		if(fileKey) this.loadFromFileKey()
 	}
 
 	componentWillUnmount() {
 		this.WS.destroy()
 		removeNoteDownListener(this.handleNoteDown)
+		removeNoteUpListener(this.handleNoteUp)
 	}
 
 	componentWillReceiveProps(newProps) {
 		if(this.props.fileKey != newProps.fileKey) this.loadFromFileKey(newProps.fileKey)
+		if(this.sampler) {
+			if(this.props.reversed != newProps.reversed) {
+				this.sampler.reverse = newProps.reversed
+				this.setState({position: {
+					start: 1 - this.state.position.end,
+					end: 1 - this.state.position.start,
+				}})
+			}
+			if(this.props.looped != newProps.looped) this.sampler.loop = newProps.looped
+		}
 	}
 
 	loadFromFileKey(fileKey = this.props.fileKey) {
@@ -66,9 +82,12 @@ export default class Waveform extends Component {
 	initSampler(callback = () => {}) {
 		if(!this.props.fileKey) return
 		const { start, end } = this.state.position
+		const { reversed, looped } = this.props
 		if(this.sampler) this.sampler.dispose();
 		this.sampler = new Sampler(getBlobUrl(this.props.fileKey), () => {
 			const duration = this.sampler.buffer.duration
+			this.sampler.reverse = reversed
+			this.sampler.loop = looped
 			if(!(start === 0 && end === 1)) {
 				this.sampler.buffer = this.sampler.buffer.slice(duration * start, duration * end)
 			}
@@ -81,6 +100,11 @@ export default class Waveform extends Component {
 		this.triggerPlay(note-60, velocity)
 	}
 
+	handleNoteUp(channel, note, velocity) {
+		console.log('note up')
+		if(this.sampler) this.sampler.triggerRelease(now())
+	}
+
 	handlePlay() {
 		if(!this.sampler) this.initSampler(() => this.triggerPlay());
 		else this.triggerPlay()
@@ -88,7 +112,7 @@ export default class Waveform extends Component {
 
 	triggerPlay(pitch = 0, velocity = 0.5) {
 		// pitch = Math.round(Math.random()*20) - 10
-		if(this.sampler.buffer.loaded) this.sampler.triggerAttack(pitch, now(), velocity)
+		if(this.sampler.buffer.loaded) this.sampler.triggerAttack(pitch, now(), velocity / 2)
 	}
 
 	handleTrim(newPos, oldPos) {
@@ -96,7 +120,7 @@ export default class Waveform extends Component {
 	}
 
 	render() {
-		const { fileKey } = this.props
+		const { fileKey, reversed } = this.props
 		const waveformUri = getWaveform(fileKey)
 		const haveAudio = !!waveformUri
 
@@ -105,7 +129,7 @@ export default class Waveform extends Component {
 		return (
 			<div className="waveform" onClick={() => this.handlePlay()}>
 				<div className="waveform-renderer" ref={elem => this.waveformContainer = elem} />
-				{haveAudio && <div className="waveform-graphic" style={{backgroundImage: `url(${waveformUri})`}} />}
+				{haveAudio && <div className={classnames('waveform-graphic', {reversed})} style={{backgroundImage: `url(${waveformUri})`}} />}
 				{haveAudio && 
 					<AudioTrim 
 						position={position} 
