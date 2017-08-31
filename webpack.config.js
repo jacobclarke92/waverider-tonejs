@@ -13,6 +13,11 @@ var options = {
 		path: path.join(__dirname, '/app/dist'),
 	},
 	devtool: 'cheap-module-eval-source-map',
+	resolve: {
+		alias: {
+			'dexie': 'dexie/src/Dexie',
+		},
+	},
 	plugins: [
 		new webpack.NoEmitOnErrorsPlugin(),
 		new ExtractTextPlugin('styles.css'),
