@@ -9,7 +9,7 @@ export default class WaveformContainer extends Component {
 
 	constructor(props) {
 		super(props)
-		this.state = { fileKey: null }
+		this.state = { fileHash: null }
 		this.handleFileDrop = this.handleFileDrop.bind(this)
 	}
 
@@ -17,21 +17,19 @@ export default class WaveformContainer extends Component {
 		if(monitor) {
 			const droppedFiles = monitor.getItem().files
 			if(droppedFiles.length) {
-				droppedFiles.forEach(file => {
-					addBlob(file.name, file)
-					addFile(file).then(response => console.log(response)).catch(error => console.warn(error))
+				droppedFiles.forEach(droppedFile => {
+					addFile(droppedFile).then(file => this.setState({fileHash: file.hash}))
 				})
-				this.setState({fileKey: droppedFiles[0].name})
 			}
 		}
 	}
 
 	render() {
-		const { fileKey } = this.state
+		const { fileHash } = this.state
 		return (
 			<div className="waveform-container">
 				<Dropzone onDrop={this.handleFileDrop}>
-					<Waveform fileKey={fileKey} {...this.props} />
+					<Waveform fileHash={fileHash} {...this.props} />
 				</Dropzone>
 			</div>
 		)

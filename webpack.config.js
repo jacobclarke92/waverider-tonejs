@@ -15,7 +15,7 @@ var options = {
 	devtool: 'cheap-module-eval-source-map',
 	resolve: {
 		alias: {
-			'dexie': 'dexie/src/Dexie',
+			'wavesurfer': 'wavesurfer.js/src/wavesurfer.js',
 		},
 	},
 	plugins: [

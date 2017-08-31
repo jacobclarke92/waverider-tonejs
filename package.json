@@ -37,6 +37,7 @@
     "webpack-hot-middleware": "^2.12.2"
   },
   "dependencies": {
+    "b64-to-blob": "^1.2.19",
     "babel-polyfill": "^6.16.0",
     "classname": "0.0.0",
     "classnames": "^2.2.5",
