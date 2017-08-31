@@ -88,27 +88,21 @@ function getHashFromBlob(blob) {
 }
 
 export function addFile(blob) {
-	return new Promise((resolve, reject) => {
-		getHashFromBlob(blob).then(hash => {
-			console.log(hash)
-			db.files.where('hash').equals(hash).first().then(existingFile => {
-				if(existingFile) {
-					console.log('file exists')
-					resolve(existingFile)
-				}else{
-					console.log('new file')
-					db.files.add({
-						id: ++fileId,
-						filename: blob.name,
-						size: blob.size,
-						type: blob.type,
-						date: blob.lastModified,
-						hash,
-					})
-					.then(response => resolve(response))
-					.catch(error => reject(error))
-				}
-			})
+	return getHashFromBlob(blob).then(hash => {
+		return db.files.where('hash').equals(hash).first().then(existingFile => {
+			if(existingFile) {
+				return existingFile
+			}else{
+				console.log('new file')
+				return db.files.add({
+					id: ++fileId,
+					filename: blob.name,
+					size: blob.size,
+					type: blob.type,
+					date: blob.lastModified,
+					hash,
+				})
+			}
 		})
 	})
 }
