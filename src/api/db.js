@@ -1,13 +1,24 @@
 import Dexie from 'dexie'
-import Crypto from 'crypto'
+import Crypto from 'crypto-js'
+import 'crypto-js/sha1'
+import 'crypto-js/lib-typedarrays'
 
 const db = new Dexie('TimbreSandpit')
 db.version(1).stores({
-	files: '++id,filename,size,type,date,hash,data',
+	files: '++id,filename,size,type,date,&hash,data',
 })
 
 export default db
 
+
+db.open().catch(e => console.error('Opening DB failed', e.stack))
+
+let fileId = 0
+db.files.orderBy('id').last().then(item => fileId = item ? item.id : fileId)
+
+db.files.toArray().then(files => console.log(files))
+
+/*
 export const filesDB = db.files.defineClass({
 	id: Number,
 	filename: String,
@@ -41,19 +52,14 @@ filesDB.prototype.revokeObjectUrl = function() {
 filesDB.prototype.readAsText = function() {
 	return new Promise((resolve, reject) => {
 		const fileReader = new FileReader()
-		fileReader.onload = function() { resolve(this.result) }
+		fileReader.onload = e => resolve(e.target.result)
 		fileReader.onerror = reject
 		fileReader.readAsText(this.data)
 	})
 }
 
 filesDB.prototype.readAsArrayBuffer = function() {
-	return new Promise((resolve, reject) => {
-		const fileReader = new FileReader()
-		fileReader.onload = function() { resolve(this.result) }
-		fileReader.onerror = reject
-		fileReader.readAsArrayBuffer(this.data)
-	})
+	return readAsArrayBuffer(this.data)
 }
 
 filesDB.prototype.disposeData = function () {
@@ -62,20 +68,47 @@ filesDB.prototype.disposeData = function () {
 	this.data = null
 	this.disposed = true
 }
+*/
+
+function readAsArrayBuffer(blob) {
+	return new Promise((resolve, reject) => {
+		const fileReader = new FileReader()
+		fileReader.onload = e => resolve(e.target.result)
+		fileReader.onerror = reject
+		fileReader.readAsArrayBuffer(blob)
+	})
+}
 
 function getHashFromBlob(blob) {
-	return null
+	return new Promise((resolve, reject) => {
+		readAsArrayBuffer(blob)
+			.then(data => resolve(Crypto.SHA1(Crypto.lib.WordArray.create(data)).toString()))
+			.catch(error => reject(error))
+	})
 }
 
 export function addFile(blob) {
-	const row = db.files.put({
-		id: null,
-		filename: blob.name,
-		size: blob.size,
-		type: blob.type,
-		date: blob.lastModified,
-		hash: getHashFromBlob(blob),
+	return new Promise((resolve, reject) => {
+		getHashFromBlob(blob).then(hash => {
+			console.log(hash)
+			db.files.where('hash').equals(hash).first().then(existingFile => {
+				if(existingFile) {
+					console.log('file exists')
+					resolve(existingFile)
+				}else{
+					console.log('new file')
+					db.files.add({
+						id: ++fileId,
+						filename: blob.name,
+						size: blob.size,
+						type: blob.type,
+						date: blob.lastModified,
+						hash,
+					})
+					.then(response => resolve(response))
+					.catch(error => reject(error))
+				}
+			})
+		})
 	})
-	console.log(row)
-	return row
 }

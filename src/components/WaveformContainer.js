@@ -19,7 +19,7 @@ export default class WaveformContainer extends Component {
 			if(droppedFiles.length) {
 				droppedFiles.forEach(file => {
 					addBlob(file.name, file)
-					addFile(file)
+					addFile(file).then(response => console.log(response)).catch(error => console.warn(error))
 				})
 				this.setState({fileKey: droppedFiles[0].name})
 			}
