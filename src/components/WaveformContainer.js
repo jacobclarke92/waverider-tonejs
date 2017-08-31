@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 
 import Dropzone from './Dropzone'
 import Waveform from './Waveform'
-import { addBlob, getAll } from './mediaStore'
+import { addBlob, getAll } from '../api/mediaStore'
 
 export default class WaveformContainer extends Component {
 

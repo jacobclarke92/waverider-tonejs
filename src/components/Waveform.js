@@ -3,8 +3,8 @@ import WaveSurfer from 'wavesurfer.js/src/wavesurfer.js'
 import { Sampler, Time, now } from 'tone'
 import classnames from 'classnames'
 
-import { getBlob, getBlobUrl, addWaveform, getWaveform } from './mediaStore'
-import { addNoteDownListener, addNoteUpListener, removeNoteDownListener, removeNoteUpListener } from './midi'
+import { getBlob, getBlobUrl, addWaveform, getWaveform } from '../api/mediaStore'
+import { addNoteDownListener, addNoteUpListener, removeNoteDownListener, removeNoteUpListener } from '../api/midi'
 
 import AudioTrim from './AudioTrim'
 

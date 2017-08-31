@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import './css/styles.css'
 
-import { init as initMidi } from './midi'
+import { init as initMidi } from './api/midi'
 
 import App from './App'
 
