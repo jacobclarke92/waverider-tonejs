@@ -2,9 +2,18 @@ const NOTE_ON = 144
 const NOTE_OFF = 128
 
 let midi = null
+let devices = []
+
 let listeners = []
 let noteDownListeners = []
 let noteUpListeners = []
+
+export const addListener = func => listeners.push(func)
+export const addNoteDownListener = func => noteDownListeners.push(func)
+export const addNoteUpListener = func => noteUpListeners.push(func)
+export const removeListener = func => listeners = listeners.filter(listener => listener != func)
+export const removeNoteDownListener = func => noteDownListeners = noteDownListeners.filter(listener => listener != func)
+export const removeNoteUpListener = func => noteUpListeners = noteUpListeners.filter(listener => listener != func)
 
 export function init() {
 	if (navigator.requestMIDIAccess) {
@@ -14,23 +23,24 @@ export function init() {
 	}
 }
 
-export const addListener = func => listeners.push(func)
-export const addNoteDownListener = func => noteDownListeners.push(func)
-export const addNoteUpListener = func => noteUpListeners.push(func)
-export const removeListener = func => listeners = listeners.filter(listener => listener != func)
-export const removeNoteDownListener = func => noteDownListeners = noteDownListeners.filter(listener => listener != func)
-export const removeNoteUpListener = func => noteUpListeners = noteUpListeners.filter(listener => listener != func)
-
 const handleMidiSuccess = midiAccess => {
     midi = midiAccess
-
-    const inputs = midi.inputs.values()
-    for (let input = inputs.next(); input && !input.done; input = inputs.next()) {
-    	input.value.onmidimessage = handleMidiMessage
-    }
+    midi.onstatechange = ({port}) => updateDevices()
+    updateDevices()
 }
 
 const handleMidiFailure = e => console.warn('No access to MIDI devices or your browser doesn\'t support WebMIDI API.', e)
+
+const updateDevices = () => {
+	if(!midi) return init()
+	
+	devices = []
+	const inputs = midi.inputs.values()
+    for (let input = inputs.next(); input && !input.done; input = inputs.next()) {
+    	devices.push(input.value)
+    	input.value.onmidimessage = handleMidiMessage
+    }
+}
 
 const handleMidiMessage = ({data}) => {
 	const command = data[0] >> 4

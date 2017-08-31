@@ -8,6 +8,9 @@ export default class Simpler extends Component {
 		this.state = {
 			reversed: false,
 			looped: false,
+			voices: 4,
+			midiDeviceId: null,
+			midiChannel: null,
 		}
 	}
 
