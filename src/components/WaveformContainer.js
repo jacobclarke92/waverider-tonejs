@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import Dropzone from './Dropzone'
 import Waveform from './Waveform'
 import { addBlob, getAll } from '../api/mediaStore'
+import { filesDB, addFile } from '../api/db'
 
 export default class WaveformContainer extends Component {
 
@@ -16,7 +17,10 @@ export default class WaveformContainer extends Component {
 		if(monitor) {
 			const droppedFiles = monitor.getItem().files
 			if(droppedFiles.length) {
-				droppedFiles.forEach(file => addBlob(file.name, file))
+				droppedFiles.forEach(file => {
+					addBlob(file.name, file)
+					addFile(file)
+				})
 				this.setState({fileKey: droppedFiles[0].name})
 			}
 		}
