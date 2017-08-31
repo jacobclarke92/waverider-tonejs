@@ -70,12 +70,12 @@ export const addFile = blob => getHashFromBlob(blob).then(hash =>
 		})
 )
 
-export const getBy = (key, value) => new Promise((resolve, reject) => {
+export const getBy = (key, value) => new Promise((resolve, reject) => 
 	db.files.where(key).equals(value).first().then(file => {
 		if(file) resolve(file)
 		else reject('File not found')
 	})
-})
+)
 
 export const getFileById = id => getBy('id', id)
 export const getFileByHash = hash => getBy('hash', hash)
