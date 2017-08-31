@@ -1,0 +1,59 @@
+.audio-trim-container {
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    & .trim-area {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 5px;
+        background-color: rgba(0,0,100,0.15);
+        pointer-events: none;
+    }
+
+    & .trim-left,
+    & .trim-right {
+        position: absolute;
+        top: 0;
+        height: 100%;
+        width: var(--triangle-size);
+        cursor: e-resize;
+
+        &:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 0;
+            height: 0;
+            border-top: var(--triangle-size) solid transparent;
+            border-bottom: var(--triangle-size) solid transparent;
+            border-left: var(--triangle-size) solid #0000FF;
+        }
+    }
+
+    & .trim-left {
+        left: 0;
+        border-left: 1px solid #0000FF;
+        &:after {
+            left: 0;
+        }
+    }
+
+    & .trim-right {
+        left: 100%;
+        transform: translateX(-100%);
+        border-right: 1px solid #0000FF;
+        cursor: w-resize;
+
+        &:after {
+            right: 0;
+            border-left: none;
+            border-right: var(--triangle-size) solid #0000FF;
+        }
+    }
+}

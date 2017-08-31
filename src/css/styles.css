@@ -1,16 +1,9 @@
 @import './_variables.css';
 
-@import './waveform.css';
-@import './dropzone.css';
+@import './body.css';
 
-body {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 10px;
-}
+@import './elements/file-label.css';
 
-.label-box {
-	display: inline-block;
-	background-color: rgba(0,0,0,0.5);
-	color: white;
-	padding: 0.5rem;
-}
+@import './components/waveform.css';
+@import './components/dropzone.css';
+@import './components/audio-trim.css';
