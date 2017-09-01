@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Sampler, Time, now } from 'tone'
+import { Sampler, PolySynth, Time, now } from 'tone'
 import classnames from 'classnames'
 
 import { getFileByHash } from '../api/db'
@@ -47,18 +47,18 @@ export default class Waveform extends Component {
 		if(this.props.fileHash != newProps.fileHash) this.loadFileFromHash(newProps.fileHash)
 		if(this.sampler) {
 			if(this.props.reversed != newProps.reversed) {
-				this.sampler.reverse = newProps.reversed
+				this.sampler.voices.forEach(voice => voice.reverse = newProps.reversed)
 				this.setState({position: {
 					start: 1 - this.state.position.end,
 					end: 1 - this.state.position.start,
 				}})
 			}
-			if(this.props.looped != newProps.looped) this.sampler.loop = newProps.looped
+			if(this.props.looped != newProps.looped) this.sampler.voices.forEach(voice => voice.loop = newProps.looped)
 		}
 	}
 
 	loadFileFromHash(fileHash = this.props.fileHash) {
-		const blob = getFileByHash(fileHash)
+		getFileByHash(fileHash)
 			.then(file => {
 				this.initSampler()
 				this.setState({fileName: file.name})
@@ -73,17 +73,21 @@ export default class Waveform extends Component {
 		if(this.sampler) this.sampler.dispose();
 	
 		const { start, end } = this.state.position
-		getFileByHash(fileHash).then(file => 
-			this.sampler = new Sampler(file.getUrl(), () => {
-				const duration = this.sampler.buffer.duration
-				this.sampler.reverse = reversed
-				this.sampler.loop = looped
-				if(!(start === 0 && end === 1)) {
-					this.sampler.buffer = this.sampler.buffer.slice(duration * start, duration * end)
-				}
-				callback()
-			}).toMaster()
-		)
+		getFileByHash(fileHash).then(file => {
+			this.sampler = new PolySynth(10, Sampler).toMaster()
+			console.log(this.sampler)
+			this.sampler.voices.forEach(voice => 
+				voice.player.load(file.getUrl(), () => {
+					const duration = voice.buffer.duration
+					voice.reverse = reversed
+					voice.loop = looped
+					if(!(start === 0 && end === 1)) {
+						voice.buffer = voice.buffer.slice(duration * start, duration * end)
+					}
+					callback()
+				})
+			)
+		})
 	}
 
 	handleNoteDown(channel, note, velocity) {
@@ -93,7 +97,7 @@ export default class Waveform extends Component {
 
 	handleNoteUp(channel, note, velocity) {
 		console.log('note up')
-		if(this.sampler) this.sampler.triggerRelease(now())
+		if(this.sampler) this.sampler.triggerRelease(note, now())
 	}
 
 	handlePlay() {
@@ -103,7 +107,7 @@ export default class Waveform extends Component {
 
 	triggerPlay(pitch = 0, velocity = 0.5) {
 		// pitch = Math.round(Math.random()*20) - 10
-		if(this.sampler.buffer.loaded) this.sampler.triggerAttack(pitch, now(), velocity / 2)
+		if(this.sampler && this.sampler.voices[0].buffer.loaded) this.sampler.triggerAttack(pitch, now(), velocity / 2)
 	}
 
 	handleTrim(newPos, oldPos) {
