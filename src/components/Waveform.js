@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
-import { Sampler, PolySynth, Time, now } from 'tone'
+import { Sampler, PolySynth, now } from 'tone'
 import classnames from 'classnames'
 
+import { getPitch } from '../api/pitch'
 import { getFileByHash } from '../api/db'
 import { getWaveformFromFile } from '../api/waveform'
 import { addNoteDownListener, addNoteUpListener, removeNoteDownListener, removeNoteUpListener } from '../api/midi'
@@ -74,8 +75,8 @@ export default class Waveform extends Component {
 	
 		const { start, end } = this.state.position
 		getFileByHash(fileHash).then(file => {
+			getPitch(file.getUrl()).then(pitch => console.log('Average pitch', pitch))
 			this.sampler = new PolySynth(10, Sampler).toMaster()
-			console.log(this.sampler)
 			this.sampler.voices.forEach(voice => 
 				voice.player.load(file.getUrl(), () => {
 					const duration = voice.buffer.duration
@@ -92,7 +93,7 @@ export default class Waveform extends Component {
 
 	handleNoteDown(channel, note, velocity) {
 		console.log(note, velocity)
-		this.triggerPlay(note-60, velocity)
+		this.triggerPlay(note-60, velocity / 2)
 	}
 
 	handleNoteUp(channel, note, velocity) {
@@ -106,8 +107,9 @@ export default class Waveform extends Component {
 	}
 
 	triggerPlay(pitch = 0, velocity = 0.5) {
-		// pitch = Math.round(Math.random()*20) - 10
-		if(this.sampler && this.sampler.voices[0].buffer.loaded) this.sampler.triggerAttack(pitch, now(), velocity / 2)
+		if(this.sampler && this.sampler.voices && this.sampler.voices[0].buffer.loaded) {
+			this.sampler.triggerAttack(pitch, now(), velocity / 2)
+		}
 	}
 
 	handleTrim(newPos, oldPos) {
