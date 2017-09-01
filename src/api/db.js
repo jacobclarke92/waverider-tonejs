@@ -1,5 +1,15 @@
 import Dexie from 'dexie'
+import prettySize from 'prettysize'
+import { getStorageQuota, requestStorage } from '../utils/localStorageUtils'
 import { readBlobAsText, readBlobAsArrayBuffer, getHashFromBlob, getBlobUrl } from '../utils/blobUtils'
+
+const localStorageBytes = 1024*1024*128
+getStorageQuota().then(({usedBytes, grantedBytes}) => {
+	console.log(prettySize(usedBytes)+' used', prettySize(grantedBytes)+' granted')
+	// if(grantedBytes < localStorageBytes) {
+	// 	requestStorage(localStorageBytes).then(grantedBytes => console.log(prettySize(grantedBytes)+' granted'))
+	// }
+})
 
 const db = new Dexie('TimbreSandpit')
 db.version(1).stores({

@@ -45,6 +45,7 @@
     "dexie": "^2.0.0-beta.11",
     "jquery": "^3.0.0",
     "keycode": "^2.1.4",
+    "prettysize": "^0.1.0",
     "react": "^15.3.0",
     "react-dnd": "^2.4.0",
     "react-dnd-html5-backend": "^2.4.1",
