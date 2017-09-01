@@ -5,23 +5,35 @@ export const getPitch = soundUrl => new Promise((resolve, reject) => {
 	let analysing = true
 	const analyser = new Analyser('waveform', 1024)
 	analyser.type = 'waveform'
-	analyser.returnType = 'byte'
+	analyser.returnType = 'float'
+
+	const noteStore = {}
+	let mostReoccuring = 0
+	let mostLikelyNote = null
+
 	const rafFunction = () => {
-		// console.log(analyser.analyse()[2])
 		const buffer = analyser.analyse()
 		const pitch = autoCorrelate(buffer, 1024)
-		console.log(buffer[0])
 		if(pitch !== -1) {
 			const note = noteFromPitch(pitch)
-			console.log(note, noteStrings[note%12], pitch+'hz')
+			noteStore[note] = (noteStore[note] || 0) + 1
+			if(noteStore[note] > mostReoccuring) {
+				mostReoccuring = noteStore[note]
+				mostLikelyNote = note
+			}
+			// console.log(note, noteStrings[note%12], pitch+'hz')
 		}
 		if(analysing) requestAnimationFrame(rafFunction)
 	}
+
 	const player = new Player(soundUrl, () => {
 		console.log(analyser)
 		player.start()
 		requestAnimationFrame(rafFunction)
-		setTimeout(() => analysing = false, (player.buffer.duration || 0)*1000)
+		setTimeout(() => {
+			analysing = false
+			console.log(mostLikelyNote, noteStrings[mostLikelyNote%12])
+		}, (player.buffer.duration || 0)*1000)
 	}).connect(analyser)//.toMaster()
 })
 
@@ -44,10 +56,7 @@ const autoCorrelate = (buf, sampleRate) => {
 		rms += val*val
 	}
 	rms = Math.sqrt(rms/SIZE)
-	if (rms < 0.01) {
-		console.log('not enough signal')
-		return -1
-	}
+	if (rms < 0.01) return -1
 
 	let lastCorrelation = 1
 	for (let offset = MIN_SAMPLES; offset < MAX_SAMPLES; offset++) {
@@ -55,7 +64,6 @@ const autoCorrelate = (buf, sampleRate) => {
 
 		for (let i = 0; i < MAX_SAMPLES; i++) {
 			correlation += Math.abs((buf[i])-(buf[i+offset]))
-			// console.log(Math.abs((buf[i])-(buf[i+offset])))
 		}
 		correlation = 1 - (correlation/MAX_SAMPLES)
 		correlations[offset] = correlation // store it, for the tweaking we need to do below.
@@ -80,56 +88,10 @@ const autoCorrelate = (buf, sampleRate) => {
 		}
 		lastCorrelation = correlation
 	}
-	// console.log('best correlation', best_correlation)
-	if (best_correlation > 0.01) {
-		// console.log("f = " + sampleRate/best_offset + "Hz (rms: " + rms + " confidence: " + best_correlation + ")")
-		return sampleRate/best_offset
-	}
+
+	if (best_correlation > 0.01) return sampleRate/best_offset
 	return -1
 }
-
-/*
-const findFundamentalFreq = (buffer, sampleRate) => {
-	// We use Autocorrelation to find the fundamental frequency.
-	
-	// In order to correlate the signal with itself (hence the name of the algorithm), we will check two points 'k' frames away. 
-	// The autocorrelation index will be the average of these products. At the same time, we normalize the values.
-	// Source: http://www.phy.mty.edu/~suits/autocorrelation.html
-	// Assuming the sample rate is 48000Hz, a 'k' equal to 1000 would correspond to a 48Hz signal (48000/1000 = 48), 
-	// while a 'k' equal to 8 would correspond to a 6000Hz one, which is enough to cover most (if not all) 
-	// the notes we have in the notes.json file.
-	var n = 1024, bestR = 0, bestK = -1;
-	for(var k = 8; k <= 1000; k++){
-		var sum = 0;
-		
-		for(var i = 0; i < n; i++){
-			sum += ((buffer[i] - 127.5) / 127.5) * ((buffer[i + k] - 127.5) / 127.5);
-		}
-		
-		var r = sum / (n + k);
-
-		if(r > bestR){
-			bestR = r;
-			bestK = k;
-		}
-
-		if(r > 0.9) {
-			// Let's assume that this is good enough and stop right here
-			break;
-		}
-	}
-	console.log(buffer.length, bestR)
-	if(bestR > 0.0025) {
-		// The period (in frames) of the fundamental frequency is 'bestK'. Getting the frequency from there is trivial.
-		var fundamentalFreq = sampleRate / bestK;
-		return fundamentalFreq;
-	}
-	else {
-		// We haven't found a good correlation
-		return -1;
-	}
-}
-*/
 
 const noteFromPitch = frequency => {
 	const noteNum = 12 * (Math.log(frequency / 440) / Math.log(2))
