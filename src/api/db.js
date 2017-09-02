@@ -92,16 +92,17 @@ export const getBy = (key, value) => new Promise((resolve, reject) =>
 export const getFileById = id => getBy('id', id)
 export const getFileByHash = hash => getBy('hash', hash)
 
+export const updateById = (id, updates) => new Promise((resolve, reject) => {
+	db.files.update(id, updates).then(updated => {
+		if(updated) resolve(getFileById(id))
+		else reject('Failed to update file')
+	})
+})
+
 export const updateBy = (key, value, updates = {}) => new Promise((resolve, reject) => {
 	if(!Object.keys(updates).length) reject('No updates provided for updating file')
 	db.files.where(key).equals(value).first().then(file => {
-		if(file) {
-			db.files.update(file.id, updates).then(updated => {
-				if(updated) resolve(getBy(key, value))
-				else reject('Failed to update file')
-			})
-		}else{
-			reject('File not found')
-		}
+		if(file) return updateById(file.id, updates)
+		else reject('File not found')
 	})
 })
