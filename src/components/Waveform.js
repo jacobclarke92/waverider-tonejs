@@ -5,6 +5,7 @@ import classnames from 'classnames'
 import { getPitch } from '../api/pitch'
 import { getFileByHash } from '../api/db'
 import { getWaveformFromFile } from '../api/waveform'
+import { noteStrings } from '../constants/noteStrings'
 import { addNoteDownListener, addNoteUpListener, removeNoteDownListener, removeNoteUpListener } from '../api/midi'
 
 import AudioTrim from './AudioTrim'
@@ -75,7 +76,9 @@ export default class Waveform extends Component {
 	
 		const { start, end } = this.state.position
 		getFileByHash(fileHash).then(file => {
-			getPitch(file.getUrl()).then(pitch => console.log('Average pitch', pitch))
+			getPitch(file.getUrl())
+				.then(note => console.log(`Average note = ${note} (${noteStrings[note%12]})`))
+				.catch(e => console.log('Could not get pitch of sample'))
 			this.sampler = new PolySynth(10, Sampler).toMaster()
 			this.sampler.voices.forEach(voice => 
 				voice.player.load(file.getUrl(), () => {
