@@ -1,6 +1,7 @@
 import { Player, Analyser } from 'tone'
+import { updateBy } from './db'
 
-export const getPitch = soundUrl => new Promise((resolve, reject) => {
+export const getNote = soundUrl => new Promise((resolve, reject) => {
 	let analysing = true
 	const analyser = new Analyser('waveform', 1024)
 	analyser.type = 'waveform'
@@ -34,6 +35,26 @@ export const getPitch = soundUrl => new Promise((resolve, reject) => {
 		}, (player.buffer.duration || 0)*1000)
 	}).connect(analyser)
 })
+
+export const getNoteByFile = file => {
+	return new Promise((resolve, reject) => {
+		if(file.note) {
+			console.log('Average note already stored')
+			resolve(file.note)
+		}else {
+			console.log('Analysing for average note...')
+			getNote(file.getUrl())
+				.then(note => {
+					console.log('Got average note', note)
+					updateBy('hash', file.hash, {note})
+						.then(() => console.log('File updated with average note value'))
+						.catch(e => console.log('Failed to update file with average note value', e))
+					resolve(note)
+				})
+				.catch(reject)
+		}
+	})
+}
 
 
 export const noteFromPitch = frequency => {

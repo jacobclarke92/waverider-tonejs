@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import { Sampler, PolySynth, now } from 'tone'
 import classnames from 'classnames'
 
-import { getPitch } from '../api/pitch'
 import { getFileByHash } from '../api/db'
+import { getNoteByFile } from '../api/pitch'
 import { getWaveformFromFile } from '../api/waveform'
 import { noteStrings } from '../constants/noteStrings'
 import { addNoteDownListener, addNoteUpListener, removeNoteDownListener, removeNoteUpListener } from '../api/midi'
@@ -76,7 +76,7 @@ export default class Waveform extends Component {
 	
 		const { start, end } = this.state.position
 		getFileByHash(fileHash).then(file => {
-			getPitch(file.getUrl())
+			getNoteByFile(file)
 				.then(note => console.log(`Average note = ${note} (${noteStrings[note%12]})`))
 				.catch(e => console.log('Could not get pitch of sample'))
 			this.sampler = new PolySynth(10, Sampler).toMaster()
