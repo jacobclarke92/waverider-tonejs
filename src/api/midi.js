@@ -1,12 +1,15 @@
+import { DEVICES_UPDATED } from '../reducers/devices'
+
 const NOTE_ON = 144
 const NOTE_OFF = 128
 
 let midi = null
-let devices = []
 
 let listeners = []
 let noteDownListeners = []
 let noteUpListeners = []
+
+let store = null
 
 export const addListener = func => listeners.push(func)
 export const addNoteDownListener = func => noteDownListeners.push(func)
@@ -15,7 +18,8 @@ export const removeListener = func => listeners = listeners.filter(listener => l
 export const removeNoteDownListener = func => noteDownListeners = noteDownListeners.filter(listener => listener != func)
 export const removeNoteUpListener = func => noteUpListeners = noteUpListeners.filter(listener => listener != func)
 
-export function init() {
+export function init(_store) {
+	store = _store
 	if (navigator.requestMIDIAccess) {
 	    navigator.requestMIDIAccess({sysex: false}).then(handleMidiSuccess, handleMidiFailure)
 	} else {
@@ -34,12 +38,14 @@ const handleMidiFailure = e => console.warn('No access to MIDI devices or your b
 const updateDevices = () => {
 	if(!midi) return init()
 	
-	devices = []
+	const devices = []
 	const inputs = midi.inputs.values()
     for (let input = inputs.next(); input && !input.done; input = inputs.next()) {
     	devices.push(input.value)
     	input.value.onmidimessage = handleMidiMessage
     }
+
+	store.dispatch({type: DEVICES_UPDATED, devices})
 }
 
 const handleMidiMessage = ({data}) => {

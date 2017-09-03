@@ -14,6 +14,7 @@ getStorageQuota().then(({usedBytes, grantedBytes}) => {
 const db = new Dexie('TimbreSandpit')
 db.version(1).stores({
 	files: '++id,filename,size,type,date,&hash,blob',
+	instruments: '++id,type,instrument',
 })
 
 db.open().catch(e => console.error('Opening DB failed', e.stack))
@@ -64,6 +65,27 @@ function addUrlBehavior(tableDB, blobKey) {
 
 export default db
 
+export const add = (table, entity) => db.table(table).add(entity).then(id => db[table].get(id))
+
+export const getAll = table => db.table(table).toArray()
+
+export const getBy = (table, key, value) => new Promise((resolve, reject) => 
+	db.table(table).where(key).equals(value).first()
+		.then(entity => entity ? resolve(entity) : reject('Entity not found'))
+		.catch(reject)	
+)
+
+export const updateBy = (table, key, value, updates = {}) => new Promise((resolve, reject) => 
+	db.table(table).where(key).equals(value).first()
+		.then(entity => {
+			if(!entity) reject('Entity not found')
+			else {
+				db[table].update(entity.id, update)
+					.then(updated => updated ? resolve(getBy(table, key, value)) : reject('Failed to update entity'))
+			}
+		}).catch(reject)
+)
+
 export const addFile = blob => getHashFromBlob(blob).then(hash => 
 	getFileByHash(hash)
 		.then(existingFile => existingFile)
@@ -81,28 +103,9 @@ export const addFile = blob => getHashFromBlob(blob).then(hash =>
 		})
 )
 
-export const getBy = (key, value) => new Promise((resolve, reject) => 
-	db.files.where(key).equals(value).first().then(file => {
-		if(file) resolve(file)
-		else reject('File not found')
-	})
-)
-
-
-export const getFileById = id => getBy('id', id)
-export const getFileByHash = hash => getBy('hash', hash)
-
-export const updateById = (id, updates) => new Promise((resolve, reject) => {
-	db.files.update(id, updates).then(updated => {
-		if(updated) resolve(getFileById(id))
-		else reject('Failed to update file')
-	})
-})
-
-export const updateBy = (key, value, updates = {}) => new Promise((resolve, reject) => {
-	if(!Object.keys(updates).length) reject('No updates provided for updating file')
-	db.files.where(key).equals(value).first().then(file => {
-		if(file) return updateById(file.id, updates)
-		else reject('File not found')
-	})
-})
+export const getFileBy = (key, value) => getBy('files', key, value)
+export const getFileById = id => getFileBy('id', id)
+export const getFileByHash = hash => getFileBy('hash', hash)
+export const updateFileBy = (key, value, updates = {}) => updateBy('files', key, value, updates)
+export const updateFileById = (id, updates) => updateBy('files', 'id', id, updates)
+export const updateFileByHash = (hash, updates) => updateBy('files', 'hash', hash, updates)

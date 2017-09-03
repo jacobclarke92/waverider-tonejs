@@ -1,5 +1,5 @@
 import { Player, Analyser } from 'tone'
-import { updateById } from './db'
+import { updateFileById } from './db'
 
 export const getNote = soundUrl => new Promise((resolve, reject) => {
 	let analysing = true
@@ -46,7 +46,7 @@ export const getNoteByFile = file => {
 			getNote(file.getUrl())
 				.then(note => {
 					console.log('Got average note', note)
-					updateById(file.id, {note})
+					updateFileById(file.id, {note})
 						.then(() => console.log('File updated with average note value'))
 						.catch(e => console.log('Failed to update file with average note value', e))
 					resolve(note)

@@ -50,6 +50,9 @@
     "react-dnd": "^2.4.0",
     "react-dnd-html5-backend": "^2.4.1",
     "react-dom": "^15.3.0",
+    "react-redux": "^5.0.6",
+    "redux": "^3.7.2",
+    "redux-thunk": "^2.2.0",
     "tone": "git://github.com/Tonejs/Tone.js.git#r10",
     "wavesurfer.js": "^2.0.0-beta01"
   }
