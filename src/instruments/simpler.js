@@ -4,15 +4,17 @@ import { getFileByHash } from '../api/db'
 import { getNoteByFile } from '../api/pitch'
 import { noteStrings } from '../constants/noteStrings'
 import { checkDifferenceAny, checkDifferenceAll } from '../utils/lifecycleUtils'
+import { updateInstrument } from '../reducers/instruments'
 
 import Simpler from '../components/instruments/Simpler'
 import { allInstrumentDefaults, defaultEnvelope } from '../instrumentLibrary'
 
 export class SimplerInstrument {
-	constructor(value = {}) {
+	constructor(value = {}, dispatch) {
 		console.log('Mounting simpler...')
 		this.mounted = false
 		this.file = null
+		this.dispatch = dispatch
 		Object.keys(value).forEach(key => this[key] = value[key])
 		this.initSampler(() => {
 			this.mounted = true
@@ -60,7 +62,16 @@ export class SimplerInstrument {
 
 			// do something with this i guess
 			getNoteByFile(file)
-				.then(note => console.log(`Average note = ${note} (${noteStrings[note%12]})`))
+				.then(note => {
+					console.log(`Average note = ${note} (${noteStrings[note%12]})`)
+					if(this.instrument.baseNote != note) {
+						this.dispatch(updateInstrument(this.id, {instrument: {
+							...this.instrument, 
+							baseNote: note, 
+							cents: 0,
+						}}))
+					}
+				})
 				.catch(e => console.log('Could not get pitch of sample'))
 
 			callback(file)
@@ -96,7 +107,7 @@ export class SimplerInstrument {
 	}
 
 	noteDown(note, velocity) {
-		if(this.mounted) this.sampler.triggerAttack(note - 60, now(), velocity / 2)
+		if(this.mounted) this.sampler.triggerAttack(note - this.instrument.baseNote, now(), velocity / 2)
 	}
 
 	noteUp(note) {
@@ -113,6 +124,8 @@ export default {
 		...allInstrumentDefaults,
 		instrument: {
 			fileHash: null,
+			baseNote: 60,
+			cents: 0,
 			envelope: defaultEnvelope,
 			reverse: false,
 			loop: false,

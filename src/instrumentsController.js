@@ -34,7 +34,7 @@ function initInstruments(instruments) {
 
 function initInstrument(instrument) {
 	const Instrument = instrumentLibrary[instrument.type].Instrument
-	instances[instrument.id] = new Instrument(instrument)
+	instances[instrument.id] = new Instrument(instrument, store.dispatch)
 }
 
 function updateInstrument(instrument) {

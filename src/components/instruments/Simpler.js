@@ -4,6 +4,7 @@ import { updateInstrument } from '../../reducers/instruments'
 import { addFile } from '../../api/db'
 
 import Checkbox from '../input/Checkbox'
+import NumberInput from '../input/NumberInput'
 import DeviceSelect from '../DeviceSelect'
 import ChannelSelect from '../ChannelSelect'
 import Dropzone from '../Dropzone'
@@ -41,11 +42,13 @@ class Simpler extends Component {
 
 	render() {
 		const { dispatch, id, instrument, midiDeviceId, midiChannel } = this.props
-		const { voices, loop, reverse, trim, fileHash } = instrument
+		const { voices, loop, reverse, trim, fileHash, baseNote, cents } = instrument
 		return (
 			<div className="simpler">
 				<DeviceSelect value={midiDeviceId} onChange={midiDeviceId => dispatch(updateInstrument(id, {midiDeviceId}))} />
 				<ChannelSelect value={midiChannel} onChange={midiChannel => dispatch(updateInstrument(id, {midiChannel}))} />
+				<NumberInput value={baseNote} step={1} min={0} max={128} onChange={baseNote => dispatch(updateInstrument(id, {instrument: {...instrument, baseNote}}))} />
+				<NumberInput value={cents} step={1} onChange={cents => dispatch(updateInstrument(id, {instrument: {...instrument, cents}}))} />
 				<div className="waveform-container">
 					<Dropzone onDrop={this.handleFilesDrop}>
 						<Waveform 
