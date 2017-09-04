@@ -1,12 +1,8 @@
 import React, { Component } from 'react'
-import { Sampler, PolySynth, now } from 'tone'
 import classnames from 'classnames'
 
 import { getFileByHash } from '../api/db'
-import { getNoteByFile } from '../api/pitch'
 import { getWaveformFromFile } from '../api/waveform'
-import { noteStrings } from '../constants/noteStrings'
-import { addNoteDownListener, addNoteUpListener, removeNoteDownListener, removeNoteUpListener } from '../api/midi'
 
 import AudioTrim from './AudioTrim'
 
@@ -16,6 +12,8 @@ export default class Waveform extends Component {
 		fileHash: null,
 		reversed: false,
 		looped: false,
+		onTrimChange: () => {},
+		onPreviewAudio: () => {},
 	};
 
 	constructor(props) {
@@ -23,7 +21,7 @@ export default class Waveform extends Component {
 		this.state = {
 			waveformUrl: null,
 			fileName: null,
-			position: {
+			trim: {
 				start: 0,
 				end: 1,
 			}
@@ -32,105 +30,78 @@ export default class Waveform extends Component {
 
 	componentDidMount() {
 		const { fileHash } = this.props
-		this.handleNoteDown = this.handleNoteDown.bind(this)
-		this.handleNoteUp = this.handleNoteUp.bind(this)
-		addNoteDownListener(this.handleNoteDown)
-		addNoteUpListener(this.handleNoteUp)
+		// this.handleNoteDown = this.handleNoteDown.bind(this)
+		// this.handleNoteUp = this.handleNoteUp.bind(this)
+		// addNoteDownListener(this.handleNoteDown)
+		// addNoteUpListener(this.handleNoteUp)
 		if(fileHash) this.loadFileFromHash()
 	}
 
 	componentWillUnmount() {
-		this.WS.destroy()
-		removeNoteDownListener(this.handleNoteDown)
-		removeNoteUpListener(this.handleNoteUp)
+		// removeNoteDownListener(this.handleNoteDown)
+		// removeNoteUpListener(this.handleNoteUp)
 	}
 
 	componentWillReceiveProps(newProps) {
 		if(this.props.fileHash != newProps.fileHash) this.loadFileFromHash(newProps.fileHash)
-		if(this.sampler) {
-			if(this.props.reversed != newProps.reversed) {
-				this.sampler.voices.forEach(voice => voice.reverse = newProps.reversed)
-				this.setState({position: {
-					start: 1 - this.state.position.end,
-					end: 1 - this.state.position.start,
-				}})
-			}
-			if(this.props.looped != newProps.looped) this.sampler.voices.forEach(voice => voice.loop = newProps.looped)
-		}
+		// if(this.sampler) {
+		// 	if(this.props.reversed != newProps.reversed) {
+		// 		this.sampler.voices.forEach(voice => voice.reverse = newProps.reversed)
+		// 		this.setState({trim: {
+		// 			start: 1 - this.state.trim.end,
+		// 			end: 1 - this.state.trim.start,
+		// 		}})
+		// 	}
+		// 	if(this.props.looped != newProps.looped) this.sampler.voices.forEach(voice => voice.loop = newProps.looped)
+		// }
 	}
 
 	loadFileFromHash(fileHash = this.props.fileHash) {
 		getFileByHash(fileHash)
 			.then(file => {
-				this.initSampler()
 				this.setState({fileName: file.name})
 				return getWaveformFromFile(file)
 			})
 			.then(waveformUrl => this.setState({waveformUrl}))
 	}
 
-	initSampler(callback = () => {}) {
-		const { fileHash, reversed, looped } = this.props
-		if(!fileHash) return
-		if(this.sampler) this.sampler.dispose();
-	
-		const { start, end } = this.state.position
-		getFileByHash(fileHash).then(file => {
-			getNoteByFile(file)
-				.then(note => console.log(`Average note = ${note} (${noteStrings[note%12]})`))
-				.catch(e => console.log('Could not get pitch of sample'))
-			this.sampler = new PolySynth(10, Sampler).toMaster()
-			this.sampler.voices.forEach(voice => 
-				voice.player.load(file.getUrl(), () => {
-					const duration = voice.buffer.duration
-					voice.reverse = reversed
-					voice.loop = looped
-					if(!(start === 0 && end === 1)) {
-						voice.buffer = voice.buffer.slice(duration * start, duration * end)
-					}
-					callback()
-				})
-			)
-		})
-	}
+	// handleNoteDown(channel, note, velocity) {
+	// 	console.log(note, velocity)
+	// 	this.triggerPlay(note-60, velocity / 2)
+	// }
 
-	handleNoteDown(channel, note, velocity) {
-		console.log(note, velocity)
-		this.triggerPlay(note-60, velocity / 2)
-	}
+	// handleNoteUp(channel, note, velocity) {
+	// 	console.log('note up')
+	// 	if(this.sampler) this.sampler.triggerRelease(note, now())
+	// }
 
-	handleNoteUp(channel, note, velocity) {
-		console.log('note up')
-		if(this.sampler) this.sampler.triggerRelease(note, now())
-	}
+	// handlePlay() {
+	// 	if(!this.sampler) this.initSampler(() => this.triggerPlay());
+	// 	else this.triggerPlay()
+	// }
 
-	handlePlay() {
-		if(!this.sampler) this.initSampler(() => this.triggerPlay());
-		else this.triggerPlay()
-	}
+	// triggerPlay(pitch = 0, velocity = 0.5) {
+	// 	if(this.sampler && this.sampler.voices && this.sampler.voices[0].buffer.loaded) {
+	// 		this.sampler.triggerAttack(pitch, now(), velocity / 2)
+	// 	}
+	// }
 
-	triggerPlay(pitch = 0, velocity = 0.5) {
-		if(this.sampler && this.sampler.voices && this.sampler.voices[0].buffer.loaded) {
-			this.sampler.triggerAttack(pitch, now(), velocity / 2)
-		}
-	}
-
-	handleTrim(newPos, oldPos) {
-		if(newPos.start !== oldPos.start || newPos.end !== oldPos.end) this.initSampler()
-	}
+	// handleTrim(newPos, oldPos) {
+	// 	if(newPos.start !== oldPos.start || newPos.end !== oldPos.end) this.initSampler()
+	// }
 
 	render() {
-		const { reversed } = this.props
-		const { position, waveformUrl, fileName } = this.state
+		const { reversed, onTrimChange, onPreviewAudio } = this.props
+		const { trim, waveformUrl, fileName } = this.state
 
 		return (
-			<div className="waveform" onClick={() => this.handlePlay()}>
+			<div className="waveform" onClick={() => onPreviewAudio()}>
 				{waveformUrl && <div className={classnames('waveform-graphic', {reversed})} style={{backgroundImage: `url(${waveformUrl})`}} />}
 				{waveformUrl && 
 					<AudioTrim 
-						position={position} 
-						onChange={position => this.setState({position})} 
-						onAfterChange={(newPos, oldPos) => this.handleTrim(newPos, oldPos)} />}
+						trim={trim} 
+						onChange={trim => this.setState({trim})} 
+						onAfterChange={(newPos, oldPos) => onTrimChange(newPos, oldPos)} />}
 				{fileName && <label className="label-box">{fileName}</label>}
 			</div>
 		)

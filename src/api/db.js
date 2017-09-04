@@ -3,6 +3,8 @@ import prettySize from 'prettysize'
 import { getStorageQuota, requestStorage } from '../utils/localStorageUtils'
 import { readBlobAsText, readBlobAsArrayBuffer, getHashFromBlob, getBlobUrl } from '../utils/blobUtils'
 
+import { instrumentSchema } from '../instrumentLibrary'
+
 const localStorageBytes = 1024*1024*128
 getStorageQuota().then(({usedBytes, grantedBytes}) => {
 	console.log(prettySize(usedBytes)+' used', prettySize(grantedBytes)+' granted')
@@ -14,7 +16,7 @@ getStorageQuota().then(({usedBytes, grantedBytes}) => {
 const db = new Dexie('TimbreSandpit')
 db.version(1).stores({
 	files: '++id,filename,size,type,date,&hash,blob',
-	instruments: '++id,type,instrument',
+	instruments: instrumentSchema,
 })
 
 db.open().catch(e => console.error('Opening DB failed', e.stack))
@@ -74,16 +76,23 @@ export const getBy = (table, key, value) => new Promise((resolve, reject) =>
 		.then(entity => entity ? resolve(entity) : reject('Entity not found'))
 		.catch(reject)	
 )
+export const getById = (table, id) => db.table(table).get(id)
 
 export const updateBy = (table, key, value, updates = {}) => new Promise((resolve, reject) => 
 	db.table(table).where(key).equals(value).first()
 		.then(entity => {
 			if(!entity) reject('Entity not found')
 			else {
-				db[table].update(entity.id, update)
+				db.table(table).update(entity.id, update)
 					.then(updated => updated ? resolve(getBy(table, key, value)) : reject('Failed to update entity'))
 			}
 		}).catch(reject)
+)
+
+export const updateById = (table, id, updates = {}) => new Promise((resolve, reject) => 
+	db.table(table).update(id, updates)
+		.then(updated => updated ? resolve(getById(table, id)) : reject('Entity not found after updating'))
+		.catch(reject)
 )
 
 export const addFile = blob => getHashFromBlob(blob).then(hash => 
@@ -107,5 +116,5 @@ export const getFileBy = (key, value) => getBy('files', key, value)
 export const getFileById = id => getFileBy('id', id)
 export const getFileByHash = hash => getFileBy('hash', hash)
 export const updateFileBy = (key, value, updates = {}) => updateBy('files', key, value, updates)
-export const updateFileById = (id, updates) => updateBy('files', 'id', id, updates)
+export const updateFileById = (id, updates) => updateById('files', id, updates)
 export const updateFileByHash = (hash, updates) => updateBy('files', 'hash', hash, updates)

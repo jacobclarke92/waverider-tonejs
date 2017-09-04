@@ -2,13 +2,13 @@ import React, { Component } from 'react'
 import { DragDropContext, DragDropContextProvider } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 
-import Simpler from './components/Simpler'
+import InstrumentList from './components/InstrumentList'
 
 class App extends Component {
 	render() {
 		return (
 			<DragDropContextProvider backend={HTML5Backend}>
-				<Simpler />
+				<InstrumentList />
 			</DragDropContextProvider>
 		)
 	}

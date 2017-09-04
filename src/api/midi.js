@@ -1,7 +1,7 @@
 import { DEVICES_UPDATED } from '../reducers/devices'
 
-const NOTE_ON = 144
-const NOTE_OFF = 128
+export const NOTE_ON = 144
+export const NOTE_OFF = 128
 
 let midi = null
 
@@ -41,14 +41,16 @@ const updateDevices = () => {
 	const devices = []
 	const inputs = midi.inputs.values()
     for (let input = inputs.next(); input && !input.done; input = inputs.next()) {
-    	devices.push(input.value)
-    	input.value.onmidimessage = handleMidiMessage
+    	const device = input.value
+    	devices.push(device)
+    	input.value.onmidimessage = message => handleMidiMessage(message, device)
     }
 
 	store.dispatch({type: DEVICES_UPDATED, devices})
 }
 
-const handleMidiMessage = ({data}) => {
+const handleMidiMessage = (message, device) => {
+	const { data, target } = message
 	const command = data[0] >> 4
 	const channel = data[0] & 0xf
 	let type = data[0] & 0xf0
@@ -59,10 +61,16 @@ const handleMidiMessage = ({data}) => {
 	if(type == NOTE_ON && velocity === 0) type = NOTE_OFF
 
 	switch(type) {
-		case NOTE_ON: triggerNoteDownListeners(channel, note, velocity); break
-		case NOTE_OFF: triggerNoteUpListeners(channel, note, velocity); break
+		case NOTE_ON: 
+			triggerNoteDownListeners(target.id, channel, note, velocity)
+			store.dispatch({type: NOTE_ON, deviceId: target.id, channel, note, velocity})
+			break
+		case NOTE_OFF: 
+			triggerNoteUpListeners(target.id, channel, note, velocity)
+			store.dispatch({type: NOTE_OFF, deviceId: target.id, channel, note, velocity})
+			break
 	}
 }
 
-const triggerNoteDownListeners = (channel, note, velocity) => noteDownListeners.forEach(listener => listener(channel, note, velocity))
-const triggerNoteUpListeners = (channel, note, velocity) => noteUpListeners.forEach(listener => listener(channel, note, velocity))
+const triggerNoteDownListeners = (deviceId, channel, note, velocity) => noteDownListeners.forEach(listener => listener(deviceId, channel, note, velocity))
+const triggerNoteUpListeners = (deviceId, channel, note, velocity) => noteUpListeners.forEach(listener => listener(deviceId, channel, note, velocity))

@@ -5,7 +5,7 @@ export default class AudioTrim extends Component {
 	static defaultProps = {
 		onChange: () => {},
 		onAfterChange: () => {},
-		position: {
+		trim: {
 			start: 0,
 			end: 1,
 		}
@@ -30,11 +30,11 @@ export default class AudioTrim extends Component {
 
 	handleStartDrag(type) {
 		this.dragging = type
-		this.previousPosition = {...this.props.position}
+		this.previousPosition = {...this.props.trim}
 	}
 
 	handleMouseUp(e) {
-		if(this.dragging) this.props.onAfterChange(this.props.position, this.previousPosition)
+		if(this.dragging) this.props.onAfterChange(this.props.trim, this.previousPosition)
 		this.dragging = false
 	}
 
@@ -45,23 +45,23 @@ export default class AudioTrim extends Component {
 		const rect = this.container.getBoundingClientRect()
 		const relativePos = Math.min(1, Math.max(0, (mouseX - rect.left) / rect.width))
 		
-		const position = {...this.props.position}
-		position[this.dragging] = relativePos
+		const trim = {...this.props.trim}
+		trim[this.dragging] = relativePos
 
-		const tmpStart = position.start
+		const tmpStart = trim.start
 
 		// swap selectors if they cross over
-		if(position.start > position.end || position.end < position.start) {
-			position.start = position.end
-			position.end = tmpStart
+		if(trim.start > trim.end || trim.end < trim.start) {
+			trim.start = trim.end
+			trim.end = tmpStart
 			this.dragging = this.dragging == 'start' ? 'end' : 'start'
 		}
 
-		this.props.onChange(position)
+		this.props.onChange(trim)
 	}
 
 	render() {
-		const { start, end } = this.props.position
+		const { start, end } = this.props.trim
 		const duration = end - start
 
 		return (

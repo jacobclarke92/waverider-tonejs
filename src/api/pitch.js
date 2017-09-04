@@ -36,26 +36,20 @@ export const getNote = soundUrl => new Promise((resolve, reject) => {
 	}).connect(analyser)
 })
 
-export const getNoteByFile = file => {
-	return new Promise((resolve, reject) => {
-		if(file.note) {
-			console.log('Average note already stored')
-			resolve(file.note)
-		}else {
-			console.log('Analysing for average note...')
-			getNote(file.getUrl())
-				.then(note => {
-					console.log('Got average note', note)
-					updateFileById(file.id, {note})
-						.then(() => console.log('File updated with average note value'))
-						.catch(e => console.log('Failed to update file with average note value', e))
-					resolve(note)
-				})
+export const getNoteByFile = file => new Promise((resolve, reject) => {
+	if(file.note) {
+		console.log('Average note already stored')
+		resolve(file.note)
+	}else {
+		console.log('Analysing for average note...')
+		getNote(file.getUrl())
+			.then(note => updateFileById(file.id, {note})
+				.then(() => resolve(note))
 				.catch(reject)
-		}
-	})
-}
-
+			)
+			.catch(reject)
+	}
+})
 
 export const noteFromPitch = frequency => {
 	const noteNum = 12 * (Math.log(frequency / 440) / Math.log(2))
