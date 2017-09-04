@@ -4,6 +4,7 @@ import { Sampler, PolySynth, now } from 'tone'
 import { getFileByHash } from '../api/db'
 import { getNoteByFile } from '../api/pitch'
 import { noteStrings } from '../constants/noteStrings'
+import { checkDifferenceAny, checkDifferenceAll } from '../utils/lifecycleUtils'
 
 import Simpler from '../components/instruments/Simpler'
 import { allInstrumentDefaults, defaultEnvelope } from '../instrumentLibrary'
@@ -22,15 +23,18 @@ export class SimplerInstrument {
 
 	update(value, oldValue) {
 		Object.keys(value).forEach(key => this[key] = value[key])
-		if(!_isEqual(value.instrument.trim, oldValue.instrument.trim)) {
+		if(checkDifferenceAny(value, oldValue, 'instrument.trim', _isEqual)) {
 			if(this.file) this.updateAudioFile(this.file.getUrl())
 		}
-		if(value.instrument.fileHash != oldValue.instrument.fileHash) {
+		if(checkDifferenceAny(value, oldValue, 'instrument.fileHash')) {
 			this.loadAudioFile(value.instrument.fileHash, file => {
 				this.updateAudioFile(file.getUrl(), () => {
 					this.updateVoiceParams()
 				})
 			})
+		}
+		if(checkDifferenceAny(value.instrument, oldValue.instrument, ['reverse', 'loop'])) {
+			this.updateVoiceParams()
 		}
 	}
 
