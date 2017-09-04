@@ -25,7 +25,9 @@ export class SimplerInstrument {
 	update(value, oldValue) {
 		Object.keys(value).forEach(key => this[key] = value[key])
 		if(checkDifferenceAny(value, oldValue, 'instrument.trim')) {
-			if(this.file) this.updateAudioFile(this.file.getUrl())
+			if(this.file) this.updateAudioFile(this.file.getUrl(), () => {
+				this.updateVoiceParams()
+			})
 		}
 		if(checkDifferenceAny(value, oldValue, 'instrument.fileHash')) {
 			this.loadAudioFile(value.instrument.fileHash, file => {
@@ -85,11 +87,14 @@ export class SimplerInstrument {
 		let voicesLoaded = 0
 		const { voices, trim, reverse } = this.instrument
 		this.sampler.voices.forEach(voice => {
+			voice.reverse = false
 			voice.player.load(url, () => {
 				const duration = voice.buffer.duration
 				if(!(trim.start === 0 && trim.end === 1)) {
-					voice.reverse = reverse
-					voice.buffer = voice.buffer.slice(duration * trim.start, duration * trim.end)
+					voice.buffer = voice.buffer.slice(
+						duration * (reverse ? 1 - trim.end : trim.start), 
+						duration * (reverse ? 1 - trim.start : trim.end)
+					)
 				}
 				if(++voicesLoaded >= voices) callback()
 			})
