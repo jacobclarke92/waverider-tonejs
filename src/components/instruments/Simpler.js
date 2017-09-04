@@ -26,20 +26,37 @@ class Simpler extends Component {
 		}
 	}
 
+	handleReverse(reverse) {
+		const { dispatch, id, instrument } = this.props
+		const { trim } = instrument
+		dispatch(updateInstrument(id, {instrument: {
+			...instrument, 
+			reverse, 
+			trim: {
+				start: 1 - trim.end, 
+				end: 1 - trim.start
+			},
+		}}))
+	}
+
 	render() {
 		const { dispatch, id, instrument, midiDeviceId, midiChannel } = this.props
-		const { voices, loop, reverse, fileHash } = instrument
+		const { voices, loop, reverse, trim, fileHash } = instrument
 		return (
 			<div className="simpler">
 				<DeviceSelect value={midiDeviceId} onChange={midiDeviceId => dispatch(updateInstrument(id, {midiDeviceId}))} />
 				<ChannelSelect value={midiChannel} onChange={midiChannel => dispatch(updateInstrument(id, {midiChannel}))} />
 				<div className="waveform-container">
 					<Dropzone onDrop={this.handleFilesDrop}>
-						<Waveform fileHash={fileHash} onTrimChange={trim => dispatch(updateInstrument(id, {instrument: {...instrument, trim}}))} />
+						<Waveform 
+							fileHash={fileHash} 
+							trim={trim} 
+							reverse={reverse} 
+							onTrimChange={trim => dispatch(updateInstrument(id, {instrument: {...instrument, trim}}))} />
 					</Dropzone>
 				</div>
 				<Checkbox value={loop} text="Loop" onChange={loop => dispatch(updateInstrument(id, {instrument: {...instrument, loop}}))} />
-				<Checkbox value={reverse} text="Reverse" onChange={reverse => dispatch(updateInstrument(id, {instrument: {...instrument, reverse}}))} />
+				<Checkbox value={reverse} text="Reverse" onChange={reverse => this.handleReverse(reverse)} />
 			</div>
 		)
 	}

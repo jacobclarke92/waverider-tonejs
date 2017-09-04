@@ -1,4 +1,3 @@
-import _isEqual from 'lodash/isEqual'
 import { Sampler, PolySynth, now } from 'tone'
 
 import { getFileByHash } from '../api/db'
@@ -23,7 +22,7 @@ export class SimplerInstrument {
 
 	update(value, oldValue) {
 		Object.keys(value).forEach(key => this[key] = value[key])
-		if(checkDifferenceAny(value, oldValue, 'instrument.trim', _isEqual)) {
+		if(checkDifferenceAny(value, oldValue, 'instrument.trim')) {
 			if(this.file) this.updateAudioFile(this.file.getUrl())
 		}
 		if(checkDifferenceAny(value, oldValue, 'instrument.fileHash')) {
@@ -73,11 +72,12 @@ export class SimplerInstrument {
 		if(!this.sampler) return this.initSampler()
 
 		let voicesLoaded = 0
-		const { voices, trim } = this.instrument
+		const { voices, trim, reverse } = this.instrument
 		this.sampler.voices.forEach(voice => {
 			voice.player.load(url, () => {
 				const duration = voice.buffer.duration
 				if(!(trim.start === 0 && trim.end === 1)) {
+					voice.reverse = reverse
 					voice.buffer = voice.buffer.slice(duration * trim.start, duration * trim.end)
 				}
 				if(++voicesLoaded >= voices) callback()

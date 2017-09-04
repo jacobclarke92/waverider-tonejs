@@ -3,6 +3,7 @@ import classnames from 'classnames'
 
 import { getFileByHash } from '../api/db'
 import { getWaveformFromFile } from '../api/waveform'
+import { checkDifferenceAny } from '../utils/lifecycleUtils'
 
 import AudioTrim from './AudioTrim'
 
@@ -11,7 +12,10 @@ export default class Waveform extends Component {
 	static defaultProps = {
 		fileHash: null,
 		reverse: false,
-		looped: false,
+		trim: {
+			start: 0,
+			end: 1,
+		},
 		onTrimChange: () => {},
 		onPreviewAudio: () => {},
 	};
@@ -21,10 +25,7 @@ export default class Waveform extends Component {
 		this.state = {
 			waveformUrl: null,
 			fileName: null,
-			trim: {
-				start: 0,
-				end: 1,
-			}
+			trim: props.trim
 		}
 	}
 
@@ -34,6 +35,7 @@ export default class Waveform extends Component {
 
 	componentWillReceiveProps(newProps) {
 		if(this.props.fileHash != newProps.fileHash) this.loadFileFromHash(newProps.fileHash)
+		if(checkDifferenceAny(this.props, newProps, 'trim')) this.setState({trim: newProps.trim})
 	}
 
 	loadFileFromHash(fileHash = this.props.fileHash) {
