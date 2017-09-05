@@ -47,11 +47,13 @@ class Simpler extends Component {
 			<div className="simpler">
 				<DeviceSelect value={midiDeviceId} onChange={midiDeviceId => dispatch(updateInstrument(id, {midiDeviceId}))} />
 				<ChannelSelect value={midiChannel} onChange={midiChannel => dispatch(updateInstrument(id, {midiChannel}))} />
+				<NumberInput value={voices} step={1} min={1} max={12} onChange={voices => dispatch(updateInstrument(id, {instrument: {...instrument, voices}}))} />
 				<NumberInput value={baseNote} step={1} min={0} max={128} onChange={baseNote => dispatch(updateInstrument(id, {instrument: {...instrument, baseNote}}))} />
 				<NumberInput value={cents} step={1} onChange={cents => dispatch(updateInstrument(id, {instrument: {...instrument, cents}}))} />
 				<div className="waveform-container">
 					<Dropzone onDrop={this.handleFilesDrop}>
 						<Waveform 
+							instrumentId={id}
 							fileHash={fileHash} 
 							trim={trim} 
 							reverse={reverse} 
