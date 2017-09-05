@@ -15,6 +15,11 @@ export function init(_store) {
 	store.subscribe(handleUpdate)
 }
 
+export function getInstrumentInstance(id) {
+	if(id in instances) return instances[id]
+	return false
+}
+
 function handleUpdate() {
 	const { lastAction, instruments } = store.getState()
 	switch(lastAction.type) {

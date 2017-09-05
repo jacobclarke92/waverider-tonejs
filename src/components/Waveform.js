@@ -4,6 +4,7 @@ import classnames from 'classnames'
 import { getFileByHash } from '../api/db'
 import { getWaveformFromFile } from '../api/waveform'
 import { checkDifferenceAny } from '../utils/lifecycleUtils'
+import { getInstrumentInstance } from '../instrumentsController'
 
 import AudioTrim from './AudioTrim'
 
@@ -22,15 +23,23 @@ export default class Waveform extends Component {
 
 	constructor(props) {
 		super(props)
+		this.raf = null
+		this.animate = this.animate.bind(this)
 		this.state = {
 			waveformUrl: null,
 			fileName: null,
-			trim: props.trim
+			trim: props.trim,
+			notePositions: [],
 		}
 	}
 
 	componentDidMount() {
 		if(this.props.fileHash) this.loadFileFromHash()
+		this.animate()
+	}
+
+	componentWillUnmount() {
+		if(this.raf) window.cancelAnimationFrame(this.raf)
 	}
 
 	componentWillReceiveProps(newProps) {
@@ -47,9 +56,21 @@ export default class Waveform extends Component {
 			.then(waveformUrl => this.setState({waveformUrl}))
 	}
 
+	animate() {
+		const { instrumentId } = this.props
+		const { notePositions } = this.state
+		const instrument = getInstrumentInstance(instrumentId)
+		if(instrument) {
+			this.setState({notePositions: instrument.getPlaybackPositions()})
+		}else{
+			if(notePositions.length > 0) this.setState({notePositions: []})
+		}
+		this.raf = window.requestAnimationFrame(this.animate)
+	}
+
 	render() {
 		const { reverse, onTrimChange, onPreviewAudio } = this.props
-		const { trim, waveformUrl, fileName } = this.state
+		const { trim, waveformUrl, fileName, notePositions } = this.state
 
 		return (
 			<div className="waveform" onClick={() => onPreviewAudio()}>
@@ -59,6 +80,10 @@ export default class Waveform extends Component {
 						trim={trim} 
 						onChange={trim => this.setState({trim})} 
 						onAfterChange={(newPos, oldPos) => onTrimChange(newPos, oldPos)} />}
+				<div className="note-positions">
+					{notePositions.map((position, i) => <div key={i} className="note-position" style={{left: ((trim.start + (trim.end-trim.start)*position)*100) + '%'}} />)}
+				</div>
+
 				{fileName && <label className="label-box">{fileName}</label>}
 			</div>
 		)

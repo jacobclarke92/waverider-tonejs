@@ -41,3 +41,22 @@
             opacity: 0;
             pointer-events: none;
         }
+
+        .note-positions {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+
+            & .note-position {
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 100%;
+                width: 1px;
+                background-color: red;
+            }
+        }

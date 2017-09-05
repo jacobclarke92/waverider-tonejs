@@ -118,6 +118,25 @@ export class SimplerInstrument {
 	noteUp(note) {
 		if(this.mounted) this.sampler.triggerRelease(note, now())
 	}
+
+	getPlaybackPositions() {
+		if(!this.mounted) return []
+		const positions = []
+		this.sampler.voices.forEach(voice => {
+			if(voice.player.state == 'started') {
+				const startedEvents = voice.player._state._timeline.filter(event => event.state == 'started')
+				if(startedEvents.length) {
+					const lastStartedEvent = startedEvents.pop()
+					const duration = voice.player.buffer.duration
+					const playbackRate = voice.player.playbackRate
+					const elapsedTime = now() - lastStartedEvent.time
+					const durationPercent = elapsedTime / (duration/playbackRate)
+					positions.push(durationPercent)
+				}
+			}
+		})
+		return positions
+	}
 }
 
 export default {
