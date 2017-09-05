@@ -13,7 +13,7 @@
         left: 0;
         width: 5px;
         background-color: rgba(0,0,100,0.15);
-        pointer-events: none;
+        cursor: ew-resize;
     }
 
     & .trim-left,

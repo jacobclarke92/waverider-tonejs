@@ -66,7 +66,7 @@ export default class AudioTrim extends Component {
 
 		return (
 			<div className="audio-trim-container" ref={elem => this.container = elem}>
-				<div className="trim-area" style={{left: (start*100)+'%', width: (duration*100)+'%'}} />
+				<div className="trim-area" style={{left: (start*100)+'%', width: (duration*100)+'%'}} onMouseDown={() => this.handleStartDrag('move')} />
 				<div className="trim-left" style={{left: (start*100)+'%'}} onMouseDown={() => this.handleStartDrag('start')} />
 				<div className="trim-right" style={{left: (end*100)+'%'}} onMouseDown={() => this.handleStartDrag('end')} />
 			</div>
