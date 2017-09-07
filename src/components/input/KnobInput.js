@@ -63,7 +63,7 @@ export default class KnobInput extends Component {
 		this.dragValue = this.props.value
 		requestPointerLock(this.elem)
 		document.addEventListener('mousemove', this.handleMouseMove)
-		event.preventDefault()
+		event.preventDefault() // stops highlighting
 	}
 
 	handleMouseUp(event) {

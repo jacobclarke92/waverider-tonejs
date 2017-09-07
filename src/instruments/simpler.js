@@ -112,11 +112,11 @@ export class SimplerInstrument {
 	}
 
 	noteDown(note, velocity) {
-		if(this.mounted) this.sampler.triggerAttack(note - this.instrument.baseNote, now(), velocity / 2)
+		if(this.mounted && this.sampler) this.sampler.triggerAttack(note - this.instrument.baseNote, now(), velocity / 2)
 	}
 
 	noteUp(note) {
-		if(this.mounted) this.sampler.triggerRelease(note, now())
+		if(this.mounted && this.sampler) this.sampler.triggerRelease(note, now())
 	}
 
 	getPlaybackPositions() {
