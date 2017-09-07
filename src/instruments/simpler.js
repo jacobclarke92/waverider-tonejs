@@ -122,7 +122,7 @@ export class SimplerInstrument {
 	}
 
 	getPlaybackPositions() {
-		if(!this.mounted || !this.sampler) return []
+		if(!this.mounted || !this.sampler || !this.sampler.voices) return []
 		const positions = []
 		this.sampler.voices.forEach(voice => {
 			if(voice.player.state == 'started') {
@@ -132,7 +132,8 @@ export class SimplerInstrument {
 					const duration = voice.player.buffer.duration
 					const playbackRate = voice.player.playbackRate
 					const elapsedTime = now() - lastStartedEvent.time
-					const durationPercent = elapsedTime / (duration/playbackRate)
+					let durationPercent = elapsedTime / (duration/playbackRate)
+					if(this.instrument.loop) durationPercent = durationPercent%1
 					positions.push(durationPercent)
 				}
 			}

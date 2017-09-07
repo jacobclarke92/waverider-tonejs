@@ -57,11 +57,15 @@ export default class Waveform extends Component {
 	}
 
 	animate() {
-		const { instrumentId } = this.props
+		const { instrumentId, trim } = this.props
 		const { notePositions } = this.state
 		const instrument = getInstrumentInstance(instrumentId)
 		if(instrument) {
-			this.setState({notePositions: instrument.getPlaybackPositions()})
+			const duration = trim.end - trim.start
+			const newNotePositions = instrument.getPlaybackPositions()
+				.map(position => trim.start + duration*position)
+				.filter(position => position < trim.start + duration)
+			this.setState({notePositions: newNotePositions})
 		}else{
 			if(notePositions.length > 0) this.setState({notePositions: []})
 		}
@@ -81,7 +85,9 @@ export default class Waveform extends Component {
 						onChange={trim => this.setState({trim})} 
 						onAfterChange={(newPos, oldPos) => onTrimChange(newPos, oldPos)} />}
 				<div className="note-positions">
-					{notePositions.map((position, i) => <div key={i} className="note-position" style={{left: ((trim.start + (trim.end-trim.start)*position)*100) + '%'}} />)}
+					{notePositions.map((position, i) => 
+						<div key={i} className="note-position" style={{left: `${position*100}%`}} />
+					)}
 				</div>
 
 				{fileName && <label className="label-box">{fileName}</label>}
