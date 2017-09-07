@@ -4,6 +4,8 @@ import { updateInstrument } from '../../reducers/instruments'
 import { addFile } from '../../api/db'
 import { parseNoteToNumber, noteNumberToName } from '../../utils/noteUtils'
 
+import { defaultValue } from '../../instruments/simpler'
+
 import Checkbox from '../input/Checkbox'
 import NumberInput from '../input/NumberInput'
 import KnobInput from '../input/KnobInput'
@@ -44,7 +46,8 @@ class Simpler extends Component {
 
 	render() {
 		const { dispatch, id, instrument, midiDeviceId, midiChannel } = this.props
-		const { voices, loop, reverse, trim, fileHash, baseNote, calculatedBaseNote, cents } = instrument
+		const { voices, loop, reverse, trim, envelope, fileHash, baseNote, calculatedBaseNote, cents } = instrument
+		const { attack, decay, sustain, release } = envelope
 		return (
 			<div className="simpler">
 				<DeviceSelect value={midiDeviceId} onChange={midiDeviceId => dispatch(updateInstrument(id, {midiDeviceId}))} />
@@ -89,8 +92,46 @@ class Simpler extends Component {
 							onTrimChange={trim => dispatch(updateInstrument(id, {instrument: {...instrument, trim}}))} />
 					</Dropzone>
 				</div>
+
 				<Checkbox value={loop} text="Loop" onChange={loop => dispatch(updateInstrument(id, {instrument: {...instrument, loop}}))} />
 				<Checkbox value={reverse} text="Reverse" onChange={reverse => this.handleReverse(reverse)} />
+
+				<KnobInput
+					label="Attack"
+					value={attack}
+					min={0}
+					max={5}
+					step={0.01}
+					valueDisplay={value => value+'s'}
+					defaultValue={defaultValue.instrument.envelope.attack}
+					onChange={attack => dispatch(updateInstrument(id, {instrument: {...instrument, envelope: {...envelope, attack}}}))} />
+				<KnobInput
+					label="Decay"
+					value={decay}
+					min={0}
+					max={5}
+					step={0.01}
+					valueDisplay={value => value+'s'}
+					defaultValue={defaultValue.instrument.envelope.decay}
+					onChange={decay => dispatch(updateInstrument(id, {instrument: {...instrument, envelope: {...envelope, decay}}}))} />
+				<KnobInput
+					label="Sustain"
+					value={sustain}
+					min={0}
+					max={1}
+					step={0.01}
+					valueDisplay={value => Math.round(value*100)+'%'}
+					defaultValue={defaultValue.instrument.envelope.sustain}
+					onChange={sustain => dispatch(updateInstrument(id, {instrument: {...instrument, envelope: {...envelope, sustain}}}))} />
+				<KnobInput
+					label="Release"
+					value={release}
+					min={0}
+					max={10}
+					step={0.01}
+					valueDisplay={value => value+'s'}
+					defaultValue={defaultValue.instrument.envelope.release}
+					onChange={release => dispatch(updateInstrument(id, {instrument: {...instrument, envelope: {...envelope, release}}}))} />
 			</div>
 		)
 	}

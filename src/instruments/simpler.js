@@ -40,7 +40,7 @@ export class SimplerInstrument {
 				})
 			})
 		}
-		if(checkDifferenceAny(value.instrument, oldValue.instrument, ['loop'])) {
+		if(checkDifferenceAny(value.instrument, oldValue.instrument, ['loop', 'envelope.attack', 'envelope.decay', 'envelope.sustain', 'envelope.release'])) {
 			this.updateVoiceParams()
 		}
 	}
@@ -110,9 +110,12 @@ export class SimplerInstrument {
 	updateVoiceParams() {
 		if(!this.sampler) return this.initSampler()
 
-		const { reverse, loop } = this.instrument
-		this.sampler.set('reverse', reverse)
-		this.sampler.set('loop', loop)
+		const { reverse, loop, envelope } = this.instrument
+		this.sampler.set({
+			reverse,
+			loop,
+			envelope,
+		})
 	}
 
 	noteDown(note, velocity) {
@@ -143,7 +146,8 @@ export class SimplerInstrument {
 		return positions
 	}
 }
-const defaultValue = {
+
+export const defaultValue = {
 	...allInstrumentDefaults,
 	instrument: {
 		fileHash: null,
@@ -157,6 +161,12 @@ const defaultValue = {
 		trim: {
 			start: 0,
 			end: 1,
+		},
+		envelope: {
+			attack: 0.01,
+			decay: 0,
+			sustain: 1,
+			release: 0.1,
 		},
 	},
 }
