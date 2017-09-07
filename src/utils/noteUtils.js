@@ -3,6 +3,7 @@ import { noteStrings } from '../constants/noteStrings'
 export const parseNoteToNumber = input => {
 	if(typeof input == 'number') input = input.toString()
 	input = input.toUpperCase().replace(' ', '')
+
 	const regex = /([A-Z]){1}(#|B)?(\d){1,2}/g
 	const matches = regex.exec(input)
 	if(!matches) return false 
@@ -10,8 +11,6 @@ export const parseNoteToNumber = input => {
 	const letter = matches[1]
 	const intonation = (matches[2] || '').toLowerCase()
 	const scale = parseInt(matches[3] || '4')
-
-	console.log(letter, intonation, scale)
 
 	const relativeNote = fixNote(letter+intonation)
 	const noteIndex = noteStrings.indexOf(relativeNote)
@@ -30,9 +29,8 @@ const fixNote = note => {
 		case 'Bb': return 'A#'
 		case 'Cb': 
 		case 'B#': return false
-
 	}
 	return note
 }
 
-export const noteNumberToName = number => noteStrings[number%12]+' '+Math.floor(number/12)
+export const noteNumberToName = number => noteStrings[number%12] + Math.floor(number/12)

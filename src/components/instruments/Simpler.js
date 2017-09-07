@@ -71,8 +71,9 @@ class Simpler extends Component {
 					max={128} 
 					step={1} 
 					signed={true}
+					inputValueIsDisplayValue
 					inputProps={{type: 'text', beforeOnChange: e => e.target.value}}
-					valueValidator={value => parseNoteToNumber(value)}
+					inputValidator={value => parseNoteToNumber(value)}
 					valueDisplay={value => noteNumberToName(value)}
 					onChange={baseNote => dispatch(updateInstrument(id, {instrument: {...instrument, baseNote}}))} />
 				<div className="waveform-container">

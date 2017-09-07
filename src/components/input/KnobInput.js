@@ -24,9 +24,10 @@ export default class KnobInput extends Component {
 		trackThickness: 8,
 		dragSensitivity: 512,
 		inputProps: {},
+		inputValidator: null,
+		inputValueIsDisplayValue: false,
 		onChange: () => {},
 		valueDisplay: value => value,
-		valueValidator: null,
 	}
 
 	constructor(props) {
@@ -39,7 +40,7 @@ export default class KnobInput extends Component {
 		this.dragValue = 0
 		this.handleMouseUp = this.handleMouseUp.bind(this)
 		this.setInputValue = this.setInputValue.bind(this)
-		this.valueValidator = props.valueValidator || this.validateInput
+		this.inputValidator = props.inputValidator || this.validateInput
 		this.handleMouseMove = _throttle(this.handleMouseMove.bind(this), 1000/60)
 		this.state = {
 			editing: false,
@@ -85,9 +86,10 @@ export default class KnobInput extends Component {
 	}
 
 	handleDoubleClick() {
+		const { inputValueIsDisplayValue, value, valueDisplay } = this.props
 		this.setState({
 			editing: true, 
-			inputValue: this.props.value,
+			inputValue: inputValueIsDisplayValue ? valueDisplay(value) : value,
 		}, () => {
 			addKeyListener('enter', this.setInputValue)
 		})
@@ -105,7 +107,7 @@ export default class KnobInput extends Component {
 		const { inputValue } = this.state
 		removeKeyListener('enter', this.setInputValue)
 		this.setState({editing: false})
-		const newValue = this.valueValidator(inputValue)
+		const newValue = this.inputValidator(inputValue)
 		if(newValue === false || inputValue == value || newValue == value) return
 		else onChange(newValue)
 	}
