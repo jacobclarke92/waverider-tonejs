@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { getRelativeMousePosition } from '../utils/screenUtils'
 
 export default class AudioTrim extends Component {
 
@@ -28,33 +29,48 @@ export default class AudioTrim extends Component {
 		document.removeEventListener('mousemove', this.handleMouseMove)
 	}
 
-	handleStartDrag(type) {
+	handleStartDrag(type, event) {
 		this.dragging = type
+		this.initDragMousePosition = getRelativeMousePosition(event, this.container)
 		this.previousPosition = {...this.props.trim}
 	}
 
-	handleMouseUp(e) {
+	handleMouseUp(event) {
 		if(this.dragging) this.props.onAfterChange(this.props.trim, this.previousPosition)
 		this.dragging = false
 	}
 
-	handleMouseMove(e) {
+	handleMouseMove(event) {
 		if(!this.dragging) return
 		
-		const mouseX = !!e.touches ? e.touches[0].pageX : e.pageX
-		const rect = this.container.getBoundingClientRect()
-		const relativePos = Math.min(1, Math.max(0, (mouseX - rect.left) / rect.width))
-		
+		const mousePosition = getRelativeMousePosition(event, this.container)
 		const trim = {...this.props.trim}
-		trim[this.dragging] = relativePos
 
-		const tmpStart = trim.start
+		if(this.dragging == 'move') {
 
-		// swap selectors if they cross over
-		if(trim.start > trim.end || trim.end < trim.start) {
-			trim.start = trim.end
-			trim.end = tmpStart
-			this.dragging = this.dragging == 'start' ? 'end' : 'start'
+			const percentDiffX = mousePosition.percent.x - this.initDragMousePosition.percent.x
+			trim.start = this.previousPosition.start + percentDiffX
+			trim.end = this.previousPosition.end + percentDiffX
+
+			if(trim.start < 0) {
+				trim.end -= trim.start
+				trim.start = 0
+			}else if(trim.end > 1) {
+				trim.start -= trim.end-1
+				trim.end = 1
+			}
+
+		}else{
+
+			trim[this.dragging] = mousePosition.percent.x
+
+			// swap selectors if they cross over
+			if(trim.start > trim.end || trim.end < trim.start) {
+				const tmpStart = trim.start
+				trim.start = trim.end
+				trim.end = tmpStart
+				this.dragging = this.dragging == 'start' ? 'end' : 'start'
+			}
 		}
 
 		this.props.onChange(trim)
@@ -66,9 +82,9 @@ export default class AudioTrim extends Component {
 
 		return (
 			<div className="audio-trim-container" ref={elem => this.container = elem}>
-				<div className="trim-area" style={{left: (start*100)+'%', width: (duration*100)+'%'}} onMouseDown={() => this.handleStartDrag('move')} />
-				<div className="trim-left" style={{left: (start*100)+'%'}} onMouseDown={() => this.handleStartDrag('start')} />
-				<div className="trim-right" style={{left: (end*100)+'%'}} onMouseDown={() => this.handleStartDrag('end')} />
+				<div className="trim-area" style={{left: (start*100)+'%', width: (duration*100)+'%'}} onMouseDown={e => this.handleStartDrag('move', e)} />
+				<div className="trim-left" style={{left: (start*100)+'%'}} onMouseDown={e => this.handleStartDrag('start', e)} />
+				<div className="trim-right" style={{left: (end*100)+'%'}} onMouseDown={e => this.handleStartDrag('end', e)} />
 			</div>
 		)	
 	}

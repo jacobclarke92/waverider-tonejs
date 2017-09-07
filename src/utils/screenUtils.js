@@ -1,4 +1,5 @@
 import _debounce from 'lodash/debounce'
+import { clamp } from './mathUtils'
 
 let debounce = 100 //ms
 
@@ -38,3 +39,25 @@ function _resizeCallback() {
 
 const resizeCallback = _debounce(_resizeCallback, 100)
 window.addEventListener('resize', resizeCallback)
+
+
+export const getRect = elem => elem.getBoundingClientRect()
+export const getMousePosition = e => ({x: e.clientX, y: e.clientY})
+export const getRelativeMousePosition = (e, elem, contain = true) => {
+	const rect = getRect(elem)
+	const mouseX = !!e.touches ? e.touches[0].pageX : e.pageX
+	const mouseY = !!e.touches ? e.touches[0].pageY : e.pageY
+	const position = {
+		x: mouseX - rect.left,
+		y: mouseY - rect.top,
+	}
+	position.percent = {
+		x: position.x / rect.width,
+		y: position.y / rect.height,
+	}
+	if(contain) {
+		position.percent.x = clamp(position.percent.x, 0, 1)
+		position.percent.y = clamp(position.percent.y, 0, 1)
+	}
+	return position
+}
