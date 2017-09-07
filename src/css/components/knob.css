@@ -1,0 +1,28 @@
+.knob {
+	position: relative;
+
+	&.label-bottom {
+		& .knob-label {
+			margin-top: -0.5em;
+		}
+	}
+}
+
+	.knob-inner {
+		position: relative;
+		display: block;
+	}
+
+		.knob-value {
+			position: absolute;
+			top: 50%;
+			transform: translateY(-50%);
+			width: 100%;
+			text-align: center;
+		}
+
+		.knob-label {
+			display: block;
+			width: 100%;
+			text-align: center;
+		}
