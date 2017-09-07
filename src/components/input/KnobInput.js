@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import _throttle from 'lodash/throttle'
 import { clamp, roundToMultiple } from '../../utils/mathUtils'
-import { addKeyListener, removeKeyListener } from '../../utils/keyUtils'
+import { addKeyListener, removeKeyListener, isAltKeyPressed } from '../../utils/keyUtils'
 import { requestPointerLock, exitPointerLock } from '../../utils/screenUtils'
 
 import Donut from './Donut'
@@ -15,6 +15,7 @@ export default class KnobInput extends Component {
 		max: 127,
 		step: 1,
 		value: 64,
+		defaultValue: 64,
 		extraValues: [],
 		signed: null,
 		label: 'Input',
@@ -44,6 +45,12 @@ export default class KnobInput extends Component {
 			editing: false,
 			inputValue: value,
 		}
+	}
+
+	handleMouseDown(event) {
+		const { value, defaultValue, onChange } = this.props
+		this.dragValue = value
+		if(isAltKeyPressed()) onChange(defaultValue)
 	}
 
 	handleMovement({x, y}) {
@@ -115,8 +122,7 @@ export default class KnobInput extends Component {
 		return (
 			<PointerLockContainer onMovement={vector => this.handleMovement(vector)}>
 				<div 
-					ref={elem => this.elem = elem} 
-					style={knobStyles}
+					style={knobStyles} 
 					className={`knob label-${labelPosition}`} 
 					onMouseDown={e => this.handleMouseDown(e)}
 					onDoubleClick={e => this.handleDoubleClick(e)}>

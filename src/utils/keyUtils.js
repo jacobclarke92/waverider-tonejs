@@ -2,6 +2,7 @@ import keycode from 'keycode'
 
 let shiftKeyPressed = false
 let ctrlKeyPressed = false
+let altKeyPressed = false
 let leftKeyPressed = false
 let rightKeyPressed = false
 let upKeyPressed = false
@@ -11,6 +12,7 @@ let rightCommandKeyPressed = false
 
 export const isShiftKeyPressed = () => shiftKeyPressed
 export const isCtrlKeyPressed = () => ctrlKeyPressed
+export const isAltKeyPressed = () => altKeyPressed
 export const isCommandKeyPressed = () => leftCommandKeyPressed || rightCommandKeyPressed
 export const isLeftKeyPressed = () => leftKeyPressed
 export const isRightKeyPressed = () => rightKeyPressed
@@ -23,9 +25,11 @@ const keyUpCallbacks = {}
 function handleKeyDown(event) {
 	const inputIsFocused = isInputFocused()
 	const key = keycode(event)
+	console.log(key)
 	switch (key) {
 		case 'shift': shiftKeyPressed = true; break
 		case 'ctrl': ctrlKeyPressed = true; break
+		case 'alt': altKeyPressed = true; break
 		case 'left command': leftCommandKeyPressed = true; break
 		case 'right command': rightCommandKeyPressed = true; break
 	}
@@ -49,6 +53,7 @@ function handleKeyUp(event) {
 	switch (key) {
 		case 'shift': shiftKeyPressed = false; break
 		case 'ctrl': ctrlKeyPressed = false; break
+		case 'alt': altKeyPressed = false; break
 		case 'left command': leftCommandKeyPressed = false; break
 		case 'right command': rightCommandKeyPressed = false; break
 	}
