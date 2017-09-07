@@ -44,7 +44,7 @@ class Simpler extends Component {
 
 	render() {
 		const { dispatch, id, instrument, midiDeviceId, midiChannel } = this.props
-		const { voices, loop, reverse, trim, fileHash, baseNote, cents } = instrument
+		const { voices, loop, reverse, trim, fileHash, baseNote, calculatedBaseNote, cents } = instrument
 		return (
 			<div className="simpler">
 				<DeviceSelect value={midiDeviceId} onChange={midiDeviceId => dispatch(updateInstrument(id, {midiDeviceId}))} />
@@ -52,6 +52,7 @@ class Simpler extends Component {
 				<KnobInput 
 					label="Voices" 
 					value={voices} 
+					defaultValue={4}
 					min={1} 
 					max={12} 
 					step={1} 
@@ -59,6 +60,7 @@ class Simpler extends Component {
 				<KnobInput 
 					label="Note" 
 					value={baseNote} 
+					defaultValue={calculatedBaseNote}
 					min={0} 
 					max={128} 
 					step={1} 
@@ -71,6 +73,7 @@ class Simpler extends Component {
 				<KnobInput 
 					label="Cents" 
 					value={cents} 
+					defaultValue={0}
 					min={-100} 
 					max={100} 
 					step={1} 

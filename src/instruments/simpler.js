@@ -71,10 +71,12 @@ export class SimplerInstrument {
 			getNoteByFile(file)
 				.then(note => {
 					console.log(`Average note = ${note} (${noteStrings[note%12]})`)
-					if(this.instrument.baseNote != note) {
+					const { baseNote } = this.instrument
+					if(this.instrument.baseNote == defaultValue.instrument.baseNote) {
 						this.dispatch(updateInstrument(this.id, {instrument: {
 							...this.instrument, 
-							baseNote: note, 
+							calculatedBaseNote: note, 
+							baseNote: (baseNote == defaultValue.instrument.baseNote) ? note : baseNote,
 							cents: 0,
 						}}))
 					}
@@ -141,26 +143,28 @@ export class SimplerInstrument {
 		return positions
 	}
 }
+const defaultValue = {
+	...allInstrumentDefaults,
+	instrument: {
+		fileHash: null,
+		baseNote: 0,
+		calculatedBaseNote: null,
+		cents: 0,
+		envelope: defaultEnvelope,
+		reverse: false,
+		loop: false,
+		voices: 4,
+		trim: {
+			start: 0,
+			end: 1,
+		},
+	},
+}
 
 export default {
 	name: 'Simpler',
 	slug: 'simpler',
 	Editor: Simpler,
 	Instrument: SimplerInstrument,
-	defaultValue: {
-		...allInstrumentDefaults,
-		instrument: {
-			fileHash: null,
-			baseNote: 60,
-			cents: 0,
-			envelope: defaultEnvelope,
-			reverse: false,
-			loop: false,
-			voices: 4,
-			trim: {
-				start: 0,
-				end: 1,
-			},
-		},
-	},
+	defaultValue,	
 }
