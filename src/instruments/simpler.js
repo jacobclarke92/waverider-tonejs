@@ -120,7 +120,7 @@ export class SimplerInstrument {
 	}
 
 	noteUp(note) {
-		if(this.mounted && this.sampler) this.sampler.triggerRelease(note, now())
+		if(this.mounted && this.sampler) this.sampler.triggerRelease(note - this.instrument.baseNote, now())
 	}
 
 	getPlaybackPositions() {
