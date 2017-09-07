@@ -57,14 +57,6 @@ class Simpler extends Component {
 					step={1} 
 					onChange={voices => dispatch(updateInstrument(id, {instrument: {...instrument, voices}}))} />
 				<KnobInput 
-					label="Cents" 
-					value={cents} 
-					min={-100} 
-					max={100} 
-					step={1} 
-					valueDisplay={value => value+'c'}
-					onChange={cents => dispatch(updateInstrument(id, {instrument: {...instrument, cents}}))} />
-				<KnobInput 
 					label="Note" 
 					value={baseNote} 
 					min={0} 
@@ -76,6 +68,14 @@ class Simpler extends Component {
 					inputValidator={value => parseNoteToNumber(value)}
 					valueDisplay={value => noteNumberToName(value)}
 					onChange={baseNote => dispatch(updateInstrument(id, {instrument: {...instrument, baseNote}}))} />
+				<KnobInput 
+					label="Cents" 
+					value={cents} 
+					min={-100} 
+					max={100} 
+					step={1} 
+					valueDisplay={value => value === 0 ? 0 : value+'c'}
+					onChange={cents => dispatch(updateInstrument(id, {instrument: {...instrument, cents}}))} />
 				<div className="waveform-container">
 					<Dropzone onDrop={this.handleFilesDrop}>
 						<Waveform 

@@ -20,12 +20,13 @@ export default class KnobInput extends Component {
 		labelPosition: 'bottom',
 		trackSpan: 270,
 		trackRotate: 0,
-		trackSize: 50,
+		trackSize: 45,
 		trackThickness: 8,
 		dragSensitivity: 512,
 		inputProps: {},
 		inputValidator: null,
 		inputValueIsDisplayValue: false,
+		loading: false,
 		onChange: () => {},
 		valueDisplay: value => value,
 	}
@@ -138,7 +139,7 @@ export default class KnobInput extends Component {
 		if(labelPosition == 'top' || labelPosition == 'bottom') knobStyles = { ...knobStyles, width: trackSize }
 		if(labelPosition == 'left' || labelPosition == 'right') knobStyles = { ...knobStyles, height: trackSize }
 
-		const _inputProps = { min, max, step, value: inputValue, ...inputProps }
+		const extendedInputProps = { min, max, step, value: inputValue, ...inputProps }
 		const trackProps = { span: trackSpan, size: trackSize, rotate: trackRotate, thickness: trackThickness }
 
 		return (
@@ -161,7 +162,7 @@ export default class KnobInput extends Component {
 						{editing ? (
 							<NumberInput 
 								autoFocus
-								{..._inputProps}
+								{...extendedInputProps}
 								onChange={inputValue => this.setState({inputValue})}
 								onBlur={e => this.setInputValue()} />
 						) : valueDisplay(value)}
