@@ -24,7 +24,7 @@ export default class KnobInput extends Component {
 		trackRotate: 0,
 		trackSize: 45,
 		trackThickness: 8,
-		dragSensitivity: 512,
+		dragSensitivity: 128,
 		inputProps: {},
 		inputValidator: null,
 		inputValueIsDisplayValue: false,
@@ -37,7 +37,7 @@ export default class KnobInput extends Component {
 		super(props)
 		const { value, min, max, step, dragSensitivity, inputValidator } = props
 		this.input = null
-		this.stepNotch = ((max - min) / step) / dragSensitivity
+		this.stepNotch = ((max - min) * step) / dragSensitivity
 		this.dragValue = value
 		this.setInputValue = this.setInputValue.bind(this)
 		this.inputValidator = inputValidator || this.validateInput
@@ -142,7 +142,7 @@ export default class KnobInput extends Component {
 									{...extendedInputProps}
 									onChange={inputValue => this.setState({inputValue})}
 									onBlur={e => this.setInputValue()} />
-							) : valueDisplay(value)}
+							) : valueDisplay(parseFloat(value).toPrecision(3))}
 						</div>
 					</div>
 					<label className="knob-label">
