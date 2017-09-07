@@ -5,7 +5,6 @@ export default class NumberInput extends Component {
 		autoFocus: false,
 		value: 0,
 		onChange: () => {},
-		beforeOnChange: e => parseFloat(e.target.value),
 	}
 
 	componentDidMount() {
@@ -16,12 +15,12 @@ export default class NumberInput extends Component {
 	}
 
 	render() {
-		const { onChange, beforeOnChange, ...props } = this.props
+		const { onChange, ...props } = this.props
 		return (
 			<input 
 				type="number" 
 				ref={elem => this.input = elem}
-				onChange={e => onChange(beforeOnChange(e))} 
+				onChange={e => onChange(parseFloat(e.target.value))} 
 				{...props} />
 		)
 	}

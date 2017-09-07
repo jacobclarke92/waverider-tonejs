@@ -9,10 +9,11 @@ export default class Donut extends Component {
 		percent: 0.5,
 		extraValues: [],
 		thickness: 5,
+		signed: false,
 	}
 
 	render() {
-		const { size, thickness, rotate, span, percent, extraValues } = this.props
+		const { size, thickness, rotate, span, percent, extraValues, signed } = this.props
 		const strokeWidth = thickness * (100 / size)
 		const radius = size - strokeWidth / 2
 
@@ -34,16 +35,19 @@ export default class Donut extends Component {
 						strokeWidth={strokeWidth}
 						strokeDasharray={`${ringDashLength} 1000`}
 						strokeDashoffset="0" />
-					<circle 
-						className="donut-segment" 
-						cx="50" 
-						cy="50" 
-						r={radius} 
-						fill="transparent" 
-						stroke="green" 
-						strokeWidth={strokeWidth}
-						strokeDasharray={`${valueDashLength} 1000`}
-						strokeDashoffset="0" />
+
+					{!signed && 
+						<circle 
+							className="donut-segment" 
+							cx="50" 
+							cy="50" 
+							r={radius} 
+							fill="transparent" 
+							stroke="green" 
+							strokeWidth={strokeWidth}
+							strokeDasharray={`${valueDashLength} 1000`}
+							strokeDashoffset="0" />
+					}
 					{extraValues.map((extraPercent, i) => 
 						<circle 
 							key={i}
@@ -55,8 +59,20 @@ export default class Donut extends Component {
 							stroke="red" 
 							strokeWidth={strokeWidth}
 							strokeDasharray="3 1000"
-							strokeDashoffset={ -ringDashLength * extraPercent} />
+							strokeDashoffset={-ringDashLength * extraPercent} />
 					)}
+					{signed && 
+						<circle 
+							className="donut-segment" 
+							cx="50" 
+							cy="50" 
+							r={radius} 
+							fill="transparent" 
+							stroke="green" 
+							strokeWidth={strokeWidth}
+							strokeDasharray="3 1000"
+							strokeDashoffset={-valueDashLength} />
+					}
 				</g>
 			</svg>
 		)

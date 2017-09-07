@@ -1,8 +1,11 @@
 import React, { Component } from 'react'
 import _throttle from 'lodash/throttle'
+import { clamp, roundToMultiple } from '../../utils/mathUtils'
+import { addKeyListener, removeKeyListener } from '../../utils/keyUtils'
 import { requestPointerLock, exitPointerLock } from '../../utils/screenUtils'
 
 import Donut from './Donut'
+import NumberInput from './NumberInput'
 
 export default class KnobInput extends Component {
 
@@ -12,22 +15,32 @@ export default class KnobInput extends Component {
 		step: 1,
 		value: 64,
 		extraValues: [],
+		signed: null,
 		label: 'Input',
 		labelPosition: 'bottom',
 		trackSpan: 270,
 		trackRotate: 0,
 		trackSize: 50,
 		trackThickness: 8,
+		inputProps: {},
 		onChange: () => {},
 		valueDisplay: value => value,
+		valueValidator: null,
 	}
 
 	constructor(props) {
 		super(props)
 		this.elem = null
+		this.input = null
 		this.mouseDown = false
 		this.handleMouseUp = this.handleMouseUp.bind(this)
+		this.setInputValue = this.setInputValue.bind(this)
+		this.valueValidator = props.valueValidator || this.validateInput
 		this.handleMouseMove = _throttle(this.handleMouseMove.bind(this), 1000/60)
+		this.state = {
+			editing: false,
+			inputValue: props.value,
+		}
 	}
 
 	componentDidMount() {
@@ -59,60 +72,97 @@ export default class KnobInput extends Component {
 			const movementY = event.movementY || event.mozMovementY || 0
 			const amount = -movementY*step
 			let newValue = value + amount
-			if(min && newValue < min) newValue = min
-			if(max && newValue > max) newValue = max
-			newValue = Math.round(newValue*1000)/1000 // fixes javascript float shitness
-			if(amount) onChange(newValue)
+			newValue = clamp(newValue, min, max)
+			// newValue = Math.round(newValue*1000)/1000 // fixes javascript float shitness
+			onChange(newValue)
 		}
 	}
 
+	handleDoubleClick() {
+		this.setState({
+			editing: true, 
+			inputValue: this.props.value,
+		}, () => {
+			addKeyListener('enter', this.setInputValue)
+		})
+	}
+
+	validateInput(newValue) {
+		const { min, max, step } = this.props
+		if(newValue%step !== 0) newValue = roundToMultiple(newValue, step)
+		newValue = clamp(newValue, min, max)
+		return newValue
+	}
+
+	setInputValue() {
+		const { value, onChange, valueInterpretter } = this.props
+		const { inputValue } = this.state
+		removeKeyListener('enter', this.setInputValue)
+		this.setState({editing: false})
+		const newValue = this.valueValidator(inputValue)
+		if(newValue === false || inputValue == value || newValue == value) return
+		else onChange(newValue)
+	}
+
 	render() {
+		const { editing, inputValue } = this.state
 		const { 
 			min, 
 			max, 
+			step,
 			value, 
 			extraValues, 
-			valueDisplay, 
+			valueDisplay,
+			signed, 
 			label, 
 			labelPosition, 
 			trackSize, 
 			trackThickness, 
 			trackSpan, 
 			trackRotate, 
+			inputProps,
 		} = this.props
 		
 		const valuePercent = (value - min) / (max - min)
 		const extraValuePercents = extraValues.map(val => (val - min) / (max - min))
 
 		let knobStyles = {}
-		if(labelPosition == 'top' || labelPosition == 'bottom') knobStyles = {...knobStyles, width: trackSize}
-		if(labelPosition == 'left' || labelPosition == 'right') knobStyles = {...knobStyles, height: trackSize}
+		if(labelPosition == 'top' || labelPosition == 'bottom') knobStyles = { ...knobStyles, width: trackSize }
+		if(labelPosition == 'left' || labelPosition == 'right') knobStyles = { ...knobStyles, height: trackSize }
+
+		const _inputProps = { min, max, step, value: inputValue, ...inputProps }
+		const trackProps = { span: trackSpan, size: trackSize, rotate: trackRotate, thickness: trackThickness }
 
 		return (
 			<div 
 				ref={elem => this.elem = elem} 
 				style={knobStyles}
 				className={`knob label-${labelPosition}`} 
-				onMouseDown={e => this.handleMouseDown(event)}>
+				onMouseDown={e => this.handleMouseDown(e)}
+				onDoubleClick={e => this.handleDoubleClick(e)}>
 
 				<div className="knob-inner" style={{width: trackSize, height: trackSize}}>
 					<div className="knob-track">
 						<Donut 
-							span={trackSpan} 
-							size={trackSize} 
-							rotate={trackRotate} 
+							{...trackProps}
+							signed={signed !== null ? signed : min < 0 && max > 0}
 							percent={valuePercent} 
-							thickness={trackThickness}
 							extraValues={extraValuePercents} />
 					</div>
 					<div className="knob-value">
-						{valueDisplay(value)}
+						{editing ? (
+							<NumberInput 
+								autoFocus
+								{..._inputProps}
+								onChange={inputValue => this.setState({inputValue})}
+								onBlur={e => this.setInputValue()} />
+						) : valueDisplay(value)}
 					</div>
 				</div>
 				<label className="knob-label">
 					{label}
 				</label>
-				
+
 			</div>
 		)
 	}

@@ -1,5 +1,6 @@
 .knob {
 	position: relative;
+	display: inline-block;
 
 	&.label-bottom {
 		& .knob-label {

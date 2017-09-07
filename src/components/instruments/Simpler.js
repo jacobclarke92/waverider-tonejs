@@ -2,9 +2,11 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { updateInstrument } from '../../reducers/instruments'
 import { addFile } from '../../api/db'
+import { parseNoteToNumber, noteNumberToName } from '../../utils/noteUtils'
 
 import Checkbox from '../input/Checkbox'
 import NumberInput from '../input/NumberInput'
+import KnobInput from '../input/KnobInput'
 import DeviceSelect from '../DeviceSelect'
 import ChannelSelect from '../ChannelSelect'
 import Dropzone from '../Dropzone'
@@ -47,9 +49,32 @@ class Simpler extends Component {
 			<div className="simpler">
 				<DeviceSelect value={midiDeviceId} onChange={midiDeviceId => dispatch(updateInstrument(id, {midiDeviceId}))} />
 				<ChannelSelect value={midiChannel} onChange={midiChannel => dispatch(updateInstrument(id, {midiChannel}))} />
-				<NumberInput value={voices} step={1} min={1} max={12} onChange={voices => dispatch(updateInstrument(id, {instrument: {...instrument, voices}}))} />
-				<NumberInput value={baseNote} step={1} min={0} max={128} onChange={baseNote => dispatch(updateInstrument(id, {instrument: {...instrument, baseNote}}))} />
-				<NumberInput value={cents} step={1} onChange={cents => dispatch(updateInstrument(id, {instrument: {...instrument, cents}}))} />
+				<KnobInput 
+					label="Voices" 
+					value={voices} 
+					min={1} 
+					max={12} 
+					step={1} 
+					onChange={voices => dispatch(updateInstrument(id, {instrument: {...instrument, voices}}))} />
+				<KnobInput 
+					label="Cents" 
+					value={cents} 
+					min={-100} 
+					max={100} 
+					step={1} 
+					valueDisplay={value => value+'c'}
+					onChange={cents => dispatch(updateInstrument(id, {instrument: {...instrument, cents}}))} />
+				<KnobInput 
+					label="Note" 
+					value={baseNote} 
+					min={0} 
+					max={128} 
+					step={1} 
+					signed={true}
+					inputProps={{type: 'text', beforeOnChange: e => e.target.value}}
+					valueValidator={value => parseNoteToNumber(value)}
+					valueDisplay={value => noteNumberToName(value)}
+					onChange={baseNote => dispatch(updateInstrument(id, {instrument: {...instrument, baseNote}}))} />
 				<div className="waveform-container">
 					<Dropzone onDrop={this.handleFilesDrop}>
 						<Waveform 
