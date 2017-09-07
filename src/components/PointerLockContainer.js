@@ -24,11 +24,12 @@ export default class PointerLockContainer extends Component {
 		document.removeEventListener('mouseup', this.handleMouseUp)
 	}
 
-	handleMouseDown(event) {
+	handleMouseDown(event, child) {
 		if(!this.elem) return
 		this.mouseDown = true
 		requestPointerLock(this.elem)
 		document.addEventListener('mousemove', this.handleMouseMove)
+		if(child.props.onMouseDown) child.props.onMouseDown(event)
 		event.preventDefault() // stops highlighting
 	}
 
@@ -48,9 +49,10 @@ export default class PointerLockContainer extends Component {
 	}
 
 	render() {
-		return cloneElement(Children.only(this.props.children), {
+		const child = Children.only(this.props.children)
+		return cloneElement(child, {
 			ref: elem => this.elem = elem,
-			onMouseDown: e => this.handleMouseDown(e),
+			onMouseDown: e => this.handleMouseDown(e, child),
 		})
 	}
 }
