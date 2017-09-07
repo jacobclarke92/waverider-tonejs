@@ -120,7 +120,7 @@ export class SimplerInstrument {
 	}
 
 	getPlaybackPositions() {
-		if(!this.mounted) return []
+		if(!this.mounted || !this.sampler) return []
 		const positions = []
 		this.sampler.voices.forEach(voice => {
 			if(voice.player.state == 'started') {

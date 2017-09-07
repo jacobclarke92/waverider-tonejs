@@ -13,7 +13,7 @@ getStorageQuota().then(({usedBytes, grantedBytes}) => {
 	// if(grantedBytes < localStorageBytes) {
 	// 	requestStorage(localStorageBytes).then(grantedBytes => console.log(prettySize(grantedBytes)+' granted'))
 	// }
-})
+}).catch(e => console.warn(e))
 
 const db = new Dexie('TimbreSandpit')
 db.version(1).stores({
