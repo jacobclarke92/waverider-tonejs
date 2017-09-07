@@ -6,6 +6,7 @@ import { requestPointerLock, exitPointerLock } from '../../utils/screenUtils'
 
 import Donut from './Donut'
 import NumberInput from './NumberInput'
+import PointerLockContainer from '../PointerLockContainer'
 
 export default class KnobInput extends Component {
 
@@ -33,58 +34,26 @@ export default class KnobInput extends Component {
 
 	constructor(props) {
 		super(props)
-		this.elem = null
+		const { value, min, max, step, dragSensitivity, inputValidator } = props
 		this.input = null
-		this.mouseDown = false
-		this.stepNotches = (props.max - props.min) / props.step
-		this.stepNotch = this.stepNotches / props.dragSensitivity
-		this.dragValue = 0
-		this.handleMouseUp = this.handleMouseUp.bind(this)
+		this.stepNotch = ((max - min) / step) / dragSensitivity
+		this.dragValue = value
 		this.setInputValue = this.setInputValue.bind(this)
-		this.inputValidator = props.inputValidator || this.validateInput
-		this.handleMouseMove = _throttle(this.handleMouseMove.bind(this), 1000/60)
+		this.inputValidator = inputValidator || this.validateInput
 		this.state = {
 			editing: false,
-			inputValue: props.value,
+			inputValue: value,
 		}
 	}
 
-	componentDidMount() {
-		document.addEventListener('mouseup', this.handleMouseUp)
-	}
-
-	componentWillUnmount() {
-		document.removeEventListener('mouseup', this.handleMouseUp)
-	}
-
-	handleMouseDown(event) {
-		if(!this.elem) return
-		this.mouseDown = true
-		this.dragValue = this.props.value
-		requestPointerLock(this.elem)
-		document.addEventListener('mousemove', this.handleMouseMove)
-		event.preventDefault() // stops highlighting
-	}
-
-	handleMouseUp(event) {
-		if(this.mouseDown) {
-			exitPointerLock()
-			document.removeEventListener('mousemove', this.handleMouseMove)
-			this.mouseDown = false
-		}
-	}
-
-	handleMouseMove(event) {
-		if(this.mouseDown) {
-			const { min, max, step, value, onChange } = this.props
-			const movementY = event.movementY || event.mozMovementY || 0
-			const amount = -movementY*this.stepNotch
-			this.dragValue += amount
-			let newValue = this.dragValue
-			if(newValue%step !== 0) newValue = roundToMultiple(newValue, step)
-			newValue = clamp(newValue, min, max)
-			onChange(newValue)
-		}
+	handleMovement({x, y}) {
+		const { min, max, step, value, onChange } = this.props
+		const amount = -y*this.stepNotch
+		this.dragValue += amount
+		let newValue = this.dragValue
+		if(newValue%step !== 0) newValue = roundToMultiple(newValue, step)
+		newValue = clamp(newValue, min, max)
+		onChange(newValue)
 	}
 
 	handleDoubleClick() {
@@ -144,36 +113,38 @@ export default class KnobInput extends Component {
 		const trackProps = { span: trackSpan, size: trackSize, rotate: trackRotate, thickness: trackThickness }
 
 		return (
-			<div 
-				ref={elem => this.elem = elem} 
-				style={knobStyles}
-				className={`knob label-${labelPosition}`} 
-				onMouseDown={e => this.handleMouseDown(e)}
-				onDoubleClick={e => this.handleDoubleClick(e)}>
+			<PointerLockContainer onMovement={vector => this.handleMovement(vector)}>
+				<div 
+					ref={elem => this.elem = elem} 
+					style={knobStyles}
+					className={`knob label-${labelPosition}`} 
+					onMouseDown={e => this.handleMouseDown(e)}
+					onDoubleClick={e => this.handleDoubleClick(e)}>
 
-				<div className="knob-inner" style={{width: trackSize, height: trackSize}}>
-					<div className="knob-track">
-						<Donut 
-							{...trackProps}
-							signed={signed !== null ? signed : min < 0 && max > 0}
-							percent={valuePercent} 
-							extraValues={extraValuePercents} />
+					<div className="knob-inner" style={{width: trackSize, height: trackSize}}>
+						<div className="knob-track">
+							<Donut 
+								{...trackProps}
+								signed={signed !== null ? signed : min < 0 && max > 0}
+								percent={valuePercent} 
+								extraValues={extraValuePercents} />
+						</div>
+						<div className="knob-value">
+							{editing ? (
+								<NumberInput 
+									autoFocus
+									{...extendedInputProps}
+									onChange={inputValue => this.setState({inputValue})}
+									onBlur={e => this.setInputValue()} />
+							) : valueDisplay(value)}
+						</div>
 					</div>
-					<div className="knob-value">
-						{editing ? (
-							<NumberInput 
-								autoFocus
-								{...extendedInputProps}
-								onChange={inputValue => this.setState({inputValue})}
-								onBlur={e => this.setInputValue()} />
-						) : valueDisplay(value)}
-					</div>
+					<label className="knob-label">
+						{label}
+					</label>
+
 				</div>
-				<label className="knob-label">
-					{label}
-				</label>
-
-			</div>
+			</PointerLockContainer>
 		)
 	}
 }
