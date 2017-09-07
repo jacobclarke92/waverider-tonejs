@@ -17,7 +17,7 @@ export default class KnobInput extends Component {
 		trackSpan: 270,
 		trackRotate: 0,
 		trackSize: 50,
-		trackThickness: 20,
+		trackThickness: 8,
 		onChange: () => {},
 		valueDisplay: value => value,
 	}

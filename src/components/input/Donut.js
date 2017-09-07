@@ -8,12 +8,12 @@ export default class Donut extends Component {
 		rotate: 0, // degrees
 		percent: 0.5,
 		extraValues: [],
-		thickness: 20,
+		thickness: 5,
 	}
 
 	render() {
 		const { size, thickness, rotate, span, percent, extraValues } = this.props
-		const strokeWidth = thickness * (size / 100)
+		const strokeWidth = thickness * (100 / size)
 		const radius = size - strokeWidth / 2
 
 		const theta = (size*2 - strokeWidth) * Math.PI
