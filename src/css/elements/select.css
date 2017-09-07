@@ -1,0 +1,28 @@
+select {
+	appearance: button;
+
+	-webkit-padding-end: 20px;
+	-webkit-padding-start: 2px;
+	-webkit-user-select: none;
+	
+	border: 1px solid var(--shade-300);
+	border-radius: 3px;
+	color: var(--shade-300);
+	background-color: var(--shade-950);
+	padding: var(--padding-xs) 4rem var(--padding-xs) var(--padding-s);
+
+	background: linear-gradient(var(--shade-900), var(--shade-950));
+	background-image: url('/assets/select-chevron.png');
+	background-position: right 0.8rem top -0.5rem;
+	background-repeat: no-repeat;
+
+	margin-bottom: var(--margin-xs);
+}
+
+select,
+label.select {
+	& + select,
+	& + label.select {
+		margin-left: var(--margin-xs);
+	}
+}

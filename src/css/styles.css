@@ -2,6 +2,8 @@
 
 @import './body.css';
 
+@import './elements/button.css';
+@import './elements/select.css';
 @import './elements/file-label.css';
 
 @import './components/waveform.css';

@@ -31,3 +31,16 @@
 			width: 100%;
 			text-align: center;
 		}
+
+
+.donut {
+	& .donut-ring {
+		stroke: var(--shade-800);
+	}
+	& .donut-segment {
+		stroke: var(--primary);
+	}
+	& .donut-line {
+		stroke: var(--tertiary);
+	}
+}

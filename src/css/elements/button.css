@@ -1,0 +1,28 @@
+button,
+.button,
+input[type="button"],
+input[type="submit"] {
+
+	margin: 0;
+	padding: var(--padding-s) var(--padding-m);
+	color: var(--white);
+	background-color: var(--shade-300);
+	outline: none;
+	appearance: none;
+	border: none;
+	cursor: pointer;
+
+	transition: all 0.2s linear;
+
+	&:hover {
+		background-color: var(--shade-350);
+	}
+
+	& + button,
+	& + .button,
+	& + input[type="button"],
+	& + input[type="submit"] {
+		margin-left: var(--margin-xs);
+	}
+
+}
