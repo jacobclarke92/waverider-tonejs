@@ -1,5 +1,6 @@
 import Dexie from 'dexie'
 import prettySize from 'prettysize'
+import _get from 'lodash/get'
 import { getStorageQuota, requestStorage } from '../utils/localStorageUtils'
 import { readBlobAsText, readBlobAsArrayBuffer, getHashFromBlob, getBlobUrl } from '../utils/blobUtils'
 
@@ -71,20 +72,22 @@ export const add = (table, entity) => db.table(table).add(entity).then(id => db[
 
 export const getAll = table => db.table(table).toArray()
 
-export const getBy = (table, key, value) => new Promise((resolve, reject) => 
-	db.table(table).where(key).equals(value).first()
+export const getBy = (table, field, value) => new Promise((resolve, reject) => 
+	db.table(table).where(field).equals(value).first()
 		.then(entity => entity ? resolve(entity) : reject('Entity not found'))
 		.catch(reject)	
 )
 export const getById = (table, id) => db.table(table).get(id)
 
-export const updateBy = (table, key, value, updates = {}) => new Promise((resolve, reject) => 
-	db.table(table).where(key).equals(value).first()
+export const getList = (table, fieldPath) => db.table(table).toArray().map(item => _get(item, fieldPath))
+
+export const updateBy = (table, field, value, updates = {}) => new Promise((resolve, reject) => 
+	db.table(table).where(field).equals(value).first()
 		.then(entity => {
 			if(!entity) reject('Entity not found')
 			else {
 				db.table(table).update(entity.id, update)
-					.then(updated => updated ? resolve(getBy(table, key, value)) : reject('Failed to update entity'))
+					.then(updated => updated ? resolve(getBy(table, field, value)) : reject('Failed to update entity'))
 			}
 		}).catch(reject)
 )
@@ -112,9 +115,9 @@ export const addFile = blob => getHashFromBlob(blob).then(hash =>
 		})
 )
 
-export const getFileBy = (key, value) => getBy('files', key, value)
+export const getFileBy = (field, value) => getBy('files', field, value)
 export const getFileById = id => getFileBy('id', id)
 export const getFileByHash = hash => getFileBy('hash', hash)
-export const updateFileBy = (key, value, updates = {}) => updateBy('files', key, value, updates)
+export const updateFileBy = (field, value, updates = {}) => updateBy('files', field, value, updates)
 export const updateFileById = (id, updates) => updateById('files', id, updates)
 export const updateFileByHash = (hash, updates) => updateBy('files', 'hash', hash, updates)
