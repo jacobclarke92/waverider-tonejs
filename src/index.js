@@ -10,6 +10,7 @@ import { init as initKeyListeners } from './utils/keyUtils'
 import { init as initMidi } from './api/midi'
 import { init as initInstruments } from './instrumentsController'
 import { loadInstruments } from './reducers/instruments'
+import { loadDevices } from './reducers/devices'
 
 import App from './App'
 
@@ -21,6 +22,7 @@ initInstruments(store)
 initKeyListeners()
 
 store.dispatch(loadInstruments())
+store.dispatch(loadDevices())
 
 
 ReactDOM.render(<Provider store={store}><App /></Provider>, document.getElementById('app'))

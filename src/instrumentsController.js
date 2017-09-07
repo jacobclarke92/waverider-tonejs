@@ -20,6 +20,12 @@ export function getInstrumentInstance(id) {
 	return false
 }
 
+export function isDeviceUsedByInstrument(deviceId) {
+	const { instruments } = store.getState()
+	const deviceIds = instruments.map(({midiDeviceId}) => midiDeviceId)
+	return deviceIds.indexOf(deviceId) >= 0
+}
+
 function handleUpdate() {
 	const { lastAction, instruments } = store.getState()
 	switch(lastAction.type) {

@@ -1,9 +1,10 @@
-import Dexie from 'dexie'
+import Dexie, { BulkError } from 'dexie'
 import prettySize from 'prettysize'
 import _get from 'lodash/get'
 import { getStorageQuota, requestStorage } from '../utils/localStorageUtils'
 import { readBlobAsText, readBlobAsArrayBuffer, getHashFromBlob, getBlobUrl } from '../utils/blobUtils'
 
+import { deviceSchema } from './midi'
 import { instrumentSchema } from '../instrumentLibrary'
 
 const localStorageBytes = 1024*1024*128
@@ -18,6 +19,7 @@ const db = new Dexie('TimbreSandpit')
 db.version(1).stores({
 	files: '++id,filename,size,type,date,&hash,blob',
 	instruments: instrumentSchema,
+	devices: deviceSchema,
 })
 
 db.open().catch(e => console.error('Opening DB failed', e.stack))
@@ -96,6 +98,15 @@ export const updateById = (table, id, updates = {}) => new Promise((resolve, rej
 	db.table(table).update(id, updates)
 		.then(updated => updated ? resolve(getById(table, id)) : reject('Entity not found after updating'))
 		.catch(reject)
+)
+
+export const bulkPut = (table, entities) => new Promise((resolve, reject) => 
+	db.table(table).bulkPut(entities)
+		.then(lastKey => resolve(entities))
+		.catch(BulkError, function(e) {
+			const failedIds = e.failures.map(({id}) => id)
+			resolve(entities.filter(({id}) => failedIds.indexOf(id) < 0))
+		})
 )
 
 export const addFile = blob => getHashFromBlob(blob).then(hash => 

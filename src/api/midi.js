@@ -1,7 +1,12 @@
-import { DEVICES_UPDATED } from '../reducers/devices'
+import _find from 'lodash/find'
+import _difference from 'lodash/difference'
+import { updateDevices } from '../reducers/devices'
+import { isDeviceUsedByInstrument } from '../instrumentsController'
 
 export const NOTE_ON = 144
 export const NOTE_OFF = 128
+
+export const deviceSchema = 'id,type,name,manufacturer,version,disconnected'
 
 let midi = null
 
@@ -29,24 +34,37 @@ export function init(_store) {
 
 const handleMidiSuccess = midiAccess => {
     midi = midiAccess
-    midi.onstatechange = ({port}) => updateDevices()
-    updateDevices()
+    midi.onstatechange = ({port}) => handleDeviceUpdates()
+    handleDeviceUpdates()
 }
 
 const handleMidiFailure = e => console.warn('No access to MIDI devices or your browser doesn\'t support WebMIDI API.', e)
 
-const updateDevices = () => {
+const handleDeviceUpdates = () => {
 	if(!midi) return init()
-	
+
 	const devices = []
 	const inputs = midi.inputs.values()
     for (let input = inputs.next(); input && !input.done; input = inputs.next()) {
     	const device = input.value
-    	devices.push(device)
-    	input.value.onmidimessage = message => handleMidiMessage(message, device)
+    	device.onmidimessage = message => handleMidiMessage(message, device)
+
+    	const deviceObj = { disconnected: false }
+    	for(let key in device) {
+    		if(typeof device[key] == 'string') deviceObj[key] = device[key]
+    	}
+    	devices.push(deviceObj)
     }
 
-	store.dispatch({type: DEVICES_UPDATED, devices})
+	const oldDevices = (store.getState()).devices
+    const unpluggedDeviceIds = _difference(oldDevices.map(({id}) => id), devices.map(({id}) => id))
+    for(let deviceId of unpluggedDeviceIds) {
+    	const usedByInstrument = isDeviceUsedByInstrument(deviceId)
+    	console.log(`Device unplugged: ${deviceId} (${usedByInstrument ? 'was' : 'was not'} used by instrument)`)
+    	devices.push({..._find(oldDevices, {id: deviceId}), disconnected: true})
+    }
+
+	store.dispatch(updateDevices(devices))
 }
 
 const handleMidiMessage = (message, device) => {
