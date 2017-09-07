@@ -22,6 +22,7 @@ export default class KnobInput extends Component {
 		trackRotate: 0,
 		trackSize: 50,
 		trackThickness: 8,
+		dragSensitivity: 512,
 		inputProps: {},
 		onChange: () => {},
 		valueDisplay: value => value,
@@ -33,6 +34,9 @@ export default class KnobInput extends Component {
 		this.elem = null
 		this.input = null
 		this.mouseDown = false
+		this.stepNotches = (props.max - props.min) / props.step
+		this.stepNotch = this.stepNotches / props.dragSensitivity
+		this.dragValue = 0
 		this.handleMouseUp = this.handleMouseUp.bind(this)
 		this.setInputValue = this.setInputValue.bind(this)
 		this.valueValidator = props.valueValidator || this.validateInput
@@ -54,6 +58,7 @@ export default class KnobInput extends Component {
 	handleMouseDown(event) {
 		if(!this.elem) return
 		this.mouseDown = true
+		this.dragValue = this.props.value
 		requestPointerLock(this.elem)
 		document.addEventListener('mousemove', this.handleMouseMove)
 	}
@@ -70,10 +75,11 @@ export default class KnobInput extends Component {
 		if(this.mouseDown) {
 			const { min, max, step, value, onChange } = this.props
 			const movementY = event.movementY || event.mozMovementY || 0
-			const amount = -movementY*step
-			let newValue = value + amount
+			const amount = -movementY*this.stepNotch
+			this.dragValue += amount
+			let newValue = this.dragValue
+			if(newValue%step !== 0) newValue = roundToMultiple(newValue, step)
 			newValue = clamp(newValue, min, max)
-			// newValue = Math.round(newValue*1000)/1000 // fixes javascript float shitness
 			onChange(newValue)
 		}
 	}
