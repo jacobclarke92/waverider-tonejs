@@ -24,7 +24,11 @@ export class SimplerInstrument {
 
 	update(value, oldValue) {
 		Object.keys(value).forEach(key => this[key] = value[key])
-		if(checkDifferenceAny(value, oldValue, 'instrument.trim')) {
+		if(checkDifferenceAny(value.instrument, oldValue.instrument, ['voices', 'reverse'])) {
+			this.initSampler()
+			return
+		}
+		if(checkDifferenceAny(value.instrument, oldValue.instrument, ['trim'])) {
 			if(this.file) this.updateAudioFile(this.file.getUrl(), () => {
 				this.updateVoiceParams()
 			})
@@ -36,7 +40,7 @@ export class SimplerInstrument {
 				})
 			})
 		}
-		if(checkDifferenceAny(value.instrument, oldValue.instrument, ['reverse', 'loop'])) {
+		if(checkDifferenceAny(value.instrument, oldValue.instrument, ['loop'])) {
 			this.updateVoiceParams()
 		}
 	}
@@ -48,6 +52,7 @@ export class SimplerInstrument {
 		if(this.sampler) this.sampler.dispose();
 		this.loadAudioFile(fileHash, file => {
 			this.sampler = new PolySynth(voices, Sampler).toMaster()
+			this.sampler.set('volume', -12)
 			this.updateAudioFile(file.getUrl(), () => {
 				this.updateVoiceParams()
 				callback()
@@ -87,7 +92,6 @@ export class SimplerInstrument {
 		let voicesLoaded = 0
 		const { voices, trim, reverse } = this.instrument
 		this.sampler.voices.forEach(voice => {
-			voice.reverse = false
 			voice.player.load(url, () => {
 				const duration = voice.buffer.duration
 				if(!(trim.start === 0 && trim.end === 1)) {
@@ -105,10 +109,8 @@ export class SimplerInstrument {
 		if(!this.sampler) return this.initSampler()
 
 		const { reverse, loop } = this.instrument
-		this.sampler.voices.forEach(voice => {
-			voice.reverse = reverse
-			voice.loop = loop
-		})
+		this.sampler.set('reverse', reverse)
+		this.sampler.set('loop', loop)
 	}
 
 	noteDown(note, velocity) {
