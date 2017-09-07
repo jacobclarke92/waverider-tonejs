@@ -30,7 +30,8 @@ export default class SelectInput extends Component {
 		const options = this.props.options.map((option, i) => {
 			const value = typeof option == 'string' ? option : option.value
 			const text = typeof option == 'string' ? option : option.text
-			return (<option key={i + 1} value={value}>{text}</option>)
+			const disabled = typeof option == 'string' ? false : (option.disabled || false)
+			return (<option key={i + 1} value={value} disabled={disabled}>{text}</option>)
 		})
 		return empty ? [empty, ...options] : options
 	}
