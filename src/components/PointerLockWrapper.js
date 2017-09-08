@@ -1,7 +1,7 @@
 import React, { Component, Children, cloneElement } from 'react'
 import { requestPointerLock, exitPointerLock } from '../utils/screenUtils'
 
-export default class PointerLockContainer extends Component {
+export default class PointerLockWrapper extends Component {
 
 	static defaultProps = {
 		onMovement: () => {},

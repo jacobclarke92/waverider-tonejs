@@ -5,7 +5,7 @@ import { addKeyListener, removeKeyListener, isAltKeyPressed } from '../../utils/
 
 import Donut from './Donut'
 import NumberInput from './NumberInput'
-import PointerLockContainer from '../PointerLockContainer'
+import PointerLockWrapper from '../PointerLockWrapper'
 
 export default class KnobInput extends Component {
 
@@ -120,7 +120,7 @@ export default class KnobInput extends Component {
 		const trackProps = { span: trackSpan, size: trackSize, rotate: trackRotate, thickness: trackThickness }
 
 		return (
-			<PointerLockContainer onMovement={vector => this.handleMovement(vector)}>
+			<PointerLockWrapper onMovement={vector => this.handleMovement(vector)}>
 				<div 
 					style={knobStyles} 
 					className={`knob label-${labelPosition}`} 
@@ -150,7 +150,7 @@ export default class KnobInput extends Component {
 					</label>
 
 				</div>
-			</PointerLockContainer>
+			</PointerLockWrapper>
 		)
 	}
 }

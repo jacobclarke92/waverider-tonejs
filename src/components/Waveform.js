@@ -6,6 +6,7 @@ import { getWaveformFromFile } from '../api/waveform'
 import { checkDifferenceAny } from '../utils/lifecycleUtils'
 import { getInstrumentInstance } from '../instrumentsController'
 
+import DropzoneWrapper from './DropzoneWrapper'
 import AudioTrim from './AudioTrim'
 
 export default class Waveform extends Component {
@@ -17,8 +18,10 @@ export default class Waveform extends Component {
 			start: 0,
 			end: 1,
 		},
+		disableFileDrop: false,
 		onTrimChange: () => {},
 		onPreviewAudio: () => {},
+		onReceivedFiles: () => {},
 	};
 
 	constructor(props) {
@@ -73,10 +76,10 @@ export default class Waveform extends Component {
 	}
 
 	render() {
-		const { reverse, onTrimChange, onPreviewAudio } = this.props
+		const { reverse, disableFileDrop, onTrimChange, onPreviewAudio, onReceivedFiles } = this.props
 		const { trim, waveformUrl, fileName, notePositions } = this.state
 
-		return (
+		const waveformDom = (
 			<div className="waveform" onClick={() => onPreviewAudio()}>
 				{waveformUrl && <div className={classnames('waveform-graphic', {reverse})} style={{backgroundImage: `url(${waveformUrl})`}} />}
 				{waveformUrl && 
@@ -91,6 +94,16 @@ export default class Waveform extends Component {
 				</div>
 
 				{fileName && <label className="label-box">{fileName}</label>}
+			</div>
+		)
+
+		return (
+			<div className="waveform-container">
+				{disableFileDrop ? waveformDom : 
+					<DropzoneWrapper onDrop={onReceivedFiles}>
+						{waveformDom}
+					</DropzoneWrapper>
+				}
 			</div>
 		)
 	}

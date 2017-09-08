@@ -11,6 +11,12 @@
 	--padding-l: 2rem;
 	--padding-xl: 3rem;
 
+	--font-size-xs: 0.8rem;
+	--font-size-s: 1rem;
+	--font-size-m: 1.2rem;
+	--font-size-l: 1.8rem;
+	--font-size-xl: 2.4rem;
+
 	--primary: rgb(74, 143, 233);
 	--secondary: rgb(100, 182, 172);
 	--tertiary: rgb(231, 32, 31);

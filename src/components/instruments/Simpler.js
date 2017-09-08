@@ -10,7 +10,6 @@ import Checkbox from '../input/Checkbox'
 import KnobInput from '../input/KnobInput'
 import DeviceSelect from '../DeviceSelect'
 import ChannelSelect from '../ChannelSelect'
-import Dropzone from '../Dropzone'
 import Waveform from '../Waveform'
 
 class Simpler extends Component {
@@ -81,16 +80,15 @@ class Simpler extends Component {
 					step={1} 
 					valueDisplay={value => value === 0 ? 0 : value+'c'}
 					onChange={cents => dispatch(updateInstrument(id, {instrument: {...instrument, cents}}))} />
-				<div className="waveform-container">
-					<Dropzone onDrop={this.handleFilesDrop}>
-						<Waveform 
-							instrumentId={id}
-							fileHash={fileHash} 
-							trim={trim} 
-							reverse={reverse} 
-							onTrimChange={trim => dispatch(updateInstrument(id, {instrument: {...instrument, trim}}))} />
-					</Dropzone>
-				</div>
+				
+				
+				<Waveform 
+					instrumentId={id}
+					fileHash={fileHash} 
+					trim={trim} 
+					reverse={reverse} 
+					onReceivedFiles={this.handleFilesDrop}
+					onTrimChange={trim => dispatch(updateInstrument(id, {instrument: {...instrument, trim}}))} />
 
 				<Checkbox value={loop} text="Loop" onChange={loop => dispatch(updateInstrument(id, {instrument: {...instrument, loop}}))} />
 				<Checkbox value={reverse} text="Reverse" onChange={reverse => this.handleReverse(reverse)} />
