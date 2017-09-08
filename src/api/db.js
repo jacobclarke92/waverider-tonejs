@@ -7,9 +7,9 @@ import { readBlobAsText, readBlobAsArrayBuffer, getHashFromBlob, getBlobUrl } fr
 import { deviceSchema } from './midi'
 import { instrumentSchema } from '../instrumentLibrary'
 
-const localStorageBytes = 1024*1024*128
 getStorageQuota().then(({usedBytes, grantedBytes}) => {
 	console.log(prettySize(usedBytes)+' used', prettySize(grantedBytes)+' granted')
+	// const localStorageBytes = 1024*1024*128
 	// if(grantedBytes < localStorageBytes) {
 	// 	requestStorage(localStorageBytes).then(grantedBytes => console.log(prettySize(grantedBytes)+' granted'))
 	// }

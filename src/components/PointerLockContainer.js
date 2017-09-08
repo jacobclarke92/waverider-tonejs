@@ -1,5 +1,4 @@
 import React, { Component, Children, cloneElement } from 'react'
-import _throttle from 'lodash/throttle'
 import { requestPointerLock, exitPointerLock } from '../utils/screenUtils'
 
 export default class PointerLockContainer extends Component {
@@ -13,7 +12,7 @@ export default class PointerLockContainer extends Component {
 		this.elem = null
 		this.mouseDown = false
 		this.handleMouseUp = this.handleMouseUp.bind(this)
-		this.handleMouseMove = _throttle(this.handleMouseMove.bind(this), 1000/60)
+		this.handleMouseMove = this.handleMouseMove.bind(this)
 	}
 
 	componentDidMount() {

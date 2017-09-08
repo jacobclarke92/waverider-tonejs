@@ -7,7 +7,6 @@ import { parseNoteToNumber, noteNumberToName } from '../../utils/noteUtils'
 import { defaultValue } from '../../instruments/simpler'
 
 import Checkbox from '../input/Checkbox'
-import NumberInput from '../input/NumberInput'
 import KnobInput from '../input/KnobInput'
 import DeviceSelect from '../DeviceSelect'
 import ChannelSelect from '../ChannelSelect'

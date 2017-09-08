@@ -1,6 +1,6 @@
 import WaveSurfer from 'wavesurfer'
 import base64toBlob from 'b64-to-blob'
-import { getFile, addFile } from './db'
+import { getFile } from './db'
 import { getBlobUrl } from '../utils/blobUtils'
 
 const defaultOptions = {

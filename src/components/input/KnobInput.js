@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import _throttle from 'lodash/throttle'
 import { clamp, roundToMultiple } from '../../utils/mathUtils'
 import { addKeyListener, removeKeyListener, isAltKeyPressed } from '../../utils/keyUtils'
-import { requestPointerLock, exitPointerLock } from '../../utils/screenUtils'
 
 import Donut from './Donut'
 import NumberInput from './NumberInput'
@@ -40,6 +39,7 @@ export default class KnobInput extends Component {
 		this.stepNotch = ((max - min) * step) / dragSensitivity
 		this.dragValue = value
 		this.setInputValue = this.setInputValue.bind(this)
+		this.handleMovement = _throttle(this.handleMovement.bind(this), 1000/60)
 		this.inputValidator = inputValidator || this.validateInput
 		this.state = {
 			editing: false,
@@ -54,7 +54,7 @@ export default class KnobInput extends Component {
 	}
 
 	handleMovement({x, y}) {
-		const { min, max, step, value, onChange } = this.props
+		const { min, max, step, onChange } = this.props
 		const amount = -y*this.stepNotch
 		this.dragValue += amount
 		let newValue = this.dragValue
@@ -81,7 +81,7 @@ export default class KnobInput extends Component {
 	}
 
 	setInputValue() {
-		const { value, onChange, valueInterpretter } = this.props
+		const { value, onChange } = this.props
 		const { inputValue } = this.state
 		removeKeyListener('enter', this.setInputValue)
 		this.setState({editing: false})
