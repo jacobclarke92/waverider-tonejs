@@ -81,7 +81,7 @@ export default class Waveform extends Component {
 
 		const waveformDom = (
 			<div className="waveform" onClick={() => onPreviewAudio()}>
-				{waveformUrl && <div className={classnames('waveform-graphic', {reverse})} style={{backgroundImage: `url(${waveformUrl})`}} />}
+				{waveformUrl && <div className={classnames('waveform-graphic no-aliasing', {reverse})} style={{backgroundImage: `url(${waveformUrl})`}} />}
 				{waveformUrl && 
 					<AudioTrim 
 						trim={trim} 

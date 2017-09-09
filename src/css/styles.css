@@ -2,6 +2,7 @@
 
 @import './app.css';
 @import './body.css';
+@import './utility.css';
 
 @import './elements/button.css';
 @import './elements/checkbox.css';
