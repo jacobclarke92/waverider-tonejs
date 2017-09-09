@@ -5,7 +5,7 @@ import { getBlobUrl } from '../utils/blobUtils'
 
 const defaultOptions = {
 	waveColor: '#FFF',
-	minPxPerSec: 100,
+	minPxPerSec: 3000,
 	normalize: false,
 	splitChannels: true,
 }
