@@ -33,6 +33,7 @@ export default class AudioTrim extends Component {
 		this.dragging = type
 		this.initDragMousePosition = getRelativeMousePosition(event, this.container)
 		this.previousPosition = {...this.props.trim}
+		event.preventDefault()
 	}
 
 	handleMouseUp(event) {
