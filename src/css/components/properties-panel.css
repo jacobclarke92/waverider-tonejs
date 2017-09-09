@@ -1,5 +1,6 @@
 .properties-panel {
 	position: absolute;
+	z-index: var(--ui-z-index);
 	left: 0;
 	bottom: 0;
 	width: 100%;

@@ -6,6 +6,7 @@
 	--tab-width: 230px;
 	--tab-height: 30px;
 	--ui-border-color: var(--shade-600);
+	--ui-z-index: 500;
 }
 
 .app {
@@ -18,6 +19,7 @@
 
 	.header {
 		position: absolute;
+		z-index: var(--ui-z-index);
 		top: 0;
 		left: 0;
 		width: 100%;
@@ -53,6 +55,7 @@
 
 		.sidebar {
 			position: absolute;
+			z-index: var(--ui-z-index);
 			top: 0;
 			left: 0;
 			width: var(--sidebar-width);
@@ -72,6 +75,7 @@
 
 			.navbar {
 				position: absolute;
+				z-index: var(--ui-z-index);
 				top: 0;
 				left: 0;
 				width: 100%;
