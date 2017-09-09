@@ -96,5 +96,6 @@
 				width: 100%;
 				height: calc(100% - var(--navbar-height));
 				background-color: var(--black);
+				color: var(--white);
 				overflow: auto;
 			}
