@@ -31,5 +31,5 @@
 	}
 
 	.properties-panel-inner {
-		margin: var(-padding-xs);
+		margin: var(--padding-xs);
 	}
