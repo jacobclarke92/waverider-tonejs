@@ -2,4 +2,6 @@ html,
 body {
 	font-family: Helvetica, Arial, sans-serif;
 	font-size: 10px;
+    height: 100vh;
+    overflow: hidden;
 }

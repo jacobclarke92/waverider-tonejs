@@ -1,0 +1,12 @@
+.tab {
+	width: var(--tab-width);
+	height: var(--tab-height);
+	padding: var(--padding-xs);
+}
+
+	.tab-inner {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+	}

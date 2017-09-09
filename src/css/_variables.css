@@ -23,13 +23,6 @@
 
 	--primary-dark: color(var(--primary) blackness(65%));
 
-	--vu-green: rgb(1, 166, 62);		// 0%
-	--vu-greenish: rgb(102, 195, 57); 	// 52%
-	--vu-yellow: rgb(249, 248, 106); 	// 81%
-	--vu-orange: rgb(255, 115, 62);		// 93%
-	--vu-red: rgb(235, 15, 27);			// 100%
-
-
 	--black: rgb(0,0,0);
 	--shade-100: rgb(26, 26, 26);
 	--shade-200: rgb(51, 51, 51);
@@ -45,5 +38,27 @@
 	--shade-900: rgb(230, 230, 230);
 	--shade-950: rgb(242, 242, 242);
 	--white: rgb(255,255,255);
+
+
+	--vu-green: rgb(1, 166, 62);		// 0%
+	--vu-greenish: rgb(102, 195, 57); 	// 52%
+	--vu-yellow: rgb(249, 248, 106); 	// 81%
+	--vu-orange: rgb(255, 115, 62);		// 93%
+	--vu-red: rgb(235, 15, 27);			// 100%
+	
+	--vu-gradient-h: linear-gradient(to right, 
+		var(--vu-green) 0%, 
+		var(--vu-greenish) 52%, 
+		var(--vu-yellow) 81%, 
+		var(--vu-orange) 93%, 
+		var(--vu-red) 100%
+	);
+	--vu-gradient-v: linear-gradient(to bottom, 
+		var(--vu-green) 0%, 
+		var(--vu-greenish) 52%, 
+		var(--vu-yellow) 81%, 
+		var(--vu-orange) 93%, 
+		var(--vu-red) 100%
+	);
 
 }

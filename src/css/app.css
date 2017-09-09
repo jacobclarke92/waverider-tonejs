@@ -1,0 +1,96 @@
+:root {
+	--header-height: 80px;
+	--sidebar-width: 80px;
+	--navbar-height: 40px;
+	--properties-panel-height: 150px;
+	--tab-width: 230px;
+	--tab-height: 30px;
+	--ui-border-color: var(--shade-600);
+}
+
+.app {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100vw;
+	height: 100vh;
+}
+
+	.header {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: var(--header-height);
+		padding: 0 var(--padding-l);
+		background: linear-gradient(to bottom, var(--shade-850) 0%, var(--shade-750) 100%);
+		border-bottom: 1px solid var(--ui-border-color);
+		box-sizing: border-box;
+	}
+
+		.header-inner {
+			display: flex;
+			align-items: middle;
+			justify-content: space-between;
+		}
+
+			.header-left {
+
+			}
+
+			.header-right {
+
+			}
+
+
+	.main {
+		position: absolute;
+		top: var(--header-height);
+		left: 0;
+		width: 100%;
+		height: calc(100% - var(--header-height));
+	}
+
+		.sidebar {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: var(--sidebar-width);
+			height: 100%;
+			background-color: var(--shade-850);
+			border-right: 1px solid var(--ui-border-color);
+			box-sizing: border-box;
+		}
+
+		.stage-container {
+			position: absolute;
+			top: 0;
+			left: var(--sidebar-width);
+			width: calc(100% - var(--sidebar-width));
+			height: 100%;
+		}
+
+			.navbar {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: var(--navbar-height);
+				background-color: var(--shade-700);
+				border-bottom: 1px solid var(--ui-border-color);
+				box-sizing: border-box;
+			}
+
+				.navbar-inner {
+					margin: var(--padding-xs);
+				}
+
+			.stage {
+				position: absolute;
+				top: var(--navbar-height);
+				left: 0;
+				width: 100%;
+				height: calc(100% - var(--navbar-height));
+				background-color: var(--black);
+				overflow: auto;
+			}

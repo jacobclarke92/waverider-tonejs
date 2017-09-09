@@ -1,12 +1,15 @@
 @import './_variables.css';
 
+@import './app.css';
 @import './body.css';
 
 @import './elements/button.css';
-@import './elements/select.css';
 @import './elements/file-label.css';
+@import './elements/select.css';
+@import './elements/tab.css';
 
-@import './components/waveform.css';
-@import './components/dropzone.css';
 @import './components/audio-trim.css';
+@import './components/dropzone.css';
 @import './components/knob.css';
+@import './components/properties-panel.css';
+@import './components/waveform.css';
