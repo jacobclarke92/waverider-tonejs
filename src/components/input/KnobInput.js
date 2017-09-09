@@ -142,7 +142,7 @@ export default class KnobInput extends Component {
 									{...extendedInputProps}
 									onChange={inputValue => this.setState({inputValue})}
 									onBlur={e => this.setInputValue()} />
-							) : valueDisplay(parseFloat(value).toPrecision(3))}
+							) : valueDisplay(step%1 === 0 ? value : value.toFixed(2))}
 						</div>
 					</div>
 					<label className="knob-label">
