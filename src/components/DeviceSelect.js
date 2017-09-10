@@ -7,10 +7,10 @@ class DeviceSelect extends Component {
 		const { devices, ...rest } = this.props
 		const deviceOptions = [
 			{value: null, text: 'All Devices'},
-			...devices.map(({id, name, manufacturer, disconnected}) => ({
+			...devices.map(({id, name, disconnected}) => ({
 				value: id, 
 				disabled: disconnected, 
-				text: `${manufacturer && '('+manufacturer+')'} ${name}`,
+				text: name,
 			})),
 		]
 		return (
