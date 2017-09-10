@@ -6,6 +6,7 @@ import { readBlobAsText, readBlobAsArrayBuffer, getHashFromBlob, getBlobUrl } fr
 
 import { deviceSchema } from './midi'
 import { instrumentSchema } from '../instrumentLibrary'
+import { deskSchema } from '../reducers/desk'
 
 getStorageQuota().then(({usedBytes, grantedBytes}) => {
 	console.log(prettySize(usedBytes)+' used', prettySize(grantedBytes)+' granted')
@@ -20,6 +21,7 @@ db.version(1).stores({
 	files: '++id,filename,size,type,date,&hash,blob',
 	instruments: instrumentSchema,
 	devices: deviceSchema,
+	desk: deskSchema,
 })
 
 db.open().catch(e => console.error('Opening DB failed', e.stack))
