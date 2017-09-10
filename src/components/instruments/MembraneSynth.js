@@ -1,17 +1,17 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { updateInstrument } from '../../reducers/instruments'
-import { defaultValue } from '../../instruments/basicSynth'
+import { defaultValue } from '../../instruments/membraneSynth'
 
 import KnobInput from '../input/KnobInput'
 import SelectInput from '../input/SelectInput'
 import DeviceSelect from '../DeviceSelect'
 import ChannelSelect from '../ChannelSelect'
 
-class BasicSynth extends Component {
+class MembraneSynth extends Component {
 	render() {
 		const { dispatch, id, instrument, midiDeviceId, midiChannel } = this.props
-		const { voices, portamento, envelope, oscillator } = instrument
+		const { voices, pitchDecay, octaves, envelope, oscillator } = instrument
 		const { attack, decay, sustain, release } = envelope
 		return (
 			<div className="pluck-synth">
@@ -26,13 +26,21 @@ class BasicSynth extends Component {
 					defaultValue={defaultValue.instrument.voices}
 					onChange={voices => dispatch(updateInstrument(id, {instrument: {...instrument, voices}}))} />
 				<KnobInput 
-					label="Portamento" 
+					label="Pitch Decay" 
 					min={0} 
 					max={1} 
-					step={0.05} 
-					value={portamento} 
-					defaultValue={defaultValue.instrument.portamento}
-					onChange={portamento => dispatch(updateInstrument(id, {instrument: {...instrument, portamento}}))} />
+					step={0.01} 
+					value={pitchDecay} 
+					defaultValue={defaultValue.instrument.pitchDecay}
+					onChange={pitchDecay => dispatch(updateInstrument(id, {instrument: {...instrument, pitchDecay}}))} />
+				<KnobInput 
+					label="Octaves" 
+					min={0} 
+					max={12} 
+					step={1} 
+					value={octaves} 
+					defaultValue={defaultValue.instrument.octaves}
+					onChange={octaves => dispatch(updateInstrument(id, {instrument: {...instrument, octaves}}))} />
 
 				<SelectInput
 					empty={false}
@@ -82,4 +90,4 @@ class BasicSynth extends Component {
 	}
 }
 
-export default connect()(BasicSynth)
+export default connect()(MembraneSynth)
