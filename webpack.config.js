@@ -49,21 +49,10 @@ var options = {
 				},
 			},
 			{
-				test: /\.js$/,
-				include: path.join(__dirname, 'node_modules', 'pixi.js'),
-				use: {
-					loader: 'transform-loader?brfs',
-				},
-			},
-			{
-				test: /\.json$/,
-				include: [
-					path.join(__dirname, 'node_modules', 'pixi.js'),
-					path.join(__dirname, 'node_modules', 'axios'),
+				include: [path.join(__dirname, 'node_modules', 'pixi.js')],
+				use: [
+					{loader: 'ify-loader'},
 				],
-				use: {
-					loader: 'json-loader',
-				},
 			},
 			{
 				test: /\.css$/,
