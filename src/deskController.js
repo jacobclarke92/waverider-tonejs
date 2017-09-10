@@ -11,6 +11,14 @@ export function init(_store) {
 	store.subscribe(handleUpdate)
 }
 
+function handleUpdate() {
+	const { lastAction, desk } = store.getState()
+	switch(lastAction.type) {
+
+	}
+	oldDesk = _cloneDeep(desk)
+}
+
 export function connectAudioWires(source, id, disconnectFirst = false) {
 	if(!source) console.warn('no audio source to connect from', source, id)
 	if(!source || !id) return
@@ -37,10 +45,35 @@ export function connectAudioWires(source, id, disconnectFirst = false) {
 	}
 }
 
-function handleUpdate() {
-	const { lastAction, desk } = store.getState()
-	switch(lastAction.type) {
-
+export function getDeskWires() {
+	const { desk } = store.getState()
+	const connections = []
+	for(let fromItem of desk) {
+		if(fromItem.audioOutput) Object.keys(fromItem.audioOutputs).forEach(outputId => {
+			const wire = fromItem.audioOutputs[outputId]
+			const toItem = _find(desk, {ownerId: outputId})
+			if(toItem) connections.push({
+				type: 'audio',
+				id: fromItem.ownerId+'___'+toItem.ownerId,
+				from: {x: fromItem.position.x + wire.outputPosition.x, y: fromItem.position.y + wire.outputPosition.y},
+				to: {x: toItem.position.x + wire.inputPosition.x, y: toItem.position.y + wire.inputPosition.y},
+				outputOwnerId: fromItem.ownerId,
+				inputOwnerId: toItem.ownerId,
+			})
+		})
+		if(fromItem.dataOutput) Object.keys(fromItem.dataOutputs).forEach(outputId => {
+			const wire = fromItem.dataOutputs[outputId];
+			const toItem = _find(desk, {ownerId: outputId})
+			if(toItem) connections.push({
+				type: 'data',
+				id: fromItem.ownerId+'___'+toItem.ownerId,
+				from: {x: fromItem.position.x + wire.outputPosition.x, y: fromItem.position.y + wire.outputPosition.y},
+				to: {x: toItem.position.x + wire.inputPosition.x, y: toItem.position.y + wire.inputPosition.y},
+				outputOwnerId: fromItem.ownerId,
+				inputOwnerId: toItem.ownerId,
+				inputParamKey: wire.inputParam.key,
+			})
+		})
 	}
-	oldDesk = _cloneDeep(desk)
+	return connections
 }
