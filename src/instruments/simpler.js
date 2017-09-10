@@ -6,7 +6,7 @@ import { noteStrings } from '../constants/noteStrings'
 import { checkDifferenceAny, checkDifferenceAll } from '../utils/lifecycleUtils'
 import { updateInstrument } from '../reducers/instruments'
 
-import Simpler from '../components/instruments/Simpler'
+import SimplerEditor from '../components/instruments/Simpler'
 import { allInstrumentDefaults, defaultEnvelope } from '../instrumentLibrary'
 
 export class SimplerInstrument {
@@ -46,7 +46,6 @@ export class SimplerInstrument {
 	}
 
 	initSampler(callback = () => {}) {
-		console.log()
 		const { voices, fileHash, reverse, loop, trim } = this.instrument
 		if(!fileHash) return callback()
 		if(this.sampler) this.sampler.dispose();
@@ -174,7 +173,7 @@ export const defaultValue = {
 export default {
 	name: 'Simpler',
 	slug: 'simpler',
-	Editor: Simpler,
+	Editor: SimplerEditor,
 	Instrument: SimplerInstrument,
 	defaultValue,	
 }

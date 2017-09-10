@@ -8,7 +8,7 @@ class InstrumentList extends Component {
 	render() {
 		const { dispatch, instruments = [] } = this.props
 		return (
-			<div>
+			<div style={{padding: '4rem 2rem'}}>
 				<div className="instrument-buttons">
 					{Object.keys(instrumentLibrary).map(instrumentType => 
 						<button key={instrumentType} type="button" onClick={() => dispatch(addInstrument(instrumentType))}>

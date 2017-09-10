@@ -12,13 +12,13 @@ export default class PropertiesPanel extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			collapsed: false,
+			collapsed: true,
 		}
 	}
 
 	render() {
 		const { collapsed } = this.state
-		const { icon, status, title } = this.props
+		const { children, icon, status, title } = this.props
 		return (
 			<div className={classname('properties-panel', {collapsed})}>
 				<div className="properties-panel-tab tab" onClick={() => this.setState({collapsed: !collapsed})}>
@@ -27,7 +27,7 @@ export default class PropertiesPanel extends Component {
 					</div>
 				</div>
 				<div className="properties-panel-inner">
-
+					{children}
 				</div>
 			</div>
 		)

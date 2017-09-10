@@ -31,6 +31,7 @@ function handleUpdate() {
 	switch(lastAction.type) {
 		case LOAD_INSTRUMENTS: initInstruments(instruments); break
 		case UPDATE_INSTRUMENT: updateInstrument(lastAction.instrument); break
+		case ADD_INSTRUMENT: initInstrument(lastAction.instrument); break
 		case NOTE_ON: 
 		case NOTE_OFF: handleNoteAction(lastAction, instruments); break
 
