@@ -25,7 +25,6 @@ const keyUpCallbacks = {}
 function handleKeyDown(event) {
 	const inputIsFocused = isInputFocused()
 	const key = keycode(event)
-	console.log(key)
 	switch (key) {
 		case 'shift': shiftKeyPressed = true; break
 		case 'ctrl': ctrlKeyPressed = true; break

@@ -153,7 +153,6 @@ export const defaultValue = {
 		baseNote: 0,
 		calculatedBaseNote: null,
 		cents: 0,
-		envelope: defaultEnvelope,
 		reverse: false,
 		loop: false,
 		voices: 4,
@@ -161,12 +160,7 @@ export const defaultValue = {
 			start: 0,
 			end: 1,
 		},
-		envelope: {
-			attack: 0.01,
-			decay: 0,
-			sustain: 1,
-			release: 0.1,
-		},
+		envelope: {...defaultEnvelope},
 	},
 }
 

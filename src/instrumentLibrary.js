@@ -1,14 +1,15 @@
 import simpler from './instruments/simpler'
 import sampler from './instruments/sampler'
+import basicSynth from './instruments/basicSynth'
 import pluckSynth from './instruments/pluckSynth'
 
 export const instrumentSchema = '++id,type,midiChannel,midiDeviceId,instrument'
 
 export const defaultEnvelope = {
-	attack: 0.005,
-	decay: 0.1,
-	sustain: 0.9,
-	release: 1,
+	attack: 0.01,
+	decay: 0,
+	sustain: 1,
+	release: 0.2,
 }
 
 export const allInstrumentDefaults = {
@@ -19,5 +20,6 @@ export const allInstrumentDefaults = {
 export default {
 	simpler,
 	sampler,
+	basicSynth,
 	pluckSynth,
 }
