@@ -30,6 +30,7 @@ initKeyListeners()
 
 store.dispatch(loadInstruments())
 store.dispatch(loadDevices())
+store.dispatch(loadDesk())
 
 
 ReactDOM.render(<Provider store={store}><App /></Provider>, document.getElementById('app'))

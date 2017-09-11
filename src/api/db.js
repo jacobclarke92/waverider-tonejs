@@ -24,6 +24,13 @@ db.version(1).stores({
 	desk: deskSchema,
 })
 
+window.logAllTables = () => {
+	getAll('files').then(files => console.log('files', files))
+	getAll('instruments').then(instruments => console.log('instruments', instruments))
+	getAll('devices').then(devices => console.log('devices', devices))
+	getAll('desk').then(desk => console.log('desk', desk))
+}
+
 db.open().catch(e => console.error('Opening DB failed', e.stack))
 
 let fileId = 0

@@ -1,6 +1,8 @@
 import * as DeskItemTypes  from '../constants/deskItemTypes'
 import { ADD_INSTRUMENT, REMOVE_INSTRUMENT } from './instruments'
 
+import { add, getAll, updateById } from '../api/db'
+
 export const LOAD_DESK = 'LOAD_DESK'
 export const DESK_ITEM_MOVE = 'DESK_ITEM_MOVE'
 export const DESK_CONNECT_WIRE = 'DESK_CONNECT_WIRE'
@@ -14,6 +16,7 @@ const initialState = [
 		name: 'Master',
 		ownerId: 'master',
 		type: DeskItemTypes.MASTER,
+		slug: 'master',
 		position: {
 			x: 500,
 			y: 0,
@@ -61,6 +64,10 @@ export default function(state = initialState, action) {
 }
 
 export const loadDesk = () => dispatch => getAll('desk')
+	.then(desk => {
+		if(desk.length > 0) return desk
+		return add('desk', initialState[0])
+	})
 	.then(desk => dispatch({type: LOAD_DESK, desk}))
 	.catch(e => console.warn('Unable to load desk state', e))
 
