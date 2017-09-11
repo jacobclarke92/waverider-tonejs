@@ -1,4 +1,6 @@
 import { Synth, PolySynth, now } from 'tone'
+import _debounce from 'lodash/throttle'
+import { paramUpdateDebounce, voicesUpdateDebounce } from '../constants/timings'
 import { checkDifferenceAny, checkDifferenceAll } from '../utils/lifecycleUtils'
 import { allInstrumentDefaults, defaultEnvelope } from '../instrumentLibrary'
 import { noteNumberToName } from '../utils/noteUtils'
@@ -11,6 +13,8 @@ export class BasicSynthInstrument {
 		this.mounted = false
 		this.dispatch = dispatch
 		Object.keys(value).forEach(key => this[key] = value[key])
+		this.reinitSynth = _debounce(this.initSynth, voicesUpdateDebounce)
+		this.triggerUpdateVoiceParams = _debounce(this.updateVoiceParams, paramUpdateDebounce)
 		this.initSynth(() => {
 			this.mounted = true
 			console.log('basicSynth mounted', this)
@@ -20,11 +24,11 @@ export class BasicSynthInstrument {
 	update(value, oldValue) {
 		Object.keys(value).forEach(key => this[key] = value[key])
 		if(checkDifferenceAny(value.instrument, oldValue.instrument, ['voices'])) {
-			this.initSynth()
+			this.reinitSynth()
 			return
 		}
 		if(checkDifferenceAny(value.instrument, oldValue.instrument, ['portamento', 'oscillator.type', 'envelope.attack', 'envelope.decay', 'envelope.sustain', 'envelope.release'])) {
-			this.updateVoiceParams()
+			this.triggerUpdateVoiceParams()
 		}
 	}
 

@@ -1,3 +1,4 @@
+import _merge from 'lodash/merge'
 import _cloneDeep from 'lodash/cloneDeep'
 
 import { add, getAll, updateById } from '../api/db'
@@ -14,7 +15,9 @@ export default function(state = initialState, action) {
 	switch(action.type) {
 		case LOAD_INSTRUMENTS: return action.instruments || []
 		case ADD_INSTRUMENT: return [...state, action.instrument]
-		case UPDATE_INSTRUMENT: return state.map(instrument => instrument.id === action.instrument.id ? action.instrument : instrument)
+		case UPDATE_INSTRUMENT: return state.map(instrument => instrument.id === action.id
+			? _merge(_cloneDeep(instrument), action.updates)
+			: instrument)
 	}
 	return state
 }
@@ -31,6 +34,4 @@ export const addInstrument = type => {
 		.catch(e => console.warn('Unable to add instrument', newInstrument))
 }
 
-export const updateInstrument = (id, updates) => dispatch => updateById('instruments', id, updates)
-	.then(instrument => dispatch({type: UPDATE_INSTRUMENT, instrument}))
-	.catch(e => console.warn('Unable to update instrument', id, updates, e))
+export const updateInstrument = (id, updates) => ({type: UPDATE_INSTRUMENT, id, updates})

@@ -1,4 +1,6 @@
 import { PluckSynth, PolySynth, now } from 'tone'
+import _debounce from 'lodash/throttle'
+import { paramUpdateDebounce, voicesUpdateDebounce } from '../constants/timings'
 import { checkDifferenceAny, checkDifferenceAll } from '../utils/lifecycleUtils'
 import { allInstrumentDefaults, defaultEnvelope } from '../instrumentLibrary'
 import PluckSynthEditor from '../components/instruments/PluckSynth'
@@ -10,6 +12,8 @@ export class PluckSynthInstrument {
 		this.mounted = false
 		this.dispatch = dispatch
 		Object.keys(value).forEach(key => this[key] = value[key])
+		this.reinitSynth = _debounce(this.initSynth, voicesUpdateDebounce)
+		this.triggerUpdateVoiceParams = _debounce(this.updateVoiceParams, paramUpdateDebounce)
 		this.initSynth(() => {
 			this.mounted = true
 			console.log('pluckSynth mounted', this)
@@ -19,11 +23,11 @@ export class PluckSynthInstrument {
 	update(value, oldValue) {
 		Object.keys(value).forEach(key => this[key] = value[key])
 		if(checkDifferenceAny(value.instrument, oldValue.instrument, 'voices')) {
-			this.initSynth()
+			this.reinitSynth()
 			return
 		}
 		if(checkDifferenceAny(value.instrument, oldValue.instrument, ['attackNoise', 'resonance', 'dampening'])) {
-			this.updateVoiceParams()
+			this.triggerUpdateVoiceParams()
 		}
 	}
 

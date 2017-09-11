@@ -30,7 +30,7 @@ function handleUpdate() {
 	const { lastAction, instruments } = store.getState()
 	switch(lastAction.type) {
 		case LOAD_INSTRUMENTS: initInstruments(instruments); break
-		case UPDATE_INSTRUMENT: updateInstrument(lastAction.instrument); break
+		case UPDATE_INSTRUMENT: updateInstrument(lastAction, instruments); break
 		case ADD_INSTRUMENT: initInstrument(lastAction.instrument); break
 		case NOTE_ON: 
 		case NOTE_OFF: handleNoteAction(lastAction, instruments); break
@@ -49,10 +49,11 @@ function initInstrument(instrument) {
 	instances[instrument.id] = new Instrument(instrument, store.dispatch)
 }
 
-function updateInstrument(instrument) {
-	const oldInstrument = _find(oldInstruments, {id: instrument.id})
-	if(!(instrument.id in instances)) initInstrument(instrument)
-	else instances[instrument.id].update(instrument, oldInstrument)
+function updateInstrument({id}, instruments) {
+	const instrument = _find(instruments, {id})
+	const oldInstrument = _find(oldInstruments, {id})
+	if(!(id in instances)) initInstrument(instrument)
+	else instances[id].update(instrument, oldInstrument)
 }
 
 function handleNoteAction({type, deviceId, channel, note, velocity}, instruments) {

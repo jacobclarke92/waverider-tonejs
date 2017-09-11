@@ -1,5 +1,6 @@
-import _debounce from 'lodash/throttle'
 import { MembraneSynth, PolySynth, now } from 'tone'
+import _debounce from 'lodash/throttle'
+import { paramUpdateDebounce, voicesUpdateDebounce } from '../constants/timings'
 import { checkDifferenceAny, checkDifferenceAll } from '../utils/lifecycleUtils'
 import { allInstrumentDefaults, defaultEnvelope } from '../instrumentLibrary'
 import { noteNumberToName } from '../utils/noteUtils'
@@ -12,7 +13,8 @@ export class MembraneSynthInstrument {
 		this.mounted = false
 		this.dispatch = dispatch
 		Object.keys(value).forEach(key => this[key] = value[key])
-		this.reinitSynth = _debounce(this.initSynth, 1500)
+		this.reinitSynth = _debounce(this.initSynth, voicesUpdateDebounce)
+		this.triggerUpdateVoiceParams = _debounce(this.updateVoiceParams, paramUpdateDebounce)
 		this.initSynth(() => {
 			this.mounted = true
 			console.log('membraneSynth mounted', this)
@@ -26,7 +28,7 @@ export class MembraneSynthInstrument {
 			return
 		}
 		if(checkDifferenceAny(value.instrument, oldValue.instrument, ['pitchDecay', 'octaves', 'oscillator.type', 'envelope.attack', 'envelope.decay', 'envelope.sustain', 'envelope.release'])) {
-			this.updateVoiceParams()
+			this.triggerUpdateVoiceParams()
 		}
 	}
 

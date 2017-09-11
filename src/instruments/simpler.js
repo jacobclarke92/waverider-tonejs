@@ -1,4 +1,6 @@
 import { Sampler, PolySynth, now } from 'tone'
+import _debounce from 'lodash/throttle'
+import { paramUpdateDebounce, voicesUpdateDebounce } from '../constants/timings'
 
 import { getFileByHash } from '../api/db'
 import { getNoteByFile } from '../api/pitch'
@@ -16,6 +18,8 @@ export class SimplerInstrument {
 		this.file = null
 		this.dispatch = dispatch
 		Object.keys(value).forEach(key => this[key] = value[key])
+		this.reinitSampler = _debounce(this.initSampler, voicesUpdateDebounce)
+		this.triggerUpdateVoiceParams = _debounce(this.updateVoiceParams, paramUpdateDebounce)
 		this.initSampler(() => {
 			this.mounted = true
 			console.log('Simpler mounted', this)
@@ -25,23 +29,23 @@ export class SimplerInstrument {
 	update(value, oldValue) {
 		Object.keys(value).forEach(key => this[key] = value[key])
 		if(checkDifferenceAny(value.instrument, oldValue.instrument, ['voices', 'reverse'])) {
-			this.initSampler()
+			this.reinitSampler()
 			return
 		}
 		if(checkDifferenceAny(value.instrument, oldValue.instrument, ['trim'])) {
 			if(this.file) this.updateAudioFile(this.file.getUrl(), () => {
-				this.updateVoiceParams()
+				this.triggerUpdateVoiceParams()
 			})
 		}
 		if(checkDifferenceAny(value, oldValue, 'instrument.fileHash')) {
 			this.loadAudioFile(value.instrument.fileHash, file => {
 				this.updateAudioFile(file.getUrl(), () => {
-					this.updateVoiceParams()
+					this.triggerUpdateVoiceParams()
 				})
 			})
 		}
 		if(checkDifferenceAny(value.instrument, oldValue.instrument, ['loop', 'envelope.attack', 'envelope.decay', 'envelope.sustain', 'envelope.release'])) {
-			this.updateVoiceParams()
+			this.triggerUpdateVoiceParams()
 		}
 	}
 

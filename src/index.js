@@ -6,6 +6,7 @@ import { Provider } from 'react-redux'
 import './css/styles.css'
 
 import reducers from './reducers'
+import dbMiddleware from './api/dbMiddleware'
 import { init as initKeyListeners } from './utils/keyUtils'
 import { init as initMidi } from './api/midi'
 import { init as initDesk } from './deskController'
@@ -18,7 +19,7 @@ import { loadDesk } from './reducers/desk'
 
 import App from './App'
 
-const store = createStore(reducers, {}, compose(applyMiddleware(thunk)))
+const store = createStore(reducers, {}, compose(applyMiddleware(thunk, dbMiddleware)))
 window.logStore = () => console.log(store.getState())
 
 initMidi(store)
