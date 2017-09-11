@@ -1,0 +1,5 @@
+.icon {
+	& path {
+		fill: currentColor
+	}
+}

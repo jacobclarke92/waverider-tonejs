@@ -5,6 +5,7 @@ import Sidebar from './components/ui/Sidebar'
 import Navbar from './components/ui/Navbar'
 import PropertiesPanel from './components/ui/PropertiesPanel'
 import InstrumentList from './components/InstrumentList'
+import MasterDeskItem from './components/desk/MasterDeskItem'
 
 export default class Main extends Component {
 	render() {
@@ -16,6 +17,7 @@ export default class Main extends Component {
 					<div className="stage-container">
 						<Navbar />
 						<div className="stage">
+							<MasterDeskItem />
 							<InstrumentList />
 						</div>
 						<PropertiesPanel title="Properties">
