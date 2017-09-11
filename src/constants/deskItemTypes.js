@@ -1,5 +1,5 @@
 export const FX = 'FX'
 export const BUS = 'BUS'
-export const SYNTH = 'SYNTH'
+export const INSTRUMENT = 'INSTRUMENT'
 export const MASTER = 'MASTER'
 export const LFO = 'LFO'

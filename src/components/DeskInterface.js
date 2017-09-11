@@ -5,7 +5,9 @@ import { connect } from 'react-redux'
 
 import Point from '../Point'
 import { addKeyListener, removeKeyListener } from '../utils/keyUtils'
+import { FX, BUS, INSTRUMENT, MASTER, LFO } from '../constants/deskItemTypes'
 import { getDeskWires } from '../deskController'
+import instrumentLibrary from '../instrumentLibrary'
 
 class DeskInterface extends Component {
 	constructor(props) {
@@ -78,13 +80,25 @@ class DeskInterface extends Component {
 	}
 
 	render() {
+		const { desk, instruments } = this.props
 		const connections = getDeskWires()
 		return (
 			<div ref={elem => this.container = elem} className="desk-interface-container">
-				<div ref={elem => this.interface = elem}className="desk-interface" onMouseMove={e => this.handleMouseMove(e)}>
-
+				<div ref={elem => this.interface = elem} className="desk-interface" onMouseMove={e => this.handleMouseMove(e)}>
+					{desk.map(deskItem => <DeskItem key={deskItem.id} {...deskItem} />)}
 				</div>
 			</div>
+		)
+	}
+}
+
+class DeskItem extends Component {
+	render() {
+		const { type, slug } = this.props
+		let DeskComponent = null
+		if(type == INSTRUMENT) DeskComponent = instrumentLibrary[slug].DeskItem
+		return (
+			<DeskComponent />
 		)
 	}
 }

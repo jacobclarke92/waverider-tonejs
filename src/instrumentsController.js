@@ -2,6 +2,7 @@ import instrumentLibrary from './instrumentLibrary'
 import _find from 'lodash/find'
 import _cloneDeep from 'lodash/cloneDeep'
 import { NOTE_ON, NOTE_OFF } from './api/midi'
+import { DESK_CONNECT_WIRE, DESK_DISCONNECT_WIRE } from './reducers/desk'
 import { LOAD_INSTRUMENTS, ADD_INSTRUMENT, REMOVE_INSTRUMENT, UPDATE_INSTRUMENT } from './reducers/instruments'
 
 
@@ -27,13 +28,15 @@ export function isDeviceUsedByInstrument(deviceId) {
 }
 
 function handleUpdate() {
-	const { lastAction, instruments } = store.getState()
+	const { lastAction, instruments, desk } = store.getState()
 	switch(lastAction.type) {
 		case LOAD_INSTRUMENTS: initInstruments(instruments); break
 		case UPDATE_INSTRUMENT: updateInstrument(lastAction, instruments); break
 		case ADD_INSTRUMENT: initInstrument(lastAction.instrument); break
 		case NOTE_ON: 
 		case NOTE_OFF: handleNoteAction(lastAction, instruments); break
+		case DESK_CONNECT_WIRE: handleWireConnection(lastAction, desk); break
+		case DESK_DISCONNECT_WIRE: handleWireDisconnection(lastAction, desk); break
 
 	}
 	oldInstruments = _cloneDeep(instruments)
@@ -63,3 +66,12 @@ function handleNoteAction({type, deviceId, channel, note, velocity}, instruments
 		else if(type == NOTE_OFF) instances[instrument.id].noteUp(note)
 	})
 }
+
+function handleWireConnection(action, desk) {
+
+}
+
+function handleWireDisconnection(action, desk) {
+
+}
+
