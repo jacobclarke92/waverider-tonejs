@@ -13,6 +13,8 @@ import { getDeskWires } from '../../deskController'
 import instrumentLibrary from '../../instrumentLibrary'
 import MasterDeskItem from '../desk/Master'
 
+const snapGrid = 10
+
 class DeskWorkspace extends Component {
 	constructor(props) {
 		super(props)
@@ -79,7 +81,7 @@ class DeskWorkspace extends Component {
 				if(overIO) {
 					console.log('mousemove IO');
 				}else{
-					if(snapping) placementPosition = placementPosition.round(15)
+					if(snapping) placementPosition = placementPosition.round(snapGrid)
 					dispatch(moveDeskItem(dragTarget, placementPosition))
 				}
 			}else{
