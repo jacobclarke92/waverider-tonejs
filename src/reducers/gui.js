@@ -13,7 +13,7 @@ const initialState = {
 			showGuides: true,
 		},
 		[DESK]: {
-			snapping: false,
+			snapping: true,
 		},
 		[MATRIX]: {
 

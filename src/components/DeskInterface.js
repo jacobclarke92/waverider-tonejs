@@ -38,6 +38,7 @@ class DeskInterface extends Component {
 			selectedDeskItem: null,
 			dragTarget: null,
 			mouseDownTargetOffset: null,
+			pan: {x: 0, y: 0},
 		}
 	}
 
@@ -54,21 +55,18 @@ class DeskInterface extends Component {
 	}
 
 	handleThrottledMouseMove(event) {
-		const { dispatch } = this.props
-		// const { snapping } = this.props.gui.viewState[DESK]
+		const { dispatch, gui } = this.props
+		const { snapping } = gui.viewStates[DESK]
+
 		const pointer = new Point(getMousePosition(event))
 		const stagePointer = new Point(getRelativeMousePosition(event, this.interface))
-		
-		let placementPosition = stagePointer
-		// if(snapping) placementPosition = getSnapPosition(stagePointer);
 		
 		this.setState({
 			pointer,
 			stagePointer,
-			placementPosition,
 		})
 
-		const { mouseDown, mouseMoved, mouseDownPosition, mouseDownTargetOffset, dragTarget, overIO } = this.state
+		const { mouseDown, mouseMoved, mouseDownPosition, mouseDownTargetOffset, mouseDownPan, dragTarget, overIO } = this.state
 
 		// enforce a minimum distance before allowing panning
 		if(mouseDown && !mouseMoved && pointer.distance(mouseDownPosition) < 10) return true
@@ -79,11 +77,19 @@ class DeskInterface extends Component {
 
 		if(mouseDown) {
 			if(dragTarget) {
+				let placementPosition = new Point(stagePointer).subtract(mouseDownTargetOffset)
+
 				if(overIO) {
 					console.log('mousemove IO');
 				}else{
-					dispatch(moveDeskItem(dragTarget, new Point(placementPosition).subtract(mouseDownTargetOffset)))
+					if(snapping) placementPosition = placementPosition.round(15)
+					dispatch(moveDeskItem(dragTarget, placementPosition))
 				}
+			}else{
+				this.setState({pan: {
+					x: mouseDownPan.x + (pointer.x - mouseDownPosition.x),
+					y: mouseDownPan.y + (pointer.y - mouseDownPosition.y),
+				}})
 			}
 		}
 
@@ -96,6 +102,7 @@ class DeskInterface extends Component {
 			mouseMoved: false,
 			dragTarget: null,
 			mouseDownPosition: getMousePosition(event),
+			mouseDownPan: {...this.state.pan},
 		})
 	}
 
@@ -168,6 +175,7 @@ class DeskInterface extends Component {
 
 	render() {
 		const { desk, instruments } = this.props
+		const { pan } = this.state
 		const connections = getDeskWires()
 		return (
 			<div 
@@ -177,7 +185,10 @@ class DeskInterface extends Component {
 				onMouseDown={this.handlePointerDown} 
 				onMouseUp={this.handlePointerUp}>
 
-				<div ref={elem => this.interface = elem} className="desk-interface" >
+				<div 
+					ref={elem => this.interface = elem} 
+					className="desk-interface"
+					style={{transform: `translate(${pan.x}px, ${pan.y}px)`}}>
 
 					{desk.map(deskItem => 
 						<DeskItem 
