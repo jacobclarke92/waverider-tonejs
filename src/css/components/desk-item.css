@@ -20,6 +20,31 @@
 	}
 }
 
+	.connection {
+		position: absolute;
+		width: 12px;
+		height: 12px;
+		border-radius: 100%;
+		transform: translate(-50%, -50%);
+		&.audio {
+			top: 50%;
+			left: 0;
+			background-color: var(--secondary);
+			&.output {
+				left: 100%;
+				background-color: color(var(--secondary) blackness(-35%));
+			}
+		}
+
+		&.data {
+			bottom: 0;
+			background-color: var(--tertiary);
+			&.output {
+				background-color: color(var(--tertiary) blackness(-35%));
+			}
+		}
+	}
+
 .desk-item.master {
 	width: 70px;
 	height: 70px;
