@@ -3,17 +3,17 @@ import _throttle from 'lodash/throttle'
 import classname from 'classname'
 import { connect } from 'react-redux'
 
-import Point from '../Point'
-import { addKeyListener, removeKeyListener } from '../utils/keyUtils'
-import { getRelativeMousePosition, getMousePosition } from '../utils/screenUtils'
-import { FX, BUS, INSTRUMENT, MASTER, LFO } from '../constants/deskItemTypes'
-import { DESK } from '../constants/uiViews'
-import { moveDeskItem } from '../reducers/desk'
-import { getDeskWires } from '../deskController'
-import instrumentLibrary from '../instrumentLibrary'
-import MasterDeskItem from './desk/Master'
+import Point from '../../utils/Point'
+import { addKeyListener, removeKeyListener } from '../../utils/keyUtils'
+import { getRelativeMousePosition, getMousePosition } from '../../utils/screenUtils'
+import { FX, BUS, INSTRUMENT, MASTER, LFO } from '../../constants/deskItemTypes'
+import { DESK } from '../../constants/uiViews'
+import { moveDeskItem } from '../../reducers/desk'
+import { getDeskWires } from '../../deskController'
+import instrumentLibrary from '../../instrumentLibrary'
+import MasterDeskItem from '../desk/Master'
 
-class DeskInterface extends Component {
+class DeskWorkspace extends Component {
 	constructor(props) {
 		super(props)
 		this.clearActiveItem = this.clearActiveItem.bind(this)
@@ -218,5 +218,5 @@ class DeskItem extends Component {
 	}
 }
 
-export default connect(({gui, desk, instruments}) => ({gui, desk, instruments}))(DeskInterface)
+export default connect(({gui, desk, instruments}) => ({gui, desk, instruments}))(DeskWorkspace)
 

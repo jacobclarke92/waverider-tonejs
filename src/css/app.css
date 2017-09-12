@@ -31,17 +31,20 @@
 	}
 
 		.header-inner {
+			height: 100%;
 			display: flex;
-			align-items: middle;
+			align-items: center;
 			justify-content: space-between;
 		}
 
 			.header-left {
-
+				display: flex;
+				align-items: center;
 			}
 
 			.header-right {
-
+				display: flex;
+				align-items: center;
 			}
 
 
@@ -65,7 +68,7 @@
 			box-sizing: border-box;
 		}
 
-		.stage-container {
+		.workspace-container {
 			position: absolute;
 			top: 0;
 			left: var(--sidebar-width);
@@ -87,9 +90,19 @@
 
 				.navbar-inner {
 					margin: var(--padding-xs);
+					display: flex;
+					justify-content: space-between;
 				}
 
-			.stage {
+					.navbar-left {
+
+					}
+
+					.navbar-right {
+
+					}
+
+			.workspace {
 				position: absolute;
 				top: var(--navbar-height);
 				left: 0;

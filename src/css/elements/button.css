@@ -4,7 +4,8 @@ input[type="button"],
 input[type="submit"] {
 
 	margin: 0;
-	padding: var(--padding-s) var(--padding-m);
+	padding: var(--padding-xs) var(--padding-s);
+	height: 3rem;
 	color: var(--white);
 	background-color: var(--shade-300);
 	outline: none;
@@ -16,6 +17,24 @@ input[type="submit"] {
 
 	&:hover {
 		background-color: var(--shade-350);
+	}
+
+	&.icon-button {
+		width: 3.6rem;
+		height: 3.6rem;
+		padding: 0;
+		& svg {
+			width: 100%;
+			height: 100%;
+		}
+	}
+
+	&.active,
+	&.button-primary {
+		background-color: var(--primary);
+		&:hover {
+			background-color: color(var(--primary) blackness(-30%));
+		}
 	}
 
 	& + button,
