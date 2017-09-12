@@ -71,6 +71,12 @@ export default class Point {
 		return this;
 	}
 
+	round(amount = 1) {
+		this.x = amount * Math.round(this.x / amount)
+		this.y = amount * Math.round(this.y / amount)
+		return this;
+	}
+
 	distance(point) {
 		return Math.sqrt(Math.pow(point.x - this.x, 2) + Math.pow(point.y - this.y, 2));
 	}
