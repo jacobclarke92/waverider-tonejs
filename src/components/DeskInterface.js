@@ -61,19 +61,16 @@ class DeskInterface extends Component {
 		const pointer = new Point(getMousePosition(event))
 		const stagePointer = new Point(getRelativeMousePosition(event, this.interface))
 		
-		this.setState({
-			pointer,
-			stagePointer,
-		})
+		this.setState({pointer, stagePointer})
+
 
 		const { mouseDown, mouseMoved, mouseDownPosition, mouseDownTargetOffset, mouseDownPan, dragTarget, overIO } = this.state
 
-		// enforce a minimum distance before allowing panning
-		if(mouseDown && !mouseMoved && pointer.distance(mouseDownPosition) < 10) return true
-
-		this.setState({
-			mouseMoved: true
-		})
+		// enforce a minimum distance before allowing any kind of movement
+		if(!mouseMoved) {
+			if(mouseDown && pointer.distance(mouseDownPosition) < 10) return true
+			else this.setState({mouseMoved: true})
+		}
 
 		if(mouseDown) {
 			if(dragTarget) {
@@ -175,12 +172,13 @@ class DeskInterface extends Component {
 
 	render() {
 		const { desk, instruments } = this.props
-		const { pan } = this.state
+		const { pan, dragTarget, mouseDown, mouseMoved } = this.state
+		const panning = mouseDown && mouseMoved && !dragTarget
 		const connections = getDeskWires()
 		return (
 			<div 
 				ref={elem => this.container = elem} 
-				className="desk-interface-container"
+				className={classname('desk-interface-container', {panning})}
 				onMouseMove={this.handleMouseMove}
 				onMouseDown={this.handlePointerDown} 
 				onMouseUp={this.handlePointerUp}>
@@ -194,6 +192,7 @@ class DeskInterface extends Component {
 						<DeskItem 
 							key={deskItem.id} 
 							deskItem={deskItem}
+							dragging={dragTarget && dragTarget.id === deskItem.id}
 							onPointerDown={(e, elem) => this.handleItemPointerDown(e, elem, deskItem)}
 							onPointerUp={(e, elem) => this.handleItemPointerUp(e, elem, deskItem)}
 							onOutIO={event => this.handleOutIO(event)}

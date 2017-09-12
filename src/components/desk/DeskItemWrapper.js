@@ -19,7 +19,7 @@ export default class DeskItemWrapper extends Component {
 	}
 
 	render() {
-		const { children, deskItem = {} } = this.props
+		const { children, deskItem = {}, dragging } = this.props
 		const child = Children.only(children)
 		const { className, styles = {} } = child.props
 
@@ -30,7 +30,7 @@ export default class DeskItemWrapper extends Component {
 
 		return cloneElement(child, {
 			ref: elem => this.deskItemElem = elem,
-			className: classnames(className, 'desk-item'),
+			className: classnames(className, 'desk-item', {dragging}),
 			style: {...styles, ...wrapperStyles},
 			onMouseDown: e => this.handleMouseDown(e, child.props),
 			onMouseUp: e => this.handleMouseUp(e, child.props),

@@ -3,6 +3,10 @@
 	border: 1px solid var(--white);
 	box-sizing: border-box;
 	background: linear-gradient(to bottom, var(--shade-950) 0%, var(--shade-750) 100%);
+
+	&.dragging {
+		cursor: move;
+	}
 }
 
 .desk-item.master {
