@@ -2,7 +2,7 @@ import { MembraneSynth, PolySynth, now } from 'tone'
 import _debounce from 'lodash/throttle'
 import { paramUpdateDebounce, voicesUpdateDebounce } from '../constants/timings'
 import { checkDifferenceAny, checkDifferenceAll } from '../utils/lifecycleUtils'
-import { allInstrumentDefaults, defaultEnvelope } from '../instrumentLibrary'
+import { allInstrumentDefaults, defaultEnvelope, envelopeParams, voicesParam, oscTypeParam } from '../constants/params'
 import { noteNumberToName } from '../utils/noteUtils'
 import MembraneSynthEditor from '../components/instruments/MembraneSynth'
 
@@ -62,7 +62,7 @@ export const defaultValue = {
 	instrument: {
 		voices: 1,
 		pitchDecay: 0.05,
-		octaves: 10,
+		octaves: 6,
 		oscillator: {type: 'sine'},
 		envelope: {
 			attack: 0.001,
@@ -74,10 +74,33 @@ export const defaultValue = {
 	},
 }
 
+export const params = [
+	voicesParam,
+	oscTypeParam,
+	{
+		label: 'Pitch Decay',
+		path: 'pitchDecay',
+		defaultValue: 0.05,
+		min: 0,
+		max: 1,
+		step: 0.02,
+	},
+	{
+		label: 'Octaves',
+		path: 'octaves',
+		defaultValue: 6,
+		min: 0,
+		max: 12,
+		step: 1,
+	},
+	...envelopeParams,
+]
+
 export default {
 	name: 'Membrane Synth',
 	slug: 'membraneSynth',
 	Editor: MembraneSynthEditor,
 	Instrument: MembraneSynthInstrument,
-	defaultValue,	
+	defaultValue,
+	params,
 }

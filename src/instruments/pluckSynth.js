@@ -2,7 +2,7 @@ import { PluckSynth, PolySynth, now } from 'tone'
 import _debounce from 'lodash/throttle'
 import { paramUpdateDebounce, voicesUpdateDebounce } from '../constants/timings'
 import { checkDifferenceAny, checkDifferenceAll } from '../utils/lifecycleUtils'
-import { allInstrumentDefaults, defaultEnvelope } from '../instrumentLibrary'
+import { allInstrumentDefaults, defaultEnvelope, voicesParam } from '../constants/params'
 import PluckSynthEditor from '../components/instruments/PluckSynth'
 
 export class PluckSynthInstrument {
@@ -65,6 +65,34 @@ export const defaultValue = {
 		resonance: 0.9,
 	},
 }
+
+export const params = [
+	voicesParam,
+	{
+		label: 'Attack Noise',
+		path: 'attackNoise',
+		defaultValue: 1,
+		min: 0.1,
+		max: 20,
+		step: 0.1,
+	},
+	{
+		label: 'Dampening',
+		path: 'dampening',
+		defaultValue: 100,
+		min: 100,
+		max: 8000,
+		step: 10,
+	},
+	{
+		label: 'Resonance',
+		path: 'resonance',
+		defaultValue: 1,
+		min: 0.1,
+		max: 20,
+		step: 0.1,
+	},
+]
 
 export default {
 	name: 'Pluck Synth',

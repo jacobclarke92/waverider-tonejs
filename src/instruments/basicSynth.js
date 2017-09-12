@@ -2,7 +2,7 @@ import { Synth, PolySynth, now } from 'tone'
 import _debounce from 'lodash/throttle'
 import { paramUpdateDebounce, voicesUpdateDebounce } from '../constants/timings'
 import { checkDifferenceAny, checkDifferenceAll } from '../utils/lifecycleUtils'
-import { allInstrumentDefaults, defaultEnvelope } from '../instrumentLibrary'
+import { allInstrumentDefaults, defaultEnvelope, envelopeParams, voicesParam, oscTypeParam } from '../constants/params'
 import { noteNumberToName } from '../utils/noteUtils'
 import BasicSynthDeskItem from '../components/desk/BasicSynth'
 import BasicSynthEditor from '../components/instruments/BasicSynth'
@@ -68,11 +68,26 @@ export const defaultValue = {
 	},
 }
 
+export const params = [
+	voicesParam,
+	oscTypeParam,
+	{
+		label: 'Portamento',
+		path: 'portamento',
+		defaultValue: 1,
+		min: 0,
+		max: 1,
+		step: 0.02,
+	},
+	...envelopeParams,
+]
+
 export default {
 	name: 'Basic Synth',
 	slug: 'basicSynth',
-	defaultValue,	
 	Instrument: BasicSynthInstrument,
 	Editor: BasicSynthEditor,
 	DeskItem: BasicSynthDeskItem,
+	defaultValue,
+	params,
 }

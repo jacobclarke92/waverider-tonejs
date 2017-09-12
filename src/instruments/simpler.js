@@ -9,7 +9,7 @@ import { checkDifferenceAny, checkDifferenceAll } from '../utils/lifecycleUtils'
 import { updateInstrument } from '../reducers/instruments'
 
 import SimplerEditor from '../components/instruments/Simpler'
-import { allInstrumentDefaults, defaultEnvelope } from '../instrumentLibrary'
+import { allInstrumentDefaults, defaultEnvelope, envelopeParams, voicesParam } from '../constants/params'
 
 export class SimplerInstrument {
 	constructor(value = {}, dispatch) {
@@ -168,10 +168,61 @@ export const defaultValue = {
 	},
 }
 
+export const params = [
+	voicesParam,
+	{
+		label: 'Base Note',
+		path: 'baseNote',
+		defaultValue: 0,
+		min: 0,
+		max: 128,
+		step: 1,
+		type: 'note',
+	},
+	{
+		label: 'Cents',
+		path: 'cents',
+		defaultValue: 0,
+		min: -100,
+		max: 100,
+		step: 1,
+	},
+	{
+		label: 'Reverse',
+		path: 'reverse',
+		defaultValue: false,
+		type: 'boolean',
+	},
+	{
+		label: 'Loop',
+		path: 'loop',
+		defaultValue: false,
+		type: 'boolean',
+	},
+	{
+		label: 'Trim Start',
+		path: 'trim.start',
+		defaultValue: 0,
+		min: 0,
+		max: 1,
+		step: 0.001,
+	},
+	{
+		label: 'Trim End',
+		path: 'trim.end',
+		defaultValue: 1,
+		min: 0,
+		max: 1,
+		step: 0.001,
+	},
+	...envelopeParams,
+]
+
 export default {
 	name: 'Simpler',
 	slug: 'simpler',
 	Editor: SimplerEditor,
 	Instrument: SimplerInstrument,
-	defaultValue,	
+	defaultValue,
+	params,
 }
