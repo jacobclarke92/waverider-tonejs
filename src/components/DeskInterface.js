@@ -5,18 +5,26 @@ import { connect } from 'react-redux'
 
 import Point from '../Point'
 import { addKeyListener, removeKeyListener } from '../utils/keyUtils'
+import { getRelativeMousePosition, getMousePosition } from '../utils/screenUtils'
 import { FX, BUS, INSTRUMENT, MASTER, LFO } from '../constants/deskItemTypes'
+import { DESK } from '../constants/uiViews'
+import { moveDeskItem } from '../reducers/desk'
 import { getDeskWires } from '../deskController'
 import instrumentLibrary from '../instrumentLibrary'
+import MasterDeskItem from './desk/Master'
 
 class DeskInterface extends Component {
 	constructor(props) {
 		super(props)
 		this.clearActiveItem = this.clearActiveItem.bind(this)
 		this.removeActiveItem = this.removeActiveItem.bind(this)
-		this.handleMouseDown = this.handleMouseDown.bind(this)
-		this.handleMouseUp = this.handleMouseUp.bind(this)
-		this.handleMouseMove = _throttle(this.handleMouseMove.bind(this), 1000/60)
+		this.handlePointerDown = this.handlePointerDown.bind(this)
+		this.handlePointerUp = this.handlePointerUp.bind(this)
+		this.handleThrottledMouseMove = _throttle(this.handleThrottledMouseMove.bind(this), 1000/60)
+		this.handleMouseMove = e => {
+			e.persist()
+			this.handleThrottledMouseMove(e)
+		}
 		this.state = {
 			mouseDown: false,
 			mouseMoved: false,
@@ -29,6 +37,7 @@ class DeskInterface extends Component {
 			selectedWire: null,
 			selectedDeskItem: null,
 			dragTarget: null,
+			mouseDownTargetOffset: null,
 		}
 	}
 
@@ -44,20 +53,53 @@ class DeskInterface extends Component {
 		removeKeyListener('esc', this.clearActiveItem)
 	}
 
-	handleMouseMove(event) {
+	handleThrottledMouseMove(event) {
+		const { dispatch } = this.props
+		// const { snapping } = this.props.gui.viewState[DESK]
+		const pointer = new Point(getMousePosition(event))
+		const stagePointer = new Point(getRelativeMousePosition(event, this.interface))
+		
+		let placementPosition = stagePointer
+		// if(snapping) placementPosition = getSnapPosition(stagePointer);
+		
+		this.setState({
+			pointer,
+			stagePointer,
+			placementPosition,
+		})
+
+		const { mouseDown, mouseMoved, mouseDownPosition, mouseDownTargetOffset, dragTarget, overIO } = this.state
+
+		// enforce a minimum distance before allowing panning
+		if(mouseDown && !mouseMoved && pointer.distance(mouseDownPosition) < 10) return true
+
+		this.setState({
+			mouseMoved: true
+		})
+
+		if(mouseDown) {
+			if(dragTarget) {
+				if(overIO) {
+					console.log('mousemove IO');
+				}else{
+					dispatch(moveDeskItem(dragTarget, new Point(placementPosition).subtract(mouseDownTargetOffset)))
+				}
+			}
+		}
 
 	}
 
-	handleMouseDown(event) {
+	handlePointerDown(event) {
+		console.log('pointer down for stage')
 		this.setState({
 			mouseDown: true,
 			mouseMoved: false,
 			dragTarget: null,
-			mouseDownPosition: new Point(event.clientX, event.clientY),
+			mouseDownPosition: getMousePosition(event),
 		})
 	}
 
-	handleMouseUp(event) {
+	handlePointerUp(event) {
 		this.setState({
 			mouseDown: false,
 			dragTarget: null,
@@ -69,6 +111,51 @@ class DeskInterface extends Component {
 			selectedWire: null,
 			selectedDeskItem: null,
 		})
+	}
+
+	handleItemPointerDown(event, element, deskItem) {
+		console.log('pointer down for ', deskItem)
+		event.stopPropagation()
+		event.nativeEvent.stopImmediatePropagation()
+		this.setState({
+			mouseMoved: false,
+			mouseDown: true,
+			dragTarget: deskItem,
+			mouseDownPosition: getMousePosition(event),
+			mouseDownTargetOffset: getRelativeMousePosition(event, element),
+		})
+	}
+
+	handleItemPointerUp(event, element, deskItem) {
+		event.stopPropagation()
+		event.nativeEvent.stopImmediatePropagation()
+		if(!this.state.mouseMoved) {
+			event.stopPropagation();
+			this.setState({
+				selectedDeskItem: deskItem,
+				mouseDown: false,
+				dragTarget: null,
+				selectedWire: null,
+			})
+		}else{
+			this.setState({
+				mouseDown: false,
+				dragTarget: null,
+				selectedWire: null,
+			})
+		}
+	}
+
+	handleOutIO() {
+
+	}
+
+	handleOverIO(event, deskItem, wireType, ioType, label) {
+
+	}
+
+	handlePointerDownIO(event, deskItem, wireType, ioType) {
+
 	}
 
 	clearActiveItem() {
@@ -83,9 +170,26 @@ class DeskInterface extends Component {
 		const { desk, instruments } = this.props
 		const connections = getDeskWires()
 		return (
-			<div ref={elem => this.container = elem} className="desk-interface-container">
-				<div ref={elem => this.interface = elem} className="desk-interface" onMouseMove={e => this.handleMouseMove(e)}>
-					{desk.map(deskItem => <DeskItem key={deskItem.id} {...deskItem} />)}
+			<div 
+				ref={elem => this.container = elem} 
+				className="desk-interface-container"
+				onMouseMove={this.handleMouseMove}
+				onMouseDown={this.handlePointerDown} 
+				onMouseUp={this.handlePointerUp}>
+
+				<div ref={elem => this.interface = elem} className="desk-interface" >
+
+					{desk.map(deskItem => 
+						<DeskItem 
+							key={deskItem.id} 
+							deskItem={deskItem}
+							onPointerDown={(e, elem) => this.handleItemPointerDown(e, elem, deskItem)}
+							onPointerUp={(e, elem) => this.handleItemPointerUp(e, elem, deskItem)}
+							onOutIO={event => this.handleOutIO(event)}
+							onOverIO={(event, wireType, ioType, label) => this.handleOverIO(event, deskItem, wireType, ioType, label)} 
+							onPointerDownIO={(event, wireType, ioType) => this.handlePointerDownIO(event, deskItem, wireType, ioType)} />
+					)}
+
 				</div>
 			</div>
 		)
@@ -94,13 +198,15 @@ class DeskInterface extends Component {
 
 class DeskItem extends Component {
 	render() {
-		const { type, slug } = this.props
+		const { type, ownerType } = this.props.deskItem
 		let DeskComponent = null
-		if(type == INSTRUMENT) DeskComponent = instrumentLibrary[slug].DeskItem
+		if(type == MASTER) DeskComponent = MasterDeskItem
+		if(type == INSTRUMENT) DeskComponent = instrumentLibrary[ownerType].DeskItem
 		return (
-			<DeskComponent />
+			<DeskComponent {...this.props}  />
 		)
 	}
 }
 
-export default connect(({desk, instruments}) => ({desk, instruments}))(DeskInterface)
+export default connect(({gui, desk, instruments}) => ({gui, desk, instruments}))(DeskInterface)
+

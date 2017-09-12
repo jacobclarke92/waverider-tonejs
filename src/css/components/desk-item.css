@@ -5,7 +5,7 @@
 	background: linear-gradient(to bottom, var(--shade-950) 0%, var(--shade-750) 100%);
 }
 
-.desk-item-master {
+.desk-item.master {
 	width: 70px;
 	height: 70px;
 

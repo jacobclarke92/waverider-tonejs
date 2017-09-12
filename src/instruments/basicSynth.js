@@ -4,6 +4,7 @@ import { paramUpdateDebounce, voicesUpdateDebounce } from '../constants/timings'
 import { checkDifferenceAny, checkDifferenceAll } from '../utils/lifecycleUtils'
 import { allInstrumentDefaults, defaultEnvelope } from '../instrumentLibrary'
 import { noteNumberToName } from '../utils/noteUtils'
+import BasicSynthDeskItem from '../components/desk/BasicSynth'
 import BasicSynthEditor from '../components/instruments/BasicSynth'
 
 export class BasicSynthInstrument {
@@ -70,7 +71,8 @@ export const defaultValue = {
 export default {
 	name: 'Basic Synth',
 	slug: 'basicSynth',
-	Editor: BasicSynthEditor,
-	Instrument: BasicSynthInstrument,
 	defaultValue,	
+	Instrument: BasicSynthInstrument,
+	Editor: BasicSynthEditor,
+	DeskItem: BasicSynthDeskItem,
 }

@@ -8,13 +8,14 @@ export const DESK_ITEM_MOVE = 'DESK_ITEM_MOVE'
 export const DESK_CONNECT_WIRE = 'DESK_CONNECT_WIRE'
 export const DESK_DISCONNECT_WIRE = 'DESK_DISCONNECT_WIRE'
 
-export const deskSchema = '++id,name,ownerId,type,position'
+export const deskSchema = '++id,name,ownerId,ownerType,type,position'
 
 const initialState = [
 	{
 		id: 1,
 		name: 'Master',
 		ownerId: 'master',
+		ownerType: null,
 		type: DeskItemTypes.MASTER,
 		slug: 'master',
 		position: {
@@ -59,6 +60,8 @@ export default function(state = initialState, action) {
 				}
 				return item
 			})
+
+		case ADD_INSTRUMENT: return [...state, action.deskItem]
 	}
 	return state
 }
@@ -70,6 +73,8 @@ export const loadDesk = () => dispatch => getAll('desk')
 	})
 	.then(desk => dispatch({type: LOAD_DESK, desk}))
 	.catch(e => console.warn('Unable to load desk state', e))
+
+export const moveDeskItem = (deskItem, position) => ({type: DESK_ITEM_MOVE, id: deskItem.id, position})
 
 /**
  * @param  {String} wireType 	- either 'audio' or 'data'

@@ -17,3 +17,5 @@
 @import './components/knob.css';
 @import './components/properties-panel.css';
 @import './components/waveform.css';
+
+@import './views/desk.css'

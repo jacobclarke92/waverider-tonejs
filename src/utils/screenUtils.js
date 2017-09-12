@@ -42,14 +42,16 @@ window.addEventListener('resize', resizeCallback)
 
 
 export const getRect = elem => elem.getBoundingClientRect()
-export const getMousePosition = e => ({x: e.clientX, y: e.clientY})
+export const getMousePosition = e => ({
+	x: !!e.touches ? e.touches[0].pageX : e.pageX, 
+	y: !!e.touches ? e.touches[0].pageY : e.pageY,
+})
 export const getRelativeMousePosition = (e, elem, contain = true) => {
 	const rect = getRect(elem)
-	const mouseX = !!e.touches ? e.touches[0].pageX : e.pageX
-	const mouseY = !!e.touches ? e.touches[0].pageY : e.pageY
+	const mouse = getMousePosition(e)
 	const position = {
-		x: mouseX - rect.left,
-		y: mouseY - rect.top,
+		x: mouse.x - rect.left,
+		y: mouse.y - rect.top,
 	}
 	position.percent = {
 		x: position.x / rect.width,
