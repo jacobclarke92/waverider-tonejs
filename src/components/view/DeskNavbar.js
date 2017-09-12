@@ -11,7 +11,7 @@ class DeskNavbar extends Component {
 			<div className="navbar-inner">
 				<div className="navbar-left">
 					{Object.keys(instrumentLibrary).map(instrumentType => 
-						<button key={instrumentType} type="button" onClick={() => dispatch(addInstrument(instrumentType))}>
+						<button key={instrumentType} type="button" className="button-s" onClick={() => dispatch(addInstrument(instrumentType))}>
 							{'Add '+instrumentLibrary[instrumentType].name}
 						</button>
 					)}

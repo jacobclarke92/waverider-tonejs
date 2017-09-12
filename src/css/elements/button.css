@@ -4,8 +4,8 @@ input[type="button"],
 input[type="submit"] {
 
 	margin: 0;
-	padding: var(--padding-xs) var(--padding-s);
-	height: 3rem;
+	padding: var(--padding-s) var(--padding-m);
+	height: var(--button-m);
 	color: var(--white);
 	background-color: var(--shade-300);
 	outline: none;
@@ -27,6 +27,26 @@ input[type="submit"] {
 			width: 100%;
 			height: 100%;
 		}
+	}
+
+	&.button-xs {
+		height: var(--button-xs);
+		padding: var(--padding-xs) var(--padding-s);
+	}
+
+	&.button-s {
+		height: var(--button-s);
+		padding: var(--padding-xs) var(--padding-s);
+	}
+
+	&.button-l {
+		height: var(--button-l);
+		padding: var(--padding-s) var(--padding-m);
+	}
+
+	&.button-xl {
+		height: var(--button-xl);
+		padding: var(--padding-m) var(--padding-l);
 	}
 
 	&.active,

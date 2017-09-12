@@ -17,6 +17,12 @@
 	--font-size-l: 1.8rem;
 	--font-size-xl: 2.4rem;
 
+	--button-xs: 2.4rem;
+	--button-s: 3rem;
+	--button-m: 3.6rem;
+	--button-l: 4.2rem;
+	--button-xl: 4.8rem;
+
 	--primary: rgb(74, 143, 233);
 	--secondary: rgb(100, 182, 172);
 	--tertiary: rgb(231, 32, 31);
