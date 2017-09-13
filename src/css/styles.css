@@ -1,9 +1,9 @@
 @import './_variables.css';
+@import './_functions.css';
 @import './_utility.css';
 
 @import './app.css';
 @import './body.css';
-@import './utility.css';
 
 @import './elements/button.css';
 @import './elements/checkbox.css';

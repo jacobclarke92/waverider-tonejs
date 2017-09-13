@@ -43,11 +43,7 @@
         }
 
         .note-positions {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            @apply --cover;
             pointer-events: none;
             overflow: hidden;
 

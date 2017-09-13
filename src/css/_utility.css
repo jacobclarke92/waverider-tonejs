@@ -39,3 +39,13 @@
 .margin-l-m { margin-left: var(--margin-m); }
 .margin-l-l { margin-left: var(--margin-l); }
 .margin-l-xl { margin-left: var(--margin-xl); }
+
+.no-aliasing {
+	image-rendering: optimizeSpeed;
+	image-rendering: -moz-crisp-edges;
+	image-rendering: -o-crisp-edges;
+	image-rendering: -webkit-optimize-contrast;
+	image-rendering: pixelated;
+	image-rendering: optimize-contrast;
+	-ms-interpolation-mode: nearest-neighbor;
+}

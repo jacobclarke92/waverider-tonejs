@@ -1,9 +1,5 @@
 .dropzone {
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
+    @apply --cover;
 
     &:before,
     &:after {
@@ -14,11 +10,8 @@
 
     &:before {
         content: '';
+        @apply --cover;
         z-index: 98;
-        left: 0;
-        top: 0;
-        right: 0;
-        bottom: 0;
         background-color: rgba(0,0,0,0.5);
         border: 4px dashed white;
         transition: opacity 0.2s linear, background-color 0.2s linear;
