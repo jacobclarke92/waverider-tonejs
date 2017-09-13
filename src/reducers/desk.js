@@ -1,4 +1,4 @@
-import * as DeskItemTypes  from '../constants/deskItemTypes'
+import { deskItemTypeDefaults, MASTER, BUS, INSTRUMENT, FX, LFO } from '../constants/deskItemTypes'
 import { ADD_INSTRUMENT, REMOVE_INSTRUMENT } from './instruments'
 
 import { add, getAll, updateById } from '../api/db'
@@ -16,12 +16,13 @@ const initialState = [
 		name: 'Master',
 		ownerId: 'master',
 		ownerType: null,
-		type: DeskItemTypes.MASTER,
+		type: MASTER,
 		slug: 'master',
 		position: {
 			x: 500,
 			y: 0,
-		}
+		},
+		...deskItemTypeDefaults[MASTER],
 	},
 ]
 

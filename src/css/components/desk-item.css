@@ -1,64 +1,70 @@
-.desk-item {
+.desk-item-wrapper {
 	position: absolute;
-	border: 1px solid var(--white);
-	box-sizing: border-box;
-	background: linear-gradient(to bottom, var(--shade-950) 0%, var(--shade-750) 100%);
 
 	&.dragging {
 		cursor: move;
 	}
+}
 
-	& .vu-meter {
+	.desk-item {
 		position: absolute;
-		left: 0;
-		bottom: 0;
-		width: 100%;
-		height: 12px;
-		margin: -1px;
-		background: var(--vu-gradient-h);
+		z-index: 3;
 		border: 1px solid var(--white);
-	}
-}
+		box-sizing: border-box;
+		background: linear-gradient(to bottom, var(--shade-950) 0%, var(--shade-750) 100%);
 
-	.connection {
-		position: absolute;
-		width: 12px;
-		height: 12px;
-		border-radius: 100%;
-		transform: translate(-50%, -50%);
-		&.audio {
-			top: 50%;
+		& .vu-meter {
+			position: absolute;
 			left: 0;
-			background-color: var(--secondary);
-			&.output {
-				left: 100%;
-				background-color: color(var(--secondary) blackness(-35%));
-			}
-		}
-
-		&.data {
 			bottom: 0;
-			background-color: var(--tertiary);
-			&.output {
-				background-color: color(var(--tertiary) blackness(-35%));
-			}
+			width: 100%;
+			height: 12px;
+			margin: -1px;
+			background: var(--vu-gradient-h);
+			border: 1px solid var(--white);
 		}
 	}
 
-.desk-item.master {
-	width: 70px;
-	height: 70px;
+		.connection {
+			position: absolute;
+			z-index: 2;
+			width: 12px;
+			height: 12px;
+			border-radius: 100%;
+			transform: translate(-50%, -50%);
+			&.audio {
+				top: 50%;
+				left: 0;
+				background-color: var(--secondary);
+				&.output {
+					left: 100%;
+					background-color: color(var(--secondary) blackness(-35%));
+				}
+			}
 
-	& .icon {
-		position: absolute;
-		left: 50%;
-		top: calc(calc(100% - 12px) / 2);
-		transform: translate(-50%, -50%);
-		color: var(--shade-350);
+			&.data {
+				bottom: 0;
+				background-color: var(--tertiary);
+				&.output {
+					background-color: color(var(--tertiary) blackness(-35%));
+				}
+			}
+		}
+
+	.desk-item.master {
+		width: 70px;
+		height: 70px;
+
+		& .icon {
+			position: absolute;
+			left: 50%;
+			top: calc(calc(100% - 12px) / 2);
+			transform: translate(-50%, -50%);
+			color: var(--shade-350);
+		}
 	}
-}
 
-.desk-item.basic-synth {
-	width: 200px;
-	height: 70px;
-}
+	.desk-item.basic-synth {
+		width: 200px;
+		height: 70px;
+	}

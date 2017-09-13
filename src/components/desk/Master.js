@@ -6,7 +6,7 @@ export default class MasterDeskItem extends Component {
 	render() {
 		return (
 			<DeskItemWrapper {...this.props}>
-				<div className="master" onMouseDown={e => console.log('MasterDeskItem mouseDown')}>
+				<div className="desk-item master" onMouseDown={e => console.log('MasterDeskItem mouseDown')}>
 					<Icon name="volume-up" size="large" />
 					<div className="vu-meter">
 

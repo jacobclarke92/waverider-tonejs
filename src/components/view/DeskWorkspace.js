@@ -173,7 +173,7 @@ class DeskWorkspace extends Component {
 	}
 
 	render() {
-		const { desk, instruments } = this.props
+		const { desk = [], instruments = [] } = this.props
 		const { pan, dragTarget, mouseDown, mouseMoved } = this.state
 		const panning = mouseDown && mouseMoved && !dragTarget
 		const connections = getDeskWires()

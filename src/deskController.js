@@ -47,6 +47,7 @@ export function connectAudioWires(source, id, disconnectFirst = false) {
 
 export function getDeskWires() {
 	const { desk = [] } = store.getState()
+	if(!desk.length) return []
 	const connections = []
 	for(let fromItem of desk) {
 		if(fromItem.audioOutput) Object.keys(fromItem.audioOutputs).forEach(outputId => {
