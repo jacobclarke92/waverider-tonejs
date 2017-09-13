@@ -1,4 +1,4 @@
-import { MembraneSynth, PolySynth, now } from 'tone'
+import { MembraneSynth, PolySynth, Meter, now } from 'tone'
 import _debounce from 'lodash/throttle'
 import { paramUpdateDebounce, voicesUpdateDebounce } from '../constants/timings'
 import { checkDifferenceAny, checkDifferenceAll } from '../utils/lifecycleUtils'
@@ -15,6 +15,7 @@ export class MembraneSynthInstrument {
 		Object.keys(value).forEach(key => this[key] = value[key])
 		this.reinitSynth = _debounce(this.initSynth, voicesUpdateDebounce)
 		this.triggerUpdateVoiceParams = _debounce(this.updateVoiceParams, paramUpdateDebounce)
+		this.meter = new Meter()
 		this.initSynth(() => {
 			this.mounted = true
 			console.log('membraneSynth mounted', this)
@@ -37,6 +38,7 @@ export class MembraneSynthInstrument {
 		if(this.synth) this.synth.dispose()
 		this.synth = new PolySynth(voices, MembraneSynth).toMaster()
 		this.synth.set('volume', -12)
+		this.synth.connect(this.meter)
 		this.updateVoiceParams()
 		callback()
 	}

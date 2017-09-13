@@ -1,4 +1,4 @@
-import { Sampler, PolySynth, now } from 'tone'
+import { Sampler, PolySynth, Meter, now } from 'tone'
 import _debounce from 'lodash/throttle'
 import { paramUpdateDebounce, voicesUpdateDebounce } from '../constants/timings'
 
@@ -20,6 +20,7 @@ export class SimplerInstrument {
 		Object.keys(value).forEach(key => this[key] = value[key])
 		this.reinitSampler = _debounce(this.initSampler, voicesUpdateDebounce)
 		this.triggerUpdateVoiceParams = _debounce(this.updateVoiceParams, paramUpdateDebounce)
+		this.meter = new Meter()
 		this.initSampler(() => {
 			this.mounted = true
 			console.log('Simpler mounted', this)
@@ -56,6 +57,7 @@ export class SimplerInstrument {
 		this.loadAudioFile(fileHash, file => {
 			this.sampler = new PolySynth(voices, Sampler).toMaster()
 			this.sampler.set('volume', -12)
+			this.sampler.connect(this.meter)
 			this.updateAudioFile(file.getUrl(), () => {
 				this.updateVoiceParams()
 				callback()

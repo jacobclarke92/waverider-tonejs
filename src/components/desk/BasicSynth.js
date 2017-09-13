@@ -1,16 +1,16 @@
 import React, { Component } from 'react'
+
 import Icon from '../Icon'
+import VuMeter from './VuMeter'
 import DeskItemWrapper from './DeskItemWrapper'
 
 export default class BasicSynthDeskItem extends Component {
 	render() {
-		const { dataInput, dataOutput } = this.props.deskItem || {}
+		const { ownerId, type, dataInput, dataOutput } = this.props.deskItem || {}
 		return (
 			<DeskItemWrapper {...this.props}>
 				<div className="desk-item basic-synth">
-					<div className="vu-meter">
-
-					</div>
+					<VuMeter type={type} id={ownerId} />
 				</div>
 			</DeskItemWrapper>
 		)
