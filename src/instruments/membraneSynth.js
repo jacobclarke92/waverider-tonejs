@@ -5,6 +5,7 @@ import { checkDifferenceAny, checkDifferenceAll } from '../utils/lifecycleUtils'
 import { allInstrumentDefaults, defaultEnvelope, envelopeParams, voicesParam, oscTypeParam } from '../constants/params'
 import { noteNumberToName } from '../utils/noteUtils'
 import MembraneSynthEditor from '../components/instruments/MembraneSynth'
+import MembraneSynthDeskItem from '../components/desk/MembraneSynth'
 
 export class MembraneSynthInstrument {
 
@@ -103,6 +104,7 @@ export default {
 	slug: 'membraneSynth',
 	Editor: MembraneSynthEditor,
 	Instrument: MembraneSynthInstrument,
+	DeskItem: MembraneSynthDeskItem,
 	defaultValue,
 	params,
 }

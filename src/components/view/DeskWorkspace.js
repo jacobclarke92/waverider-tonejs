@@ -5,12 +5,13 @@ import { connect } from 'react-redux'
 
 import Point from '../../utils/Point'
 import { addKeyListener, removeKeyListener } from '../../utils/keyUtils'
-import { getRelativeMousePosition, getMousePosition } from '../../utils/screenUtils'
+import { getRelativeMousePosition, getMousePosition, getPositionWithinElem, getRect } from '../../utils/screenUtils'
 import { FX, BUS, INSTRUMENT, MASTER, LFO } from '../../constants/deskItemTypes'
 import { DESK } from '../../constants/uiViews'
 import { moveDeskItem } from '../../reducers/desk'
 import { getDeskWires } from '../../deskController'
 import instrumentLibrary from '../../instrumentLibrary'
+import Wire from '../desk/Wire'
 import MasterDeskItem from '../desk/Master'
 
 const snapGrid = 10
@@ -27,6 +28,7 @@ class DeskWorkspace extends Component {
 			e.persist()
 			this.handleThrottledMouseMove(e)
 		}
+		this.deskItemRefs = {}
 		this.state = {
 			mouseDown: false,
 			mouseMoved: false,
@@ -152,16 +154,46 @@ class DeskWorkspace extends Component {
 		}
 	}
 
-	handleOutIO() {
-
+	handlePinOut() {
+		this.setState({
+			overIO: false,
+			wireTo: null,
+			wireToValid: null,
+		});
 	}
 
-	handleOverIO(event, deskItem, wireType, ioType, label) {
-
+	handlePinOver(event, deskItem, { wireType, ioType, label }) {
+		this.setState({overPin: true})
+		if(this.state.wireFrom) {
+			const pinStagePosition = getPositionWithinElem(event.target, this.interface, {x: 0.5, y: 0.5})
+			const pinDeskItemPosition = new Point(pinStagePosition).subtract(new Point(deskItem.position))
+			this.setState({
+				wireToValid: this.state.wireType == wireType && this.state.ioType != ioType,
+				wireTo: {
+					deskItem,
+					position: pinStagePosition,
+					relativePosition: pinDeskItemPosition,
+				},
+			})
+		}
 	}
 
-	handlePointerDownIO(event, deskItem, wireType, ioType) {
-
+	handlePinPointerDown(event, deskItem, { wireType, ioType }) {
+		event.stopPropagation()
+		event.preventDefault()
+		event.nativeEvent.stopImmediatePropagation()
+		console.log('WIRE DOWN', deskItem, wireType, ioType)
+		const pinStagePosition = getPositionWithinElem(event.target, this.interface, {x: 0.5, y: 0.5})
+		const pinDeskItemPosition = new Point(pinStagePosition).subtract(new Point(deskItem.position))
+		this.setState({
+			wireType,
+			ioType,
+			wireFrom: {
+				deskItem,
+				position: pinStagePosition,
+				relativePosition: pinDeskItemPosition,
+			}
+		})
 	}
 
 	clearActiveItem() {
@@ -174,9 +206,10 @@ class DeskWorkspace extends Component {
 
 	render() {
 		const { desk = [], instruments = [] } = this.props
-		const { pan, dragTarget, mouseDown, mouseMoved } = this.state
+		const { pan, dragTarget, mouseDown, mouseMoved, stagePointer, wireFrom, wireTo, wireToValid } = this.state
 		const panning = mouseDown && mouseMoved && !dragTarget
 		const connections = getDeskWires()
+		if(!desk) return
 		return (
 			<div 
 				ref={elem => this.container = elem} 
@@ -192,15 +225,26 @@ class DeskWorkspace extends Component {
 
 					{desk.map(deskItem => 
 						<DeskItem 
-							key={deskItem.id} 
+							key={deskItem.id}
+							ref={elem => this.deskItemRefs[deskItem.id] = elem}
 							deskItem={deskItem}
+							wiring={!!wireFrom}
+							validWire={wireToValid}
 							dragging={dragTarget && dragTarget.id === deskItem.id}
 							onPointerDown={(e, elem) => this.handleItemPointerDown(e, elem, deskItem)}
 							onPointerUp={(e, elem) => this.handleItemPointerUp(e, elem, deskItem)}
-							onOutIO={event => this.handleOutIO(event)}
-							onOverIO={(event, wireType, ioType, label) => this.handleOverIO(event, deskItem, wireType, ioType, label)} 
-							onPointerDownIO={(event, wireType, ioType) => this.handlePointerDownIO(event, deskItem, wireType, ioType)} />
+							onPinOut={event => this.handlePinOut(event)}
+							onPinOver={(event, params) => this.handlePinOver(event, deskItem, params)} 
+							onPinPointerDown={(event, params) => this.handlePinPointerDown(event, deskItem, params)} />
 					)}
+
+					{wireFrom && 
+						<Wire
+							valid={wireToValid}
+							wireFrom={wireFrom}
+							wireTo={wireTo}
+							stagePointer={stagePointer} />
+					}
 
 				</div>
 			</div>

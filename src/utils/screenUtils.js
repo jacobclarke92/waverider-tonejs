@@ -42,6 +42,14 @@ window.addEventListener('resize', resizeCallback)
 
 
 export const getRect = elem => elem.getBoundingClientRect()
+export const getPositionWithinElem = (child, parent, childOrigin = {x: 0, y: 0}, parentOrigin = {x: 0, y: 0}) => {
+	const childRect = getRect(child)
+	const parentRect = getRect(parent)
+	return {
+		x: (childRect.left + childRect.width*childOrigin.x) - (parentRect.left + parentRect.width*parentOrigin.x),
+		y: (childRect.top + childRect.height*childOrigin.y) - (parentRect.top + parentRect.height*parentOrigin.y), 
+	}
+}
 export const getMousePosition = e => ({
 	x: !!e.touches ? e.touches[0].pageX : e.pageX, 
 	y: !!e.touches ? e.touches[0].pageY : e.pageY,

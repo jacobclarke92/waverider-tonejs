@@ -1,6 +1,7 @@
 import React, { Component, Children, cloneElement } from 'react'
 import classnames from 'classnames'
-import Connection from './Connection'
+import Pin from './Pin'
+import Icon from '../Icon'
 
 export default class DeskItemWrapper extends Component {
 
@@ -26,18 +27,24 @@ export default class DeskItemWrapper extends Component {
 	}
 
 	handleMouseDown(event, childProps) {
+		event.preventDefault()
 		this.props.onPointerDown(event, this.deskItemElem)
-		if(childProps.onMouseDown) childProps.onMouseDown(event)
 	}
 
 	handleMouseUp(event, childProps) {
 		this.props.onPointerUp(event, this.deskItemElem)
-		if(childProps.onMouseUp) childProps.onMouseUp(event)
+	}
+
+	handleDelete(event) {
+		if(confirm('Are you sure you want to delete this?')) {
+			console.log('okep delete now pls')
+		}
 	}
 
 	render() {
-		const { children, deskItem, dragging } = this.props
-		const { position, audioInput, audioOutput } = deskItem
+		const { children, deskItem, dragging, wiring, wireValid, onPinPointerDown, onPinOver, onPinOut } = this.props
+		const { name, position, audioInput, audioOutput } = deskItem
+
 		const wrapperStyles = {
 			transform: `translate(${position.x || 0}px, ${position.y || 0}px)`,
 			width: this.rect ? this.rect.width : 70,
@@ -47,19 +54,27 @@ export default class DeskItemWrapper extends Component {
 		const child = Children.only(children)
 		const { className, styles = {} } = child.props
 
-		const newChild = cloneElement(child, {
-			ref: elem => this.gotRef(elem),
-			onMouseDown: e => this.handleMouseDown(e, child.props),
-			onMouseUp: e => this.handleMouseUp(e, child.props),
-		})
+		const newChild = cloneElement(child, { ref: elem => this.gotRef(elem) })
+
+		const pinProps = { wiring, valid: wireValid, onPinOver, onPinOut, onPinPointerDown }
 
 		return (
 			<div 
 				className={classnames('desk-item-wrapper', {dragging})}
-				style={wrapperStyles}>
+				style={wrapperStyles}
+				onMouseDown={e => this.handleMouseDown(e, child.props)}
+				onMouseUp={e => this.handleMouseUp(e, child.props)}>
+
 				{newChild}
-				{audioInput && <Connection type="audio" flow="input" />}
-				{audioOutput && <Connection type="audio" flow="output" />}
+				{audioInput && <Pin wireType="audio" ioType="input" {...pinProps} />}
+				{audioOutput && <Pin wireType="audio" ioType="output" {...pinProps} />}
+				<div className="desk-item-header">
+					<div className="desk-item-icon"><Icon name="volume-up" size={16} /></div>
+					<div className="desk-item-title">{name}</div>
+					<div className="desk-item-icon"><Icon name="edit" size={16} /></div>
+					<div className="desk-item-icon" onClick={(e) => this.handleDelete(e)}><Icon name="close" size={16} /></div>
+				</div>
+
 			</div>
 		)
 	}

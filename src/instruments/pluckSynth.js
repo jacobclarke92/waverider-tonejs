@@ -4,6 +4,7 @@ import { paramUpdateDebounce, voicesUpdateDebounce } from '../constants/timings'
 import { checkDifferenceAny, checkDifferenceAll } from '../utils/lifecycleUtils'
 import { allInstrumentDefaults, defaultEnvelope, voicesParam } from '../constants/params'
 import PluckSynthEditor from '../components/instruments/PluckSynth'
+import PluckSynthDeskItem from '../components/desk/PluckSynth'
 
 export class PluckSynthInstrument {
 
@@ -101,5 +102,6 @@ export default {
 	slug: 'pluckSynth',
 	Editor: PluckSynthEditor,
 	Instrument: PluckSynthInstrument,
+	DeskItem: PluckSynthDeskItem,
 	defaultValue,	
 }
