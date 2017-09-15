@@ -1,7 +1,7 @@
 .wire {
 	position: absolute;
-	border: 1px solid red;
 	fill: none;
 	stroke: white;
 	overflow: visible;
+	/* border: 1px solid red; */
 }
