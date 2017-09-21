@@ -2,6 +2,7 @@ import _find from 'lodash/find'
 import _cloneDeep from 'lodash/cloneDeep'
 import { getEffectInstance } from './effectsController'
 import { getInstrumentInstance } from './instrumentsController'
+import { DESK_CONNECT_WIRE, DESK_DISCONNECT_WIRE } from './reducers/desk'
 
 let store = null
 let oldDesk = []
@@ -14,9 +15,20 @@ export function init(_store) {
 function handleUpdate() {
 	const { lastAction, desk } = store.getState()
 	switch(lastAction.type) {
-
+		case DESK_CONNECT_WIRE: handleNewConnection(action); break
+		case DESK_CONNECT_WIRE: handleRemoveConnection(action); break
 	}
 	oldDesk = _cloneDeep(desk)
+}
+
+function handleNewConnection(action) {
+	return
+	// connectAudioWires(...)
+}
+
+function handleRemoveConnection(action) {
+	return
+	// handleRemoveConnection(...)
 }
 
 export function connectAudioWires(source, id, disconnectFirst = false) {
