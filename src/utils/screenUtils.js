@@ -1,5 +1,6 @@
 import _debounce from 'lodash/debounce'
 import { clamp } from './mathUtils'
+import { isNumber } from './typeUtils'
 
 let debounce = 100 //ms
 
@@ -43,6 +44,8 @@ window.addEventListener('resize', resizeCallback)
 
 export const getRect = elem => elem.getBoundingClientRect()
 export const getPositionWithinElem = (child, parent, childOrigin = {x: 0, y: 0}, parentOrigin = {x: 0, y: 0}) => {
+	if(isNumber(childOrigin)) childOrigin = {x: childOrigin, y: childOrigin}
+	if(isNumber(parentOrigin)) parentOrigin = {x: parentOrigin, y: parentOrigin}
 	const childRect = getRect(child)
 	const parentRect = getRect(parent)
 	return {

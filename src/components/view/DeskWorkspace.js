@@ -173,7 +173,7 @@ class DeskWorkspace extends Component {
 	handlePinOver(event, deskItem, { wireType, ioType, label }) {
 		this.setState({overPin: true})
 		if(this.state.wireFrom) {
-			const pinStagePosition = getPositionWithinElem(event.target, this.interface, {x: 0.5, y: 0.5})
+			const pinStagePosition = getPositionWithinElem(event.target, this.interface, 0.5)
 			const pinDeskItemPosition = new Point(pinStagePosition).subtract(new Point(deskItem.position))
 			this.setState({
 				wireToValid: this.state.wireType == wireType && this.state.ioType != ioType,
