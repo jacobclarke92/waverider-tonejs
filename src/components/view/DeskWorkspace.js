@@ -108,6 +108,7 @@ class DeskWorkspace extends Component {
 	}
 
 	handlePointerUp(event) {
+		console.log('pointer up for stage')
 		this.setState({
 			mouseDown: false,
 			dragTarget: null,
@@ -135,6 +136,7 @@ class DeskWorkspace extends Component {
 	}
 
 	handleItemPointerUp(event, element, deskItem) {
+		console.log('pointer up for desk item')
 		event.stopPropagation()
 		event.nativeEvent.stopImmediatePropagation()
 		if(!this.state.mouseMoved) {
@@ -146,10 +148,16 @@ class DeskWorkspace extends Component {
 				selectedWire: null,
 			})
 		}else{
+			if(this.state.wireToValid) {
+				console.log('PLS CREATE WIRE')
+			}
 			this.setState({
 				mouseDown: false,
 				dragTarget: null,
 				selectedWire: null,
+				wireFrom: null,
+				wireTo: null,
+				wireToValid: null,
 			})
 		}
 	}
@@ -240,6 +248,7 @@ class DeskWorkspace extends Component {
 
 					{wireFrom && 
 						<Wire
+							active
 							valid={wireToValid}
 							wireFrom={wireFrom}
 							wireTo={wireTo}

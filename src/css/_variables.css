@@ -26,6 +26,8 @@
 	--primary: rgb(74, 143, 233);
 	--secondary: rgb(100, 182, 172);
 	--tertiary: rgb(246, 180, 145);
+	--success: rgb(130, 200, 0);
+	--failure: rgb(230, 40, 50);
 
 	--primary-dark: color(var(--primary) blackness(65%));
 

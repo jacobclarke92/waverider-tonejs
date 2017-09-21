@@ -4,7 +4,7 @@ import Point from '../../utils/Point'
 
 export default class Wire extends Component {
 	render() {
-		const { wireFrom, wireTo, valid, stagePointer } = this.props
+		const { wireFrom, wireTo, valid, active, stagePointer } = this.props
 
 		// Absolute positions in stage
 		const fromPos = new Point(wireFrom.deskItem.position).add(new Point(wireFrom.relativePosition))
@@ -59,8 +59,8 @@ export default class Wire extends Component {
 		}
 
 		return (
-			<svg className={classname('wire', {valid})} viewBox={`0 0 ${width} ${height}`} style={styles}>
-				<path d={path} strokeWidth={3} />
+			<svg className={classname('wire', {valid, active})} viewBox={`0 0 ${width} ${height}`} style={styles}>
+				<path d={path} strokeWidth={3} stroke="currentColor" />
 			</svg>
 		)
 	}

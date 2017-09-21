@@ -42,7 +42,7 @@ export default class DeskItemWrapper extends Component {
 	}
 
 	render() {
-		const { children, deskItem, dragging, wiring, wireValid, onPinPointerDown, onPinOver, onPinOut } = this.props
+		const { children, deskItem, dragging, wiring, validWire, onPinPointerDown, onPinOver, onPinOut } = this.props
 		const { name, position, audioInput, audioOutput } = deskItem
 
 		const wrapperStyles = {
@@ -56,7 +56,7 @@ export default class DeskItemWrapper extends Component {
 
 		const newChild = cloneElement(child, { ref: elem => this.gotRef(elem) })
 
-		const pinProps = { wiring, valid: wireValid, onPinOver, onPinOut, onPinPointerDown }
+		const pinProps = { wiring, valid: validWire, onPinOver, onPinOut, onPinPointerDown }
 
 		return (
 			<div 
