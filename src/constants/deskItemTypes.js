@@ -10,6 +10,8 @@ export const deskItemTypeDefaults = {
 		audioOutput: false,
 		dataInput: false,
 		dataOutput: false,
+		editable: false,
+		removeable: false,
 	},
 	[BUS]: {
 		audioInput: true,
@@ -17,6 +19,8 @@ export const deskItemTypeDefaults = {
 		audioOutputs: {},
 		dataInput: false,
 		dataOutput: false,
+		editable: false,
+		removeable: true,
 	},
 	[INSTRUMENT]: {
 		audioInput: false,
@@ -24,6 +28,8 @@ export const deskItemTypeDefaults = {
 		audioOutputs: {},
 		dataInput: true,
 		dataOutput: false,
+		editable: true,
+		removeable: true,
 	},
 	[FX]: {
 		audioInput: true,
@@ -31,6 +37,8 @@ export const deskItemTypeDefaults = {
 		audioOutputs: {},
 		dataInput: true,
 		dataOutput: false,
+		editable: true,
+		removeable: true,
 	},
 	[LFO]: {
 		audioInput: false,
@@ -38,5 +46,7 @@ export const deskItemTypeDefaults = {
 		dataInput: false,
 		dataOutput: true,
 		dataOutputs: {},
+		editable: true,
+		removeable: true,
 	},
 }

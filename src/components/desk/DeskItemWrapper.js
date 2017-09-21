@@ -8,6 +8,10 @@ export default class DeskItemWrapper extends Component {
 	static defaultProps = {
 		deskItem: {},
 		dragging: false,
+		editable: true,
+		removeable: true,
+		onEdit: () => {},
+		onRemove: () => {},
 		onPointerDown: () => {},
 		onPointerUp: () => {}
 	}
@@ -35,14 +39,14 @@ export default class DeskItemWrapper extends Component {
 		this.props.onPointerUp(event, this.deskItemElem)
 	}
 
-	handleDelete(event) {
+	handleRemove(event) {
 		if(confirm('Are you sure you want to delete this?')) {
-			console.log('okep delete now pls')
+			this.props.onRemove()
 		}
 	}
 
 	render() {
-		const { children, deskItem, dragging, wiring, validWire, onPinPointerDown, onPinOver, onPinOut } = this.props
+		const { children, deskItem, dragging, wiring, validWire, editable, removeable, onEdit, onPinPointerDown, onPinPointerUp, onPinOver, onPinOut } = this.props
 		const { name, position, audioInput, audioOutput } = deskItem
 
 		const wrapperStyles = {
@@ -56,7 +60,7 @@ export default class DeskItemWrapper extends Component {
 
 		const newChild = cloneElement(child, { ref: elem => this.gotRef(elem) })
 
-		const pinProps = { wiring, valid: validWire, onPinOver, onPinOut, onPinPointerDown }
+		const pinProps = { wiring, valid: validWire, onPinOver, onPinOut, onPinPointerDown, onPinPointerUp }
 
 		return (
 			<div 
@@ -71,8 +75,8 @@ export default class DeskItemWrapper extends Component {
 				<div className="desk-item-header">
 					<div className="desk-item-icon"><Icon name="volume-up" size={16} /></div>
 					<div className="desk-item-title">{name}</div>
-					<div className="desk-item-icon"><Icon name="edit" size={16} /></div>
-					<div className="desk-item-icon" onClick={(e) => this.handleDelete(e)}><Icon name="close" size={16} /></div>
+					{editable && <div className="desk-item-icon" onClick={e => onEdit()}><Icon name="edit" size={16} /></div>}
+					{removeable && <div className="desk-item-icon" onClick={e => this.handleRemove(e)}><Icon name="close" size={16} /></div>}
 				</div>
 
 			</div>

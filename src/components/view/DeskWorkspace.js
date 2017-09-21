@@ -238,6 +238,8 @@ class DeskWorkspace extends Component {
 							deskItem={deskItem}
 							wiring={!!wireFrom}
 							validWire={wireToValid}
+							editable={deskItem.editable}
+							removeable={deskItem.removeable}
 							dragging={dragTarget && dragTarget.id === deskItem.id}
 							onPointerDown={(e, elem) => this.handleItemPointerDown(e, elem, deskItem)}
 							onPointerUp={(e, elem) => this.handleItemPointerUp(e, elem, deskItem)}
