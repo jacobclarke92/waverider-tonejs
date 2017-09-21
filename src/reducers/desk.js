@@ -87,6 +87,7 @@ export const moveDeskItem = (deskItem, position) => ({type: DESK_ITEM_MOVE, id: 
  * @return {Object} 			Returns reducer action
  */
 export function connectWire(wireType, output, input, outputNode, inputNode) {
+	// check that connection hasn't been made yet (duplicate) then dispatch action
 	return {
 		type: DESK_CONNECT_WIRE, 
 		output, 

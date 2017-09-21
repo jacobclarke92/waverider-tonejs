@@ -148,9 +148,6 @@ class DeskWorkspace extends Component {
 				selectedWire: null,
 			})
 		}else{
-			if(this.state.wireToValid) {
-				console.log('PLS CREATE WIRE')
-			}
 			this.setState({
 				mouseDown: false,
 				dragTarget: null,
@@ -160,14 +157,6 @@ class DeskWorkspace extends Component {
 				wireToValid: null,
 			})
 		}
-	}
-
-	handlePinOut() {
-		this.setState({
-			overIO: false,
-			wireTo: null,
-			wireToValid: null,
-		});
 	}
 
 	handlePinOver(event, deskItem, { wireType, ioType, label }) {
@@ -184,6 +173,14 @@ class DeskWorkspace extends Component {
 				},
 			})
 		}
+	}
+
+	handlePinOut() {
+		this.setState({
+			overIO: false,
+			wireTo: null,
+			wireToValid: null,
+		});
 	}
 
 	handlePinPointerDown(event, deskItem, { wireType, ioType }) {
@@ -204,6 +201,26 @@ class DeskWorkspace extends Component {
 		})
 	}
 
+	handlePinPointerUp(event, deskItem, params) {
+		event.stopPropagation()
+		event.preventDefault()
+		event.nativeEvent.stopImmediatePropagation()
+		if(this.state.wireToValid) {
+			console.log('PLS CREATE WIRE')
+			console.log('wireFrom', this.state.wireFrom)
+			console.log('wireTo', this.state.wireTo)
+			console.log('params', params)
+		}
+		this.setState({
+			mouseDown: false,
+			dragTarget: null,
+			selectedWire: null,
+			wireFrom: null,
+			wireTo: null,
+			wireToValid: null,
+		})
+	}
+
 	clearActiveItem() {
 
 	}
@@ -217,7 +234,7 @@ class DeskWorkspace extends Component {
 		const { pan, dragTarget, mouseDown, mouseMoved, stagePointer, wireFrom, wireTo, wireToValid } = this.state
 		const panning = mouseDown && mouseMoved && !dragTarget
 		const connections = getDeskWires()
-		if(!desk) return
+		// console.log(connections)
 		return (
 			<div 
 				ref={elem => this.container = elem} 
@@ -245,7 +262,8 @@ class DeskWorkspace extends Component {
 							onPointerUp={(e, elem) => this.handleItemPointerUp(e, elem, deskItem)}
 							onPinOut={event => this.handlePinOut(event)}
 							onPinOver={(event, params) => this.handlePinOver(event, deskItem, params)} 
-							onPinPointerDown={(event, params) => this.handlePinPointerDown(event, deskItem, params)} />
+							onPinPointerDown={(event, params) => this.handlePinPointerDown(event, deskItem, params)}
+							onPinPointerUp={(event, params) => this.handlePinPointerUp(event, deskItem, params)} />
 					)}
 
 					{wireFrom && 
