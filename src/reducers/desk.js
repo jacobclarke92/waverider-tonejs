@@ -1,3 +1,4 @@
+import { isArray } from '../utils/typeUtils'
 import { deskItemTypeDefaults, MASTER, BUS, INSTRUMENT, FX, LFO } from '../constants/deskItemTypes'
 import { ADD_INSTRUMENT, REMOVE_INSTRUMENT } from './instruments'
 
@@ -72,7 +73,7 @@ export const loadDesk = () => dispatch => getAll('desk')
 		if(desk.length > 0) return desk
 		return add('desk', initialState[0])
 	})
-	.then(desk => dispatch({type: LOAD_DESK, desk}))
+	.then(desk => dispatch({type: LOAD_DESK, desk: isArray(desk) ? desk : [desk]}))
 	.catch(e => console.warn('Unable to load desk state', e))
 
 export const moveDeskItem = (deskItem, position) => ({type: DESK_ITEM_MOVE, id: deskItem.id, position})
