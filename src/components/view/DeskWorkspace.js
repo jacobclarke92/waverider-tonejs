@@ -206,10 +206,12 @@ class DeskWorkspace extends Component {
 		event.preventDefault()
 		event.nativeEvent.stopImmediatePropagation()
 		if(this.state.wireToValid) {
+			const wireFrom = params.ioType == 'input' ? this.state.wireFrom : this.state.wireTo
+			const wireTo = params.ioType == 'input' ? this.state.wireTo : this.state.wireFrom
 			console.log('PLS CREATE WIRE')
-			console.log('wireFrom', this.state.wireFrom)
-			console.log('wireTo', this.state.wireTo)
 			console.log('params', params)
+			console.log('wireFrom', wireFrom, wireFrom.deskItem)
+			console.log('wireTo', wireTo, wireTo.deskItem)
 		}
 		this.setState({
 			mouseDown: false,
