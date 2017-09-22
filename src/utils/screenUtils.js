@@ -18,7 +18,7 @@ let screenHeight = getWindowHeight()
 document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock || document.webkitExitPointerLock
 export const hasPointerLock = () => ('pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document)
 export const exitPointerLock = () => document.exitPointerLock()
-export function requestPointerLock(element) {
+export const requestPointerLock = element => {
 	if(!element) return
 	element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock
 	element.requestPointerLock()
@@ -26,7 +26,7 @@ export function requestPointerLock(element) {
 
 export const addResizeCallback = func => resizeCallbacks.push(func)
 export const triggerResize = () => _resizeCallback()
-export function removeResizeCallback(func) {
+export const removeResizeCallback = func => {
 	const index = resizeCallbacks.indexOf(func)
 	if(index >= 0) resizeCallbacks.splice(index, 1)
 }
