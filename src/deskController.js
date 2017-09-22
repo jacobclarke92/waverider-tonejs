@@ -15,8 +15,8 @@ export function init(_store) {
 function handleUpdate() {
 	const { lastAction, desk } = store.getState()
 	switch(lastAction.type) {
-		case DESK_CONNECT_WIRE: handleNewConnection(action); break
-		case DESK_CONNECT_WIRE: handleRemoveConnection(action); break
+		case DESK_CONNECT_WIRE: handleNewConnection(lastAction); break
+		case DESK_DISCONNECT_WIRE: handleRemoveConnection(lastAction); break
 	}
 	oldDesk = _cloneDeep(desk)
 }
@@ -68,10 +68,16 @@ export function getDeskWires() {
 			if(toItem) connections.push({
 				type: 'audio',
 				id: fromItem.ownerId+'___'+toItem.ownerId,
-				from: {x: fromItem.position.x + wire.outputPosition.x, y: fromItem.position.y + wire.outputPosition.y},
-				to: {x: toItem.position.x + wire.inputPosition.x, y: toItem.position.y + wire.inputPosition.y},
-				outputOwnerId: fromItem.ownerId,
-				inputOwnerId: toItem.ownerId,
+				wireFrom: {
+					deskItem: fromItem,
+					position: {...wire.outputPosition},
+					relativePosition: {...wire.outputRelativePosition},
+				},
+				wireTo: {
+					deskItem: toItem,
+					position: {...wire.inputPosition},
+					relativePosition: {...wire.inputRelativePosition},
+				},
 			})
 		})
 		if(fromItem.dataOutput) Object.keys(fromItem.dataOutputs).forEach(outputId => {
@@ -80,13 +86,39 @@ export function getDeskWires() {
 			if(toItem) connections.push({
 				type: 'data',
 				id: fromItem.ownerId+'___'+toItem.ownerId,
-				from: {x: fromItem.position.x + wire.outputPosition.x, y: fromItem.position.y + wire.outputPosition.y},
-				to: {x: toItem.position.x + wire.inputPosition.x, y: toItem.position.y + wire.inputPosition.y},
-				outputOwnerId: fromItem.ownerId,
-				inputOwnerId: toItem.ownerId,
-				inputParamKey: wire.inputParam.key,
+				wireFrom: {
+					deskItem: fromItem,
+					position: {...wire.outputPosition},
+					relativePosition: {...wire.outputRelativePosition},
+				},
+				wireTo: {
+					deskItem: toItem,
+					position: {...wire.inputPosition},
+					relativePosition: {...wire.inputRelativePosition},
+				},
 			})
 		})
 	}
 	return connections
+}
+
+export function validateConnection(wireType, wireFrom, wireTo) {
+	const { desk = [] } = store.getState()
+	const fromDeskItem = _find(desk, {id: wireFrom.deskItem.id})
+	const toDeskItem = _find(desk, {id: wireTo.deskItem.id})
+	console.log(fromDeskItem)
+	console.log(toDeskItem)
+
+	if(!fromDeskItem[wireType+'Output'] || !toDeskItem[wireType+'Input']) {
+		console.warn(`Invalid connection -- either ${wireFrom.deskItem.name} does not allow ${wireType} output or  ${wireTo.deskItem.name} does not allow ${wireType} input`);
+		return false
+	}
+
+	const outputs = fromDeskItem[wireType+'Outputs'] || {}
+	if(toDeskItem.ownerId in outputs) {
+		console.warn(`Connection already exists between ${wireFrom.deskItem.name} and ${wireTo.deskItem.name}`)
+		return false
+	}
+
+	return true
 }

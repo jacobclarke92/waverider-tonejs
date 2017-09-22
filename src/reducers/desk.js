@@ -35,16 +35,19 @@ export default function(state = initialState, action) {
 			return state.map(item => item.id == action.id ? {...item, position: action.position} : item)
 		case DESK_CONNECT_WIRE: 
 			return state.map(item => {
-				if(item.ownerId === action.output.ownerId) {
+				if(item.ownerId === action.wireFrom.deskItem.ownerId) {
 					const outputs = item[action.wireType+'Outputs']
-					if(!(action.input.ownerId in outputs)) return {
+					if(!(action.wireFrom.deskItem.ownerId in outputs)) return {
 						...item, 
 						[action.wireType+'Outputs']: {
 							...outputs, 
-							[action.input.ownerId]: {
-								inputParam: action.inputParam,
-								outputPosition: action.outputPosition, 
-								inputPosition: action.inputPosition
+							[action.wireTo.deskItem.ownerId]: {
+								outputParam: action.wireFrom.param,
+								inputParam: action.wireTo.param,
+								outputPosition: action.wireFrom.position, 
+								outputRelativePosition: action.wireFrom.relativePosition, 
+								inputPosition: action.wireTo.position, 
+								inputRelativePosition: action.wireTo.relativePosition, 
 							}
 						}
 					}
@@ -86,15 +89,12 @@ export const moveDeskItem = (deskItem, position) => ({type: DESK_ITEM_MOVE, id: 
  * @param  {PIXI} inputNode		- reference to PIXI DeskItem wire 'node'
  * @return {Object} 			Returns reducer action
  */
-export function connectWire(wireType, output, input, outputNode, inputNode) {
-	// check that connection hasn't been made yet (duplicate) then dispatch action
+export function connectWire(wireFrom, wireTo, { wireType }) {
 	return {
 		type: DESK_CONNECT_WIRE, 
-		output, 
-		input, 
-		wireType,
-		outputPosition: outputNode.position,
-		inputPosition: inputNode.position,
-		inputParam: inputNode.param || null,
+		wireType, 
+		wireFrom,
+		wireTo,
+
 	}
 }

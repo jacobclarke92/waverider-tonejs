@@ -33,6 +33,8 @@
 
 		.desk-item-title {
 			flex: 1 0 auto;
+			color: var(--shade-300);
+			padding: 0.7rem;
 		}
 
 	.desk-item {

@@ -6,10 +6,10 @@ import { connect } from 'react-redux'
 import Point from '../../utils/Point'
 import { addKeyListener, removeKeyListener } from '../../utils/keyUtils'
 import { getRelativeMousePosition, getMousePosition, getPositionWithinElem, getRect } from '../../utils/screenUtils'
+import { getDeskWires, validateConnection } from '../../deskController'
 import { FX, BUS, INSTRUMENT, MASTER, LFO } from '../../constants/deskItemTypes'
 import { DESK } from '../../constants/uiViews'
-import { moveDeskItem } from '../../reducers/desk'
-import { getDeskWires } from '../../deskController'
+import { moveDeskItem, connectWire } from '../../reducers/desk'
 import instrumentLibrary from '../../instrumentLibrary'
 import Wire from '../desk/Wire'
 import MasterDeskItem from '../desk/Master'
@@ -159,7 +159,7 @@ class DeskWorkspace extends Component {
 		}
 	}
 
-	handlePinOver(event, deskItem, { wireType, ioType, label }) {
+	handlePinOver(event, deskItem, { wireType, ioType, label, param }) {
 		this.setState({overPin: true})
 		if(this.state.wireFrom) {
 			const pinStagePosition = getPositionWithinElem(event.target, this.interface, 0.5)
@@ -167,6 +167,7 @@ class DeskWorkspace extends Component {
 			this.setState({
 				wireToValid: this.state.wireType == wireType && this.state.ioType != ioType,
 				wireTo: {
+					param,
 					deskItem,
 					position: pinStagePosition,
 					relativePosition: pinDeskItemPosition,
@@ -183,7 +184,7 @@ class DeskWorkspace extends Component {
 		});
 	}
 
-	handlePinPointerDown(event, deskItem, { wireType, ioType }) {
+	handlePinPointerDown(event, deskItem, { wireType, ioType, param }) {
 		event.stopPropagation()
 		event.preventDefault()
 		event.nativeEvent.stopImmediatePropagation()
@@ -194,6 +195,7 @@ class DeskWorkspace extends Component {
 			wireType,
 			ioType,
 			wireFrom: {
+				param,
 				deskItem,
 				position: pinStagePosition,
 				relativePosition: pinDeskItemPosition,
@@ -201,17 +203,20 @@ class DeskWorkspace extends Component {
 		})
 	}
 
-	handlePinPointerUp(event, deskItem, params) {
+	handlePinPointerUp(event, deskItem, { wireType, ioType }) {
 		event.stopPropagation()
 		event.preventDefault()
 		event.nativeEvent.stopImmediatePropagation()
 		if(this.state.wireToValid) {
-			const wireFrom = params.ioType == 'input' ? this.state.wireFrom : this.state.wireTo
-			const wireTo = params.ioType == 'input' ? this.state.wireTo : this.state.wireFrom
+			const wireFrom = ioType == 'input' ? this.state.wireFrom : this.state.wireTo
+			const wireTo = ioType == 'input' ? this.state.wireTo : this.state.wireFrom
 			console.log('PLS CREATE WIRE')
-			console.log('params', params)
-			console.log('wireFrom', wireFrom, wireFrom.deskItem)
-			console.log('wireTo', wireTo, wireTo.deskItem)
+			console.log('params', {wireType, ioType})
+			console.log('wireFrom', wireFrom)
+			console.log('wireTo', wireTo)
+			if(validateConnection(wireType, wireFrom, wireTo)) {
+				this.props.dispatch(connectWire(wireFrom, wireTo, { wireType }))
+			}
 		}
 		this.setState({
 			mouseDown: false,
@@ -249,6 +254,14 @@ class DeskWorkspace extends Component {
 					ref={elem => this.interface = elem} 
 					className="desk-interface"
 					style={{transform: `translate(${pan.x}px, ${pan.y}px)`}}>
+
+					{connections.map(wire => 
+						<Wire 
+							key={wire.id}
+							wireFrom={wire.wireFrom}
+							wireTo={wire.wireTo}
+							stagePointer={stagePointer} />
+					)}
 
 					{desk.map(deskItem => 
 						<DeskItem 
