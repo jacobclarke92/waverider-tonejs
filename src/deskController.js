@@ -64,39 +64,11 @@ export function getDeskWires() {
 	for(let fromItem of desk) {
 		if(fromItem.audioOutput) Object.keys(fromItem.audioOutputs).forEach(outputId => {
 			const wire = fromItem.audioOutputs[outputId]
-			const toItem = _find(desk, {ownerId: outputId})
-			if(toItem) connections.push({
-				type: 'audio',
-				id: fromItem.ownerId+'___'+toItem.ownerId,
-				wireFrom: {
-					deskItem: fromItem,
-					position: {...wire.outputPosition},
-					relativePosition: {...wire.outputRelativePosition},
-				},
-				wireTo: {
-					deskItem: toItem,
-					position: {...wire.inputPosition},
-					relativePosition: {...wire.inputRelativePosition},
-				},
-			})
+			connections.push(wire)
 		})
 		if(fromItem.dataOutput) Object.keys(fromItem.dataOutputs).forEach(outputId => {
 			const wire = fromItem.dataOutputs[outputId];
-			const toItem = _find(desk, {ownerId: outputId})
-			if(toItem) connections.push({
-				type: 'data',
-				id: fromItem.ownerId+'___'+toItem.ownerId,
-				wireFrom: {
-					deskItem: fromItem,
-					position: {...wire.outputPosition},
-					relativePosition: {...wire.outputRelativePosition},
-				},
-				wireTo: {
-					deskItem: toItem,
-					position: {...wire.inputPosition},
-					relativePosition: {...wire.inputRelativePosition},
-				},
-			})
+			connections.push(wire)
 		})
 	}
 	return connections
@@ -106,8 +78,6 @@ export function validateConnection(wireType, wireFrom, wireTo) {
 	const { desk = [] } = store.getState()
 	const fromDeskItem = _find(desk, {id: wireFrom.deskItem.id})
 	const toDeskItem = _find(desk, {id: wireTo.deskItem.id})
-	console.log(fromDeskItem)
-	console.log(toDeskItem)
 
 	if(!fromDeskItem[wireType+'Output'] || !toDeskItem[wireType+'Input']) {
 		console.warn(`Invalid connection -- either ${wireFrom.deskItem.name} does not allow ${wireType} output or  ${wireTo.deskItem.name} does not allow ${wireType} input`);

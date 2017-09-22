@@ -42,12 +42,10 @@ export default function(state = initialState, action) {
 						[action.wireType+'Outputs']: {
 							...outputs, 
 							[action.wireTo.deskItem.ownerId]: {
-								outputParam: action.wireFrom.param,
-								inputParam: action.wireTo.param,
-								outputPosition: action.wireFrom.position, 
-								outputRelativePosition: action.wireFrom.relativePosition, 
-								inputPosition: action.wireTo.position, 
-								inputRelativePosition: action.wireTo.relativePosition, 
+								type: action.wireType,
+								id: action.wireFrom.deskItem.ownerId+'___'+action.wireTo.deskItem.ownerId,
+								wireFrom: action.wireFrom,
+								wireTo: action.wireTo,
 							}
 						}
 					}
@@ -95,6 +93,5 @@ export function connectWire(wireFrom, wireTo, { wireType }) {
 		wireType, 
 		wireFrom,
 		wireTo,
-
 	}
 }
