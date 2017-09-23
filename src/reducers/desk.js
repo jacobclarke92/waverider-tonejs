@@ -34,40 +34,8 @@ export default function(state = initialState, action) {
 		case DESK_ITEM_MOVE: 
 			return state.map(item => item.id == action.id ? {...item, position: action.position} : item)
 		case DESK_CONNECT_WIRE: 
+		case DESK_DISCONNECT_WIRE: 
 			return state.map(item => item.id == action.deskItem.id ? action.deskItem : item)
-		/*
-		case DESK_CONNECT_WIRE: 
-			return state.map(item => {
-				if(item.ownerId === action.wireFrom.deskItem.ownerId) {
-					const outputs = item[action.wireType+'Outputs']
-					if(isObject(outputs) && !(action.wireFrom.deskItem.ownerId in outputs)) return {
-						...item, 
-						[action.wireType+'Outputs']: {
-							...outputs, 
-							[action.wireTo.deskItem.ownerId]: {
-								type: action.wireType,
-								id: action.wireFrom.deskItem.ownerId+'___'+action.wireTo.deskItem.ownerId,
-								wireFrom: action.wireFrom,
-								wireTo: action.wireTo,
-							}
-						}
-					}
-				}
-				return item
-			})
-		*/
-		case DESK_DISCONNECT_WIRE:
-			return state.map(item => {
-				if(item.ownerId === action.outputOwnerId) {
-					const outputs = {...item[action.wireType+'Outputs']}
-					if(isObject(outputs) && action.inputOwnerId in outputs) {
-						delete outputs[action.inputOwnerId]
-						return {...item, [action.wireType+'Outputs']: outputs}
-					}
-				}
-				return item
-			})
-
 		case ADD_INSTRUMENT: return [...state, action.deskItem]
 	}
 	return state
@@ -83,14 +51,6 @@ export const loadDesk = () => dispatch => getAll('desk')
 
 export const moveDeskItem = (deskItem, position) => ({type: DESK_ITEM_MOVE, id: deskItem.id, position})
 
-/**
- * @param  {String} wireType 	- either 'audio' or 'data'
- * @param  {Object} output 		- reference to item in desk store
- * @param  {Object} input 		- reference to item in desk store
- * @param  {PIXI} outputNode 	- reference to PIXI DeskItem wire 'node'
- * @param  {PIXI} inputNode		- reference to PIXI DeskItem wire 'node'
- * @return {Object} 			Returns reducer action
- */
 export const connectWire = (wireFrom, wireTo, { wireType }) => {
 	const outputs = wireFrom.deskItem[wireType+'Outputs'] || {}
 	const newDeskItem = {
@@ -108,4 +68,14 @@ export const connectWire = (wireFrom, wireTo, { wireType }) => {
 		updateById('desk', wireFrom.deskItem.id, newDeskItem)
 			.then(deskItem => dispatch({type: DESK_CONNECT_WIRE, deskItem}))
 			.catch(e => console.warn('Unable to update desk item for wire connection', wireFrom))
+}
+
+export const disconnectWire = ({type, wireFrom, wireTo}) => {
+	const outputs = wireFrom.deskItem[type+'Outputs'] || {}
+	if(wireTo.deskItem.ownerId in outputs) delete outputs[wireTo.deskItem.ownerId]
+	const newDeskItem = {[type+'Outputs']: outputs}
+	return dispatch => 
+		updateById('desk', wireFrom.deskItem.id, newDeskItem)
+			.then(deskItem => dispatch({type: DESK_DISCONNECT_WIRE, deskItem}))
+			.catch(e => console.warn('Unable to update desk item for wire disconnection', wireFrom))
 }

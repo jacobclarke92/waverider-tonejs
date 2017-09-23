@@ -10,7 +10,7 @@ import { getRelativeMousePosition, getMousePosition, getPositionWithinElem, getR
 import { getDeskWires, validateConnection } from '../../deskController'
 import { FX, BUS, INSTRUMENT, MASTER, LFO } from '../../constants/deskItemTypes'
 import { DESK } from '../../constants/uiViews'
-import { moveDeskItem, connectWire } from '../../reducers/desk'
+import { moveDeskItem, connectWire, disconnectWire } from '../../reducers/desk'
 import instrumentLibrary from '../../instrumentLibrary'
 import Wire from '../desk/Wire'
 import MasterDeskItem from '../desk/Master'
@@ -234,12 +234,15 @@ class DeskWorkspace extends Component {
 	}
 
 	removeActiveItem() {
-
+		const { selectedWire } = this.state
+		if(selectedWire) {
+			this.props.dispatch(disconnectWire(selectedWire))
+		}
 	}
 
 	render() {
 		const { desk = [], instruments = [] } = this.props
-		const { pan, dragTarget, mouseDown, mouseMoved, stagePointer, wireFrom, wireTo, wireToValid } = this.state
+		const { pan, dragTarget, mouseDown, mouseMoved, stagePointer, selectedWire, wireFrom, wireTo, wireToValid } = this.state
 		const panning = mouseDown && mouseMoved && !dragTarget
 		const connections = getDeskWires()
 		// console.log(connections)
@@ -261,7 +264,9 @@ class DeskWorkspace extends Component {
 							key={wire.id}
 							wireFrom={{...wire.wireFrom, deskItem: _find(desk, {id: wire.wireFrom.deskItem.id})}}
 							wireTo={{...wire.wireTo, deskItem: _find(desk, {id: wire.wireTo.deskItem.id})}}
-							stagePointer={stagePointer} />
+							stagePointer={stagePointer}
+							selected={selectedWire && selectedWire.id === wire.id}
+							onSelect={() => this.setState({selectedWire: wire})} />
 					)}
 
 					{desk.map(deskItem => 

@@ -29,8 +29,7 @@ function handleNewConnection(action) {
 }
 
 function handleRemoveConnection(action) {
-	return
-	// connectAudioWires(...)
+	connectAudioWires(action.deskItem, true)
 }
 
 function initConnections(desk) {

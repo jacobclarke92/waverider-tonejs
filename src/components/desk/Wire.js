@@ -3,8 +3,22 @@ import classname from 'classname'
 import Point from '../../utils/Point'
 
 export default class Wire extends Component {
+	
+	static defaultProps = {
+		active: false,
+		valid: false,
+		selected: false,
+		onSelect: () => {},
+	}
+
+	handleClick() {
+		if(!this.props.active) {
+			this.props.onSelect()
+		}
+	}
+
 	render() {
-		const { wireFrom, wireTo, valid, active, stagePointer } = this.props
+		const { wireFrom, wireTo, valid, active, selected, stagePointer } = this.props
 
 		// Absolute positions in stage
 		const fromPos = new Point(wireFrom.deskItem.position).add(new Point(wireFrom.relativePosition))
@@ -59,8 +73,12 @@ export default class Wire extends Component {
 		}
 
 		return (
-			<svg className={classname('wire', {valid, active})} viewBox={`0 0 ${width} ${height}`} style={styles}>
+			<svg 
+				className={classname('wire', {valid, active, selected})} 
+				viewBox={`0 0 ${width} ${height}`}
+				style={styles}>
 				<path d={path} strokeWidth={3} stroke="currentColor" />
+				<path d={path} strokeWidth={16} stroke="rgba(255,255,255,0)" onClick={e => this.handleClick()} />
 			</svg>
 		)
 	}

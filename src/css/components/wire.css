@@ -1,7 +1,6 @@
 .wire {
 	position: absolute;
 	fill: none;
-	stroke: white;
 	overflow: visible;
 	color: var(--white);
 	/* border: 1px solid red; */
@@ -12,5 +11,15 @@
 
 	&.valid {
 		color: var(--success);
+	}
+
+	&.selected {
+		color: var(--primary);
+	}
+
+	&:not(.active) {
+		& path {
+			cursor: pointer;
+		}
 	}
 }
