@@ -37,6 +37,7 @@ export default function(state = initialState, action) {
 		case DESK_DISCONNECT_WIRE: 
 			return state.map(item => item.id == action.deskItem.id ? action.deskItem : item)
 		case ADD_INSTRUMENT: return [...state, action.deskItem]
+		case REMOVE_INSTRUMENT: return state.filter(deskItem => deskItem.ownerId !== action.id)
 	}
 	return state
 }

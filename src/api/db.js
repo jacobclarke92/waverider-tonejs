@@ -118,6 +118,12 @@ export const bulkPut = (table, entities) => new Promise((resolve, reject) =>
 		})
 )
 
+export const removeById = (table, id) => new Promise((resolve, reject) => 
+	db.table(table).delete(id)
+		.then(resolve)
+		.catch(reject)
+)
+
 export const addFile = blob => getHashFromBlob(blob).then(hash => 
 	getFileByHash(hash)
 		.then(existingFile => existingFile)

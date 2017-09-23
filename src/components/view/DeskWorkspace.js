@@ -10,6 +10,7 @@ import { getRelativeMousePosition, getMousePosition, getPositionWithinElem, getR
 import { getDeskWires, validateConnection } from '../../deskController'
 import { FX, BUS, INSTRUMENT, MASTER, LFO } from '../../constants/deskItemTypes'
 import { DESK } from '../../constants/uiViews'
+import { removeInstrument } from '../../reducers/instruments'
 import { moveDeskItem, connectWire, disconnectWire } from '../../reducers/desk'
 import instrumentLibrary from '../../instrumentLibrary'
 import Wire from '../desk/Wire'
@@ -233,6 +234,10 @@ class DeskWorkspace extends Component {
 
 	}
 
+	handleRemoveDeskItem(deskItem) {
+		this.props.dispatch(removeInstrument(deskItem.ownerId))
+	}
+
 	removeActiveItem() {
 		const { selectedWire } = this.state
 		if(selectedWire) {
@@ -279,6 +284,7 @@ class DeskWorkspace extends Component {
 							editable={deskItem.editable}
 							removeable={deskItem.removeable}
 							dragging={dragTarget && dragTarget.id === deskItem.id}
+							onRemove={() => this.handleRemoveDeskItem(deskItem)}
 							onPointerDown={(e, elem) => this.handleItemPointerDown(e, elem, deskItem)}
 							onPointerUp={(e, elem) => this.handleItemPointerUp(e, elem, deskItem)}
 							onPinOut={event => this.handlePinOut(event)}

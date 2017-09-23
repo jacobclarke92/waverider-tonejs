@@ -2,7 +2,7 @@ import _merge from 'lodash/merge'
 import _cloneDeep from 'lodash/cloneDeep'
 
 import { isArray } from '../utils/typeUtils'
-import { add, getAll, updateById } from '../api/db'
+import { add, getAll, getBy, updateById, removeById } from '../api/db'
 import instrumentLibrary from '../instrumentLibrary'
 import { deskItemTypeDefaults, INSTRUMENT, MASTER } from '../constants/deskItemTypes'
 
@@ -28,17 +28,19 @@ export default function(state = initialState, action) {
 		case UPDATE_INSTRUMENT: return state.map(instrument => instrument.id === action.id
 			? _merge(_cloneDeep(instrument), action.updates)
 			: instrument)
+		case REMOVE_INSTRUMENT: return state.filter(instrument => instrument.id !== action.id)
 	}
 	return state
 }
 
-export const loadInstruments = () => dispatch => getAll('instruments')
-	.then(instruments => {
-		if(instruments.length > 0) return instruments
-		else return add('instruments', initialState[0])
-	})
-	.then(instruments => dispatch({type: LOAD_INSTRUMENTS, instruments: isArray(instruments) ? instruments : [instruments]}))
-	.catch(e => console.warn('Unable to load instruments', e))
+export const loadInstruments = () => dispatch => 
+	getAll('instruments')
+		.then(instruments => {
+			if(instruments.length > 0) return instruments
+			else return add('instruments', initialState[0])
+		})
+		.then(instruments => dispatch({type: LOAD_INSTRUMENTS, instruments: isArray(instruments) ? instruments : [instruments]}))
+		.catch(e => console.warn('Unable to load instruments', e))
 
 export const addInstrument = (type, position = {x: 0, y: 0}) => {
 	const instrumentDef = instrumentLibrary[type]
@@ -56,3 +58,12 @@ export const addInstrument = (type, position = {x: 0, y: 0}) => {
 }
 
 export const updateInstrument = (id, updates) => ({type: UPDATE_INSTRUMENT, id, updates})
+
+export const removeInstrument = id => dispatch => 
+	removeById('instruments', id).then(() => 
+		getBy('desk', 'ownerId', id).then(deskItem => 
+			removeById('desk', deskItem.id).then(() =>
+				dispatch({type: REMOVE_INSTRUMENT, id})
+			).catch(e => console.warn('Unable to remove desk item for instrument', id, e))
+		).catch(e => console.warn('Unable to find desk item for instrument', id, e))
+	).catch(e => console.warn('Unable to remove instrument', id, e))

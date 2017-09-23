@@ -33,6 +33,7 @@ function handleUpdate() {
 		case LOAD_INSTRUMENTS: initInstruments(instruments); break
 		case UPDATE_INSTRUMENT: updateInstrument(lastAction, instruments); break
 		case ADD_INSTRUMENT: initInstrument(lastAction.instrument); break
+		case REMOVE_INSTRUMENT: removeInstrument(lastAction.id); break
 		case NOTE_ON: 
 		case NOTE_OFF: handleNoteAction(lastAction, instruments); break
 		case DESK_CONNECT_WIRE: handleWireConnection(lastAction, desk); break
@@ -57,6 +58,14 @@ function updateInstrument({id}, instruments) {
 	const oldInstrument = _find(oldInstruments, {id})
 	if(!(id in instances)) initInstrument(instrument)
 	else instances[id].update(instrument, oldInstrument)
+}
+
+function removeInstrument(id) {
+	if(id in instances) {
+		const source = instances[id].getToneSource()
+		if(source) source.dispose()
+		delete instances[id]
+	}
 }
 
 function handleNoteAction({type, deviceId, channel, note, velocity}, instruments) {
