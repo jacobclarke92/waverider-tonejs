@@ -150,6 +150,10 @@ export class SimplerInstrument {
 		})
 		return positions
 	}
+
+	getToneSource() {
+		return (this.mounted && this.sampler) ? this.sampler : false
+	}
 }
 
 export const defaultValue = {

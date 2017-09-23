@@ -1,8 +1,10 @@
 import _find from 'lodash/find'
 import _cloneDeep from 'lodash/cloneDeep'
+import { Master } from 'tone'
 import { getEffectInstance } from './effectsController'
 import { getInstrumentInstance } from './instrumentsController'
-import { DESK_CONNECT_WIRE, DESK_DISCONNECT_WIRE } from './reducers/desk'
+import { LOAD_DESK, DESK_CONNECT_WIRE, DESK_DISCONNECT_WIRE } from './reducers/desk'
+import { MASTER, BUS, INSTRUMENT, FX, LFO } from './constants/deskItemTypes'
 
 let store = null
 let oldDesk = []
@@ -15,6 +17,7 @@ export function init(_store) {
 function handleUpdate() {
 	const { lastAction, desk } = store.getState()
 	switch(lastAction.type) {
+		case LOAD_DESK: initConnections(desk); break
 		case DESK_CONNECT_WIRE: handleNewConnection(lastAction); break
 		case DESK_DISCONNECT_WIRE: handleRemoveConnection(lastAction); break
 	}
@@ -22,38 +25,65 @@ function handleUpdate() {
 }
 
 function handleNewConnection(action) {
-	return
-	// connectAudioWires(...)
+	connectAudioWires(action.deskItem)
 }
 
 function handleRemoveConnection(action) {
 	return
-	// handleRemoveConnection(...)
+	// connectAudioWires(...)
 }
 
-export function connectAudioWires(source, id, disconnectFirst = false) {
-	if(!source) console.warn('no audio source to connect from', source, id)
-	if(!source || !id) return
-	
-	const { desk } = store.getState()
-	const deskItem = _find(desk, {ownerId: id})
-	if(!deskItem) return
+function initConnections(desk) {
+	for(let deskItem of desk) {
+		connectAudioWires(deskItem)
+	}
+}
 
+function getSource(deskItem) {
+	let source = null
+	switch(deskItem.type) {
+		case MASTER: source = Master; break
+		case INSTRUMENT: source = getInstrumentInstance(deskItem.ownerId); break
+		case FX: source = getEffectInstance(deskItem.ownerId); break
+	}
+	return source
+}
+
+export function connectAudioWires(fromDeskItem, disconnectFirst = false) {
+	if(!fromDeskItem) {
+		console.warn('No desk item provided to connectAudioWires')
+		return
+	}
+
+	const fromSource = getSource(fromDeskItem)
+	if(!fromSource) {
+		console.warn('Could not find source for output item', fromDeskItem)
+		return
+	}
+
+	const outputs = fromDeskItem.audioOutputs || {}
 	const connections = []
-	Object.keys(deskItem.audioOutputs).forEach(connectToId => {
-		if(connectToId == 'master') {
-			connections.push(/*Tone.Master*/Submaster)
-		}else{
-			const effectInstance = getEffectInstance(connectToId)
-			if(effectInstance) connections.push(effectInstance)
-			// todo: buses
+	for(let ownerId in outputs) {
+		const toDeskItem = outputs[ownerId].wireTo.deskItem
+		console.log('TO DESK ITEM', toDeskItem)
+		if(!toDeskItem) {
+			console.warn('Could not find input desk item for ownerId', ownerId)
+			continue
 		}
-	})
-	
-	if(disconnectFirst) source.disconnect()
-	if(connections.length) {
-		console.log('Connecting sound source '+id+' to', connections)
-		source.fan.apply(source, connections)
+		const toSource = getSource(toDeskItem)
+		if(!toSource) {
+			console.warn('Could not find source for input item', toDeskItem)
+			continue
+		}
+		console.log('To source', toSource)
+		connections.push(toSource.getToneSource())
+	}
+
+	const fromToneSource = fromSource.getToneSource()
+
+	if(disconnectFirst) fromToneSource.disconnect()
+	if(connections.length > 0) {
+		fromToneSource.fan.apply(fromToneSource, connections)
 	}
 }
 

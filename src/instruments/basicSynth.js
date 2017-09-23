@@ -58,6 +58,9 @@ export class BasicSynthInstrument {
 		if(this.mounted && this.synth) this.synth.triggerRelease(noteNumberToName(note), now())
 	}
 
+	getToneSource() {
+		return (this.mounted && this.synth) ? this.synth : false
+	}
 }
 
 export const defaultValue = {

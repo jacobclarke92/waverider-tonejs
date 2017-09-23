@@ -57,6 +57,9 @@ export class PluckSynthInstrument {
 		if(this.mounted && this.synth) this.synth.triggerRelease(note, now())
 	}
 
+	getToneSource() {
+		return (this.mounted && this.synth) ? this.synth : false
+	}
 }
 
 export const defaultValue = {

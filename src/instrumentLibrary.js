@@ -1,3 +1,4 @@
+import master from './instruments/master'
 import simpler from './instruments/simpler'
 import sampler from './instruments/sampler'
 import basicSynth from './instruments/basicSynth'
@@ -7,6 +8,7 @@ import membraneSynth from './instruments/membraneSynth'
 export const instrumentSchema = '++id,type,midiChannel,midiDeviceId,instrument'
 
 export default {
+	master,
 	simpler,
 	sampler,
 	basicSynth,

@@ -1,16 +1,25 @@
 import _merge from 'lodash/merge'
 import _cloneDeep from 'lodash/cloneDeep'
 
+import { isArray } from '../utils/typeUtils'
 import { add, getAll, updateById } from '../api/db'
 import instrumentLibrary from '../instrumentLibrary'
-import { deskItemTypeDefaults, INSTRUMENT } from '../constants/deskItemTypes'
+import { deskItemTypeDefaults, INSTRUMENT, MASTER } from '../constants/deskItemTypes'
 
 export const LOAD_INSTRUMENTS = 'LOAD_INSTRUMENTS'
 export const ADD_INSTRUMENT = 'ADD_INSTRUMENT'
 export const REMOVE_INSTRUMENT = 'REMOVE_INSTRUMENT'
 export const UPDATE_INSTRUMENT = 'UPDATE_INSTRUMENT'
 
-const initialState = []
+const initialState = [
+	{
+		id: 1,
+		type: 'master',
+		instrument: { gain: 0.5 },
+		midiChannel: null,
+		midiDeviceId: null,
+	}
+]
 
 export default function(state = initialState, action) {
 	switch(action.type) {
@@ -24,7 +33,11 @@ export default function(state = initialState, action) {
 }
 
 export const loadInstruments = () => dispatch => getAll('instruments')
-	.then(instruments => dispatch({type: LOAD_INSTRUMENTS, instruments}))
+	.then(instruments => {
+		if(instruments.length > 0) return instruments
+		else return add('instruments', initialState[0])
+	})
+	.then(instruments => dispatch({type: LOAD_INSTRUMENTS, instruments: isArray(instruments) ? instruments : [instruments]}))
 	.catch(e => console.warn('Unable to load instruments', e))
 
 export const addInstrument = (type, position = {x: 0, y: 0}) => {

@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import _throttle from 'lodash/throttle'
+import _find from 'lodash/find'
 import classname from 'classname'
 import { connect } from 'react-redux'
 
@@ -258,8 +259,8 @@ class DeskWorkspace extends Component {
 					{connections.map(wire => 
 						<Wire 
 							key={wire.id}
-							wireFrom={wire.wireFrom}
-							wireTo={wire.wireTo}
+							wireFrom={{...wire.wireFrom, deskItem: _find(desk, {id: wire.wireFrom.deskItem.id})}}
+							wireTo={{...wire.wireTo, deskItem: _find(desk, {id: wire.wireTo.deskItem.id})}}
 							stagePointer={stagePointer} />
 					)}
 
