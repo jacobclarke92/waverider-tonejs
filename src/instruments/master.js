@@ -21,10 +21,13 @@ export class MasterInstrument {
 
 	initSynth(callback = () => {}) {
 		if(this.submaster) this.submaster.dispose()
-		this.submaster = new Gain({gain: 0.5})
-		this.submaster.fan.apply(this.submaster, [this.meter, Master])
+		this.submaster = new Gain({gain: 0.5}).toMaster()
+		this.submaster.connect(this.meter)
 		callback()
 	}
+
+	noteUp() {}
+	noteDown() {}
 
 	getToneSource() {
 		return (this.mounted && this.submaster) ? this.submaster : false

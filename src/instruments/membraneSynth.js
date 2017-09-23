@@ -37,7 +37,7 @@ export class MembraneSynthInstrument {
 	initSynth(callback = () => {}) {
 		const { voices } = this.instrument
 		if(this.synth) this.synth.dispose()
-		this.synth = new PolySynth(voices, MembraneSynth).toMaster()
+		this.synth = new PolySynth(voices, MembraneSynth)
 		this.synth.set('volume', -12)
 		this.synth.connect(this.meter)
 		this.updateVoiceParams()

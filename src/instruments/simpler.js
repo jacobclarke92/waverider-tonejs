@@ -55,7 +55,7 @@ export class SimplerInstrument {
 		if(!fileHash) return callback()
 		if(this.sampler) this.sampler.dispose();
 		this.loadAudioFile(fileHash, file => {
-			this.sampler = new PolySynth(voices, Sampler).toMaster()
+			this.sampler = new PolySynth(voices, Sampler)
 			this.sampler.set('volume', -12)
 			this.sampler.connect(this.meter)
 			this.updateAudioFile(file.getUrl(), () => {
