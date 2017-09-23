@@ -239,15 +239,17 @@ class DeskWorkspace extends Component {
 	}
 
 	removeActiveItem() {
-		const { selectedWire } = this.state
+		const { selectedWire, selectedDeskItem } = this.state
 		if(selectedWire) {
 			this.props.dispatch(disconnectWire(selectedWire))
+		}else if(selectedDeskItem) {
+			this.handleRemoveDeskItem(selectedDeskItem)
 		}
 	}
 
 	render() {
 		const { desk = [], instruments = [] } = this.props
-		const { pan, dragTarget, mouseDown, mouseMoved, stagePointer, selectedWire, wireFrom, wireTo, wireToValid } = this.state
+		const { pan, dragTarget, mouseDown, mouseMoved, stagePointer, selectedDeskItem, selectedWire, wireFrom, wireTo, wireToValid } = this.state
 		const panning = mouseDown && mouseMoved && !dragTarget
 		const connections = getDeskWires()
 		// console.log(connections)
@@ -283,6 +285,7 @@ class DeskWorkspace extends Component {
 							validWire={wireToValid}
 							editable={deskItem.editable}
 							removeable={deskItem.removeable}
+							selected={selectedDeskItem && selectedDeskItem.id === deskItem.id}
 							dragging={dragTarget && dragTarget.id === deskItem.id}
 							onRemove={() => this.handleRemoveDeskItem(deskItem)}
 							onPointerDown={(e, elem) => this.handleItemPointerDown(e, elem, deskItem)}

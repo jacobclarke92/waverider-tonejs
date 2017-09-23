@@ -4,6 +4,17 @@
 	&.dragging {
 		cursor: move;
 	}
+
+	&.selected {
+		&:after {
+			content: '';
+			@apply --cover;
+			z-index: 10;
+			border: 2px solid var(--primary);
+			box-sizing: border-box;
+			pointer-events: none;
+		}
+	}
 }
 
 	.desk-item-header {

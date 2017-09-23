@@ -7,6 +7,7 @@ export default class DeskItemWrapper extends Component {
 
 	static defaultProps = {
 		deskItem: {},
+		selected: false,
 		dragging: false,
 		editable: true,
 		removeable: true,
@@ -46,7 +47,7 @@ export default class DeskItemWrapper extends Component {
 	}
 
 	render() {
-		const { children, deskItem, dragging, wiring, validWire, editable, removeable, onEdit, onPinPointerDown, onPinPointerUp, onPinOver, onPinOut } = this.props
+		const { children, deskItem, dragging, selected, wiring, validWire, editable, removeable, onEdit, onPinPointerDown, onPinPointerUp, onPinOver, onPinOut } = this.props
 		const { name, position, audioInput, audioOutput } = deskItem
 
 		const wrapperStyles = {
@@ -64,7 +65,7 @@ export default class DeskItemWrapper extends Component {
 
 		return (
 			<div 
-				className={classnames('desk-item-wrapper', {dragging})}
+				className={classnames('desk-item-wrapper', {dragging, selected})}
 				style={wrapperStyles}
 				onMouseDown={e => this.handleMouseDown(e, child.props)}
 				onMouseUp={e => this.handleMouseUp(e, child.props)}>
