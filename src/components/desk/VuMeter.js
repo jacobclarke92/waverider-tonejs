@@ -24,12 +24,15 @@ export default class VuMeter extends Component {
 	getInstance(props = this.props) {
 		const { id, type } = this.props
 		if(type == INSTRUMENT) this.instance = getInstrumentInstance(id)
-		if(this.instance && !this.raf) this.raf = requestAnimationFrame(this.monitorLevel)
+		if(!this.raf) this.raf = requestAnimationFrame(this.monitorLevel)
 	}
 
 	monitorLevel() {
-		const level = this.instance.meter ? this.instance.meter.value : 0
-		this.setState({level})
+		if(!this.instance) this.getInstance()
+		if(this.instance) {
+			const level = this.instance.meter ? this.instance.meter.value : 0
+			this.setState({level})
+		}
 		this.raf = requestAnimationFrame(this.monitorLevel)
 	}
 
