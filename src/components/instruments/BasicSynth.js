@@ -10,8 +10,8 @@ import ChannelSelect from '../ChannelSelect'
 
 class BasicSynth extends Component {
 	render() {
-		const { dispatch, id, instrument, midiDeviceId, midiChannel } = this.props
-		const { voices, portamento, envelope, oscillator } = instrument
+		const { dispatch, id, instrument = {}, midiDeviceId, midiChannel } = this.props
+		const { voices, portamento, envelope = {}, oscillator = {} } = instrument
 		const { attack, decay, sustain, release } = envelope
 		return (
 			<div className="pluck-synth">

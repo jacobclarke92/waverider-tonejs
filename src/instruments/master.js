@@ -1,3 +1,4 @@
+import React from 'react'
 import { Master, Gain, Meter, now } from 'tone'
 import MasterDeskItem from '../components/desk/Master'
 import { allInstrumentDefaults, defaultEnvelope, envelopeParams, voicesParam, oscTypeParam } from '../constants/params'

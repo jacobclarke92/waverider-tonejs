@@ -10,6 +10,7 @@ import { getRelativeMousePosition, getMousePosition, getPositionWithinElem, getR
 import { getDeskWires, validateConnection } from '../../deskController'
 import { FX, BUS, INSTRUMENT, MASTER, LFO } from '../../constants/deskItemTypes'
 import { DESK } from '../../constants/uiViews'
+import { updateActiveElement } from '../../reducers/gui'
 import { removeInstrument } from '../../reducers/instruments'
 import { moveDeskItem, connectWire, disconnectWire } from '../../reducers/desk'
 import instrumentLibrary from '../../instrumentLibrary'
@@ -149,6 +150,7 @@ class DeskWorkspace extends Component {
 				dragTarget: null,
 				selectedWire: null,
 			})
+			this.props.dispatch(updateActiveElement(deskItem.type, deskItem))
 		}else{
 			this.setState({
 				mouseDown: false,
