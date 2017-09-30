@@ -51,6 +51,8 @@
 	.desk-item {
 		position: absolute;
 		z-index: 3;
+		width: 200px;
+		height: 70px;
 		border: 1px solid var(--white);
 		box-sizing: border-box;
 		background: linear-gradient(to bottom, var(--shade-950) 0%, var(--shade-750) 100%);
