@@ -159,7 +159,6 @@ export class SimplerInstrument {
 	}
 
 	getToneSource() {
-		console.log('SIMPLER',  this.mounted, this.sampler)
 		return (this.mounted && this.sampler) ? this.sampler : false
 	}
 }

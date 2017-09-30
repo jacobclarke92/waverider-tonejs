@@ -9,6 +9,8 @@ import { MASTER, BUS, INSTRUMENT, FX, LFO } from './constants/deskItemTypes'
 let store = null
 let oldDesk = []
 
+const connectionAttempts = {}
+
 export function init(_store) {
 	store = _store
 	store.subscribe(handleUpdate)
@@ -78,16 +80,30 @@ export function connectAudioWires(fromDeskItem, disconnectFirst = false) {
 		connections.push(toSource.getToneSource())
 	}
 
-	const fromToneSource = fromSource.getToneSource()
-
-	if(fromToneSource) {
-		if(disconnectFirst) fromToneSource.disconnect()
-		if(connections.length > 0) {
-			fromToneSource.fan.apply(fromToneSource, connections)
+	const attemptConnectingOutputs = () => {
+		const fromToneSource = fromSource.getToneSource()
+		if(fromToneSource) {
+			if(disconnectFirst) fromToneSource.disconnect()
+			if(connections.length > 0) {
+				fromToneSource.fan.apply(fromToneSource, connections)
+				if(fromSource.id in connectionAttempts) console.log(`Connected ${fromSource.type} after ${connectionAttempts[fromSource.id]} attempts`)
+			}
+		}else{
+			console.warn(`Unable to connect ${fromSource.type} (id${fromSource.id}) because tone.js source is not available yet`)
+			if(!(fromSource.id in connectionAttempts)) connectionAttempts[fromSource.id] = 0
+			if(connectionAttempts[fromSource.id] < 5) {
+				connectionAttempts[fromSource.id] += 1
+				setTimeout(() => {
+					console.log(`Attempting ${fromSource.type} output connection #${connectionAttempts[fromSource.id]}...`)
+					attemptConnectingOutputs()
+				}, 500)
+			}else {
+				console.warn('Max reconnection attempts reached')
+			}
 		}
-	}else{
-		console.warn('Unable to connect', fromSource.id, fromSource.type, 'because tone.js source is not available', fromToneSource)
 	}
+
+	attemptConnectingOutputs()
 }
 
 export function getDeskWires() {
