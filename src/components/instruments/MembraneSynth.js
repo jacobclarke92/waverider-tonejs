@@ -14,7 +14,7 @@ class MembraneSynth extends Component {
 		const { voices, pitchDecay, octaves, envelope, oscillator } = instrument
 		const { attack, decay, sustain, release } = envelope
 		return (
-			<div className="pluck-synth">
+			<div className="membrane-synth">
 				<DeviceSelect value={midiDeviceId} onChange={midiDeviceId => dispatch(updateInstrument(id, {midiDeviceId}))} />
 				<ChannelSelect value={midiChannel} onChange={midiChannel => dispatch(updateInstrument(id, {midiChannel}))} />
 				<KnobInput 
