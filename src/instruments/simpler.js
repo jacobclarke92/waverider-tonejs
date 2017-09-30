@@ -52,12 +52,15 @@ export class SimplerInstrument {
 
 	initSampler(callback = () => {}) {
 		const { voices, fileHash, reverse, loop, trim } = this.instrument
-		if(!fileHash) return callback()
+		
 		if(this.sampler) this.sampler.dispose();
+		this.sampler = new PolySynth(voices, Sampler)
+		this.sampler.set('volume', -39)
+		this.sampler.connect(this.meter)
+		
+		if(!fileHash) return callback()
 		this.loadAudioFile(fileHash, file => {
-			this.sampler = new PolySynth(voices, Sampler)
-			this.sampler.set('volume', -39)
-			this.sampler.connect(this.meter)
+			
 			this.updateAudioFile(file.getUrl(), () => {
 				this.updateVoiceParams()
 				callback()
@@ -124,11 +127,15 @@ export class SimplerInstrument {
 	}
 
 	noteDown(note, velocity) {
-		if(this.mounted && this.sampler) this.sampler.triggerAttack(note - this.instrument.baseNote, now(), velocity / 2)
+		if(this.mounted && this.sampler && this.file) {
+			this.sampler.triggerAttack(note - this.instrument.baseNote, now(), velocity / 2)
+		}
 	}
 
 	noteUp(note) {
-		if(this.mounted && this.sampler) this.sampler.triggerRelease(note - this.instrument.baseNote, now())
+		if(this.mounted && this.sampler && this.file) {
+			this.sampler.triggerRelease(note - this.instrument.baseNote, now())
+		}
 	}
 
 	getPlaybackPositions() {
@@ -152,6 +159,7 @@ export class SimplerInstrument {
 	}
 
 	getToneSource() {
+		console.log('SIMPLER',  this.mounted, this.sampler)
 		return (this.mounted && this.sampler) ? this.sampler : false
 	}
 }
