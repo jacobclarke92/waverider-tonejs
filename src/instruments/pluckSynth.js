@@ -37,7 +37,7 @@ export class PluckSynthInstrument {
 		const { voices } = this.instrument
 		if(this.synth) this.synth.dispose()
 		this.synth = new PolySynth(voices, PluckSynth)
-		this.synth.set('volume', -12)
+		this.synth.set('volume', -39)
 		this.synth.connect(this.meter)
 		this.updateVoiceParams()
 		callback()

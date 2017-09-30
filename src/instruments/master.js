@@ -22,8 +22,9 @@ export class MasterInstrument {
 
 	initSynth(callback = () => {}) {
 		if(this.submaster) this.submaster.dispose()
-		this.submaster = new Gain({gain: 0.5}).toMaster()
+		this.submaster = new Gain({gain: 1})
 		this.submaster.connect(this.meter)
+		this.submaster.connect(Master)
 		callback()
 	}
 
