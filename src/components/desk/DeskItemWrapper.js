@@ -57,9 +57,7 @@ export default class DeskItemWrapper extends Component {
 		}
 
 		const child = Children.only(children)
-		const { className, styles = {} } = child.props
-
-		const newChild = cloneElement(child, { ref: elem => this.gotRef(elem) })
+		const newChild = child ? cloneElement(child, { ref: elem => this.gotRef(elem) }) : null
 
 		const pinProps = { wiring, valid: validWire, onPinOver, onPinOut, onPinPointerDown, onPinPointerUp }
 
@@ -67,8 +65,8 @@ export default class DeskItemWrapper extends Component {
 			<div 
 				className={classnames('desk-item-wrapper', {dragging, selected})}
 				style={wrapperStyles}
-				onMouseDown={e => this.handleMouseDown(e, child.props)}
-				onMouseUp={e => this.handleMouseUp(e, child.props)}>
+				onMouseDown={e => this.handleMouseDown(e, child ? child.props : {})}
+				onMouseUp={e => this.handleMouseUp(e, child ? child.props : {})}>
 
 				{newChild}
 				{audioInput && <Pin wireType="audio" ioType="input" {...pinProps} />}

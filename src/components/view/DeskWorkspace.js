@@ -16,6 +16,7 @@ import { moveDeskItem, connectWire, disconnectWire } from '../../reducers/desk'
 import instrumentLibrary from '../../instrumentLibrary'
 import Wire from '../desk/Wire'
 import MasterDeskItem from '../desk/Master'
+import DefaultDeskItem from '../desk/DefaultDeskItem'
 
 const snapGrid = 10
 
@@ -319,6 +320,7 @@ class DeskItem extends Component {
 		let DeskComponent = null
 		if(type == MASTER) DeskComponent = MasterDeskItem
 		if(type == INSTRUMENT) DeskComponent = instrumentLibrary[ownerType].DeskItem
+		if(!DeskComponent) DeskComponent = DefaultDeskItem
 		return (
 			<DeskComponent {...this.props}  />
 		)
