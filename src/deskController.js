@@ -64,7 +64,7 @@ export function connectAudioWires(fromDeskItem, disconnectFirst = false) {
 	const connections = []
 	for(let ownerId in outputs) {
 		const toDeskItem = outputs[ownerId].wireTo.deskItem
-		console.log('TO DESK ITEM', toDeskItem)
+		// console.log('TO DESK ITEM', toDeskItem)
 		if(!toDeskItem) {
 			console.warn('Could not find input desk item for ownerId', ownerId)
 			continue
@@ -74,15 +74,19 @@ export function connectAudioWires(fromDeskItem, disconnectFirst = false) {
 			console.warn('Could not find source for input item', toDeskItem)
 			continue
 		}
-		console.log('To source', toSource)
+		// console.log('To source', toSource)
 		connections.push(toSource.getToneSource())
 	}
 
 	const fromToneSource = fromSource.getToneSource()
 
-	if(disconnectFirst) fromToneSource.disconnect()
-	if(connections.length > 0) {
-		fromToneSource.fan.apply(fromToneSource, connections)
+	if(fromToneSource) {
+		if(disconnectFirst) fromToneSource.disconnect()
+		if(connections.length > 0) {
+			fromToneSource.fan.apply(fromToneSource, connections)
+		}
+	}else{
+		console.warn('Unable to connect', fromSource.id, fromSource.type, 'because tone.js source is not available', fromToneSource)
 	}
 }
 
