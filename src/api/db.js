@@ -90,7 +90,12 @@ export const getBy = (table, field, value) => new Promise((resolve, reject) =>
 		.then(entity => entity ? resolve(entity) : reject('Entity not found'))
 		.catch(reject)	
 )
+
 export const getById = (table, id) => db.table(table).get(id)
+
+export const getWhere = (table, conditions = {}) => db.table(table).where(conditions).toArray()
+
+export const getFirstWhere = (table, conditions = {}) => db.table(table).where(conditions).first()
 
 export const getList = (table, fieldPath) => db.table(table).toArray().map(item => _get(item, fieldPath))
 
