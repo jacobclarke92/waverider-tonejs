@@ -2,7 +2,7 @@ import _merge from 'lodash/merge'
 import _cloneDeep from 'lodash/cloneDeep'
 
 import { isArray } from '../utils/typeUtils'
-import { add, getAll, getBy, updateById, removeById } from '../api/db'
+import { add, getAll, getFirstWhere, updateById, removeById } from '../api/db'
 import instrumentLibrary from '../instrumentLibrary'
 import { deskItemTypeDefaults, INSTRUMENT, MASTER } from '../constants/deskItemTypes'
 
@@ -62,7 +62,7 @@ export const updateInstrument = (id, updates) => ({type: UPDATE_INSTRUMENT, id, 
 
 export const removeInstrument = id => dispatch => 
 	removeById('instruments', id).then(() => 
-		getBy('desk', 'ownerId', id).then(deskItem => 
+		getFirstWhere('desk', {type: INSTRUMENT, ownerId: id}).then(deskItem => 
 			removeById('desk', deskItem.id).then(() =>
 				dispatch({type: REMOVE_INSTRUMENT, id})
 			).catch(e => console.warn('Unable to remove desk item for instrument', id, e))
