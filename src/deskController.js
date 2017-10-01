@@ -4,7 +4,7 @@ import { Master } from 'tone'
 import { getEffectInstance } from './effectsController'
 import { getInstrumentInstance } from './instrumentsController'
 import { LOAD_DESK, DESK_CONNECT_WIRE, DESK_DISCONNECT_WIRE } from './reducers/desk'
-import { MASTER, BUS, INSTRUMENT, FX, LFO } from './constants/deskItemTypes'
+import { MASTER, BUS, INSTRUMENT, EFFECT, LFO } from './constants/deskItemTypes'
 
 let store = null
 let oldDesk = []
@@ -45,7 +45,7 @@ function getSource(deskItem) {
 	switch(deskItem.type) {
 		case MASTER: source = Master; break
 		case INSTRUMENT: source = getInstrumentInstance(deskItem.ownerId); break
-		case FX: source = getEffectInstance(deskItem.ownerId); break
+		case EFFECT: source = getEffectInstance(deskItem.ownerId); break
 	}
 	return source
 }
@@ -144,7 +144,7 @@ export function validateConnection(wireType, wireFrom, wireTo) {
 
 export function getOwnerByDeskItem(deskItem) {
 	const { instruments = [], effects = [] } = store.getState()
-	if(deskItem.type == FX) return _find(effects, {id: deskItem.ownerId})
+	if(deskItem.type == EFFECT) return _find(effects, {id: deskItem.ownerId})
 	if(deskItem.type == INSTRUMENT) return _find(instruments, {id: deskItem.ownerId})
 	return null
 }

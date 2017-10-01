@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { MASTER, INSTRUMENT, FX } from '../../constants/deskItemTypes'
+import { MASTER, INSTRUMENT, EFFECT } from '../../constants/deskItemTypes'
 import { getInstrumentInstance } from '../../instrumentsController'
 
 export default class VuMeter extends Component {

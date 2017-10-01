@@ -1,4 +1,4 @@
-export const FX = 'FX'
+export const EFFECT = 'EFFECT'
 export const BUS = 'BUS'
 export const INSTRUMENT = 'INSTRUMENT'
 export const MASTER = 'MASTER'
@@ -31,7 +31,7 @@ export const deskItemTypeDefaults = {
 		editable: true,
 		removeable: true,
 	},
-	[FX]: {
+	[EFFECT]: {
 		audioInput: true,
 		audioOutput: true,
 		audioOutputs: {},
