@@ -1,7 +1,7 @@
 import BaseEffect from './BaseEffect'
-import { AutoFilter } from 'tone'
+import { Chorus } from 'tone'
 
-export class AutoFilterEffect extends BaseEffect {
+export class ChorusEffect extends BaseEffect {
 
 	constructor(value = {}, dispatch) {
 		super(value, dispatch)
@@ -9,7 +9,7 @@ export class AutoFilterEffect extends BaseEffect {
 
 	initEffect(callback = () => {}) {
 		if(this.instance) this.instance.dispose()
-		this.instance = new AutoFilter()
+		this.instance = new Chorus()
 		this.instance.connect(this.meter)
 		callback()
 	}
@@ -19,29 +19,26 @@ export const params = [
 	{
 		label: 'Frequency',
 		path: 'frequency',
-		description: 'The rate of the LFO',
-		defaultValue: 1,
+		description: 'The frequency of the LFO',
+		defaultValue: 1.5,
 		min: 1,
 		max: 10000,
 		step: 1,
 	},
 	{
-		label: 'Base Frequency',
-		path: 'baseFrequency',
-		description: 'The lower value of the LFOs oscillation',
-		defaultValue: 200,
+		label: 'Delay Time',
+		path: 'delayTime',
+		description: 'The delay of the chorus effect in ms',
+		defaultValue: 2,
 		min: 1,
-		max: 10000,
-		step: 1,
+		max: 50,
+		step: 0.5,
 	},
 	{
-		label: 'Octaves',
-		path: 'octaves',
-		description: 'The number of octaves above the baseFrequency',
-		defaultValue: 2.6,
-		min: 0,
-		max: 10,
-		step: 0.2,
+		label: 'Depth',
+		path: 'depth',
+		description: 'The depth of the chorus',
+		defaultValue: 0.7,
 	}
 ]
 
@@ -50,9 +47,9 @@ export const defaultValue = {
 }
 
 export default {
-	name: 'Auto Filter',
-	slug: 'autoFilter',
-	Effect: AutoFilterEffect,
+	name: 'Chorus',
+	slug: 'chorus',
+	Effect: ChorusEffect,
 	Editor: () => null,
 	defaultValue,
 	params,
