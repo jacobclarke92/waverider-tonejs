@@ -2,21 +2,23 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import _find from 'lodash/find'
 
-import { INSTRUMENT } from './constants/deskItemTypes'
+import { INSTRUMENT, EFFECT } from './constants/deskItemTypes'
 import Header from './components/ui/Header'
 import Sidebar from './components/ui/Sidebar'
 import Navbar from './components/ui/Navbar'
 import Views from './Views'
 import PropertiesPanel from './components/ui/PropertiesPanel'
+import effectLibrary from './effectLibrary'
 import instrumentLibrary from './instrumentLibrary'
 // import InstrumentList from './components/InstrumentList'
 // import DeskInterface from './components/DeskInterface'
 
 class Main extends Component {
 	render() {
-		const { gui, instruments } = this.props
+		const { gui, instruments = [], effects = [] } = this.props
 		const { view, activeElement } = this.props.gui
 		const View = Views[view]
+		let effect = {}
 		let instrument = {}
 		let PropertiesComponent = null
 		if(activeElement) {
@@ -25,6 +27,12 @@ class Main extends Component {
 				if(instrumentConstructor) {
 					PropertiesComponent = instrumentConstructor.Editor
 					instrument = _find(instruments, {id: activeElement.element.ownerId})
+				}
+			}else if(activeElement.type == EFFECT) {
+				const effectConstructor = effectLibrary[activeElement.element.ownerType]
+				if(effectConstructor) {
+					PropertiesComponent = effectConstructor.Editor
+					effect = _find(effects, {id: activeElement.element.ownerId})
 				}
 			}
 		}
@@ -50,4 +58,4 @@ class Main extends Component {
 	}
 }
 
-export default connect(({gui, instruments}) => ({gui, instruments}))(Main)
+export default connect(({gui, effects, instruments}) => ({gui, effects, instruments}))(Main)

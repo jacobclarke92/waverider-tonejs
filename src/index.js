@@ -14,7 +14,7 @@ import { init as initEffects } from './effectsController'
 import { init as initInstruments } from './instrumentsController'
 import { loadInstruments } from './reducers/instruments'
 import { loadDevices } from './reducers/devices'
-// import { loadEffects } from './reducers/effects'
+import { loadEffects } from './reducers/effects'
 import { loadDesk } from './reducers/desk'
 
 import App from './App'
@@ -29,6 +29,7 @@ initInstruments(store)
 initKeyListeners()
 
 store.dispatch(loadInstruments())
+store.dispatch(loadEffects())
 store.dispatch(loadDevices())
 store.dispatch(loadDesk())
 

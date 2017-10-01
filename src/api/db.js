@@ -5,6 +5,7 @@ import { getStorageQuota, requestStorage } from '../utils/localStorageUtils'
 import { readBlobAsText, readBlobAsArrayBuffer, getHashFromBlob, getBlobUrl } from '../utils/blobUtils'
 
 import { deviceSchema } from './midi'
+import { effectSchema } from '../effectLibrary'
 import { instrumentSchema } from '../instrumentLibrary'
 import { deskSchema } from '../reducers/desk'
 
@@ -20,6 +21,7 @@ const db = new Dexie('TimbreSandpit')
 db.version(1).stores({
 	files: '++id,filename,size,type,date,&hash,blob',
 	instruments: instrumentSchema,
+	effects: effectSchema,
 	devices: deviceSchema,
 	desk: deskSchema,
 })

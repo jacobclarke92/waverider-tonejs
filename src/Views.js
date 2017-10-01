@@ -1,5 +1,6 @@
 import { STAGE, DESK, MATRIX } from './constants/uiViews'
 import DeskWorkspace from './components/view/DeskWorkspace'
+import DeskSidebar from './components/view/DeskSidebar'
 import DeskNavbar from './components/view/DeskNavbar'
 
 export default {
@@ -11,7 +12,7 @@ export default {
 	[DESK]: {
 		Workspace: DeskWorkspace,
 		Navbar: DeskNavbar,
-		Sidebar: null,
+		Sidebar: DeskSidebar,
 	},
 	[MATRIX]: {
 		Workspace: null,

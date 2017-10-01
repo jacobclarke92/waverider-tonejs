@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { MASTER, INSTRUMENT, EFFECT } from '../../constants/deskItemTypes'
+import { getEffectInstance } from '../../effectsController'
 import { getInstrumentInstance } from '../../instrumentsController'
 
 export default class VuMeter extends Component {
@@ -23,6 +24,7 @@ export default class VuMeter extends Component {
 
 	getInstance(props = this.props) {
 		const { id, type } = this.props
+		if(type == EFFECT) this.instance = getEffectInstance(id)
 		if(type == INSTRUMENT) this.instance = getInstrumentInstance(id)
 		if(!this.raf) this.raf = requestAnimationFrame(this.monitorLevel)
 	}
