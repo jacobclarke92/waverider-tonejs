@@ -59,7 +59,7 @@ export const connectWire = (wireFrom, wireTo, { wireType }) => {
 			...outputs, 
 			[wireTo.deskItem.ownerId]: {
 				type: wireType,
-				id: wireFrom.deskItem.ownerId+'___'+wireTo.deskItem.ownerId,
+				id: `${wireFrom.deskItem.type+wireFrom.deskItem.ownerId}___${wireTo.deskItem.type+wireTo.deskItem.ownerId}`,
 				wireFrom,
 				wireTo,
 			}
