@@ -84,8 +84,9 @@ class Simpler extends Component {
 							valueDisplay={value => value === 0 ? 0 : value+'c'}
 							onChange={cents => dispatch(updateInstrument(id, {instrument: {...instrument, cents}}))} />
 					</div>
-					<div className="flex-column margin-h-xs">
+					<div className="flex-column flex-grow margin-h-xs">
 						<Waveform 
+							width="100%"
 							height={140}
 							instrumentId={id}
 							fileHash={fileHash} 

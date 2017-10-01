@@ -100,7 +100,7 @@ export default class Waveform extends Component {
 		)
 
 		return (
-			<div className="waveform-container">
+			<div className="waveform-container" style={{width, height}}>
 				{disableFileDrop ? waveformDom : 
 					<DropzoneWrapper onDrop={onReceivedFiles}>
 						{waveformDom}
