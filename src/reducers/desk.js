@@ -9,7 +9,7 @@ export const DESK_ITEM_MOVE = 'DESK_ITEM_MOVE'
 export const DESK_CONNECT_WIRE = 'DESK_CONNECT_WIRE'
 export const DESK_DISCONNECT_WIRE = 'DESK_DISCONNECT_WIRE'
 
-export const deskSchema = '++id,name,ownerId,ownerType,type,position'
+export const deskSchema = '++id,name,ownerId,ownerType,type,position,[type+ownerId]'
 
 const initialState = [
 	{
