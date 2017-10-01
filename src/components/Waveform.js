@@ -12,6 +12,8 @@ import AudioTrim from './AudioTrim'
 export default class Waveform extends Component {
 
 	static defaultProps = {
+		width: 600,
+		height: 200,
 		fileHash: null,
 		reverse: false,
 		trim: {
@@ -76,11 +78,11 @@ export default class Waveform extends Component {
 	}
 
 	render() {
-		const { reverse, disableFileDrop, onTrimChange, onPreviewAudio, onReceivedFiles } = this.props
+		const { width, height, reverse, disableFileDrop, onTrimChange, onPreviewAudio, onReceivedFiles } = this.props
 		const { trim, waveformUrl, fileName, notePositions } = this.state
 
 		const waveformDom = (
-			<div className="waveform" onClick={() => onPreviewAudio()}>
+			<div className="waveform" style={{width, height}} onClick={() => onPreviewAudio()}>
 				{waveformUrl && <div className={classnames('waveform-graphic no-aliasing', {reverse})} style={{backgroundImage: `url(${waveformUrl})`}} />}
 				{waveformUrl && 
 					<AudioTrim 

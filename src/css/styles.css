@@ -4,6 +4,7 @@
 
 @import './app.css';
 @import './body.css';
+@import './layout.css';
 
 @import './elements/button.css';
 @import './elements/checkbox.css';
