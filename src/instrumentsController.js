@@ -69,7 +69,7 @@ function removeInstrument(id) {
 }
 
 function handleNoteAction({type, deviceId, channel, note, velocity}, instruments) {
-	const targetInstruments = instruments.filter(({midiDeviceId, midiChannel}) => (!midiDeviceId || midiDeviceId == deviceId) && (!midiChannel || midiChannel == channel))
+	const targetInstruments = instruments.filter(({enabled, midiDeviceId, midiChannel}) => enabled && (!midiDeviceId || midiDeviceId == deviceId) && (!midiChannel || midiChannel == channel))
 	targetInstruments.forEach(instrument => {
 		if(type == NOTE_ON) instances[instrument.id].noteDown(note, velocity)
 		else if(type == NOTE_OFF) instances[instrument.id].noteUp(note)

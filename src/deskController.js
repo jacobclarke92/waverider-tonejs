@@ -89,7 +89,7 @@ export function connectAudioWires(fromDeskItem, disconnectFirst = false) {
 				if(fromSource.id in connectionAttempts) console.log(`Connected ${fromSource.type} after ${connectionAttempts[fromSource.id]} attempts`)
 			}
 		}else{
-			console.warn(`Unable to connect ${fromSource.type} (id${fromSource.id}) because tone.js source is not available yet`)
+			console.warn(`Unable to connect ${fromSource.type} (${fromSource.id}) because tone.js source is not available yet`)
 			if(!(fromSource.id in connectionAttempts)) connectionAttempts[fromSource.id] = 0
 			if(connectionAttempts[fromSource.id] < 5) {
 				connectionAttempts[fromSource.id] += 1
@@ -140,4 +140,11 @@ export function validateConnection(wireType, wireFrom, wireTo) {
 	}
 
 	return true
+}
+
+export function getOwnerByDeskItem(deskItem) {
+	const { instruments = [], effects = [] } = store.getState()
+	if(deskItem.type == FX) return _find(effects, {id: deskItem.ownerId})
+	if(deskItem.type == INSTRUMENT) return _find(instruments, {id: deskItem.ownerId})
+	return null
 }

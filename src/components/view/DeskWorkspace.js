@@ -7,7 +7,7 @@ import { connect } from 'react-redux'
 import Point from '../../utils/Point'
 import { addKeyListener, removeKeyListener } from '../../utils/keyUtils'
 import { getRelativeMousePosition, getMousePosition, getPositionWithinElem, getRect } from '../../utils/screenUtils'
-import { getDeskWires, validateConnection } from '../../deskController'
+import { getDeskWires, getOwnerByDeskItem, validateConnection } from '../../deskController'
 import { FX, BUS, INSTRUMENT, MASTER, LFO } from '../../constants/deskItemTypes'
 import { DESK } from '../../constants/uiViews'
 import { updateActiveElement } from '../../reducers/gui'
@@ -251,7 +251,7 @@ class DeskWorkspace extends Component {
 	}
 
 	render() {
-		const { desk = [], instruments = [] } = this.props
+		const { dispatch, desk = [], instruments = [] } = this.props
 		const { pan, dragTarget, mouseDown, mouseMoved, stagePointer, selectedDeskItem, selectedWire, wireFrom, wireTo, wireToValid } = this.state
 		const panning = mouseDown && mouseMoved && !dragTarget
 		const connections = getDeskWires()
@@ -283,7 +283,9 @@ class DeskWorkspace extends Component {
 						<DeskItem 
 							key={deskItem.id}
 							ref={elem => this.deskItemRefs[deskItem.id] = elem}
+							dispatch={dispatch}
 							deskItem={deskItem}
+							owner={getOwnerByDeskItem(deskItem)}
 							wiring={!!wireFrom}
 							validWire={wireToValid}
 							editable={deskItem.editable}

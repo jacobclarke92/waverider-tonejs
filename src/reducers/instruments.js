@@ -13,6 +13,7 @@ export const UPDATE_INSTRUMENT = 'UPDATE_INSTRUMENT'
 
 const initialState = [
 	{
+		enabled: true,
 		id: 1,
 		type: 'master',
 		instrument: { gain: 0.5 },
@@ -45,7 +46,7 @@ export const loadInstruments = () => dispatch =>
 export const addInstrument = (type, position = {x: 0, y: 0}) => {
 	const instrumentDef = instrumentLibrary[type]
 	if(!instrumentDef) return null
-	const newInstrument = {type, ..._cloneDeep(instrumentDef.defaultValue)}
+	const newInstrument = {enabled: true, type, ..._cloneDeep(instrumentDef.defaultValue)}
 	const newDeskItem = {name: instrumentDef.name, ownerType: type, type: INSTRUMENT, position, ...deskItemTypeDefaults[INSTRUMENT]}
 	return dispatch => 
 		add('instruments', newInstrument)

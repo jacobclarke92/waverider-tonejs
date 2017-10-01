@@ -1,5 +1,7 @@
 import React, { Component, Children, cloneElement } from 'react'
 import classnames from 'classnames'
+import { updateInstrument } from '../../reducers/instruments'
+
 import Pin from './Pin'
 import Icon from '../Icon'
 
@@ -11,6 +13,8 @@ export default class DeskItemWrapper extends Component {
 		dragging: false,
 		editable: true,
 		removeable: true,
+		owner: {},
+		dispatch: () => {},
 		onEdit: () => {},
 		onRemove: () => {},
 		onPointerDown: () => {},
@@ -46,8 +50,14 @@ export default class DeskItemWrapper extends Component {
 		}
 	}
 
+	toggleActiveState() {
+		const { dispatch, owner } = this.props
+		const enabled = !owner.enabled
+		dispatch(updateInstrument(owner.id, {enabled}))
+	}
+
 	render() {
-		const { children, deskItem, dragging, selected, wiring, validWire, editable, removeable, onEdit, onPinPointerDown, onPinPointerUp, onPinOver, onPinOut } = this.props
+		const { children, deskItem, owner, dragging, selected, wiring, validWire, editable, removeable, onEdit, onPinPointerDown, onPinPointerUp, onPinOver, onPinOut } = this.props
 		const { name, position, audioInput, audioOutput } = deskItem
 
 		const wrapperStyles = {
@@ -61,6 +71,8 @@ export default class DeskItemWrapper extends Component {
 
 		const pinProps = { wiring, valid: validWire, onPinOver, onPinOut, onPinPointerDown, onPinPointerUp }
 
+		const disabled = !owner.enabled
+
 		return (
 			<div 
 				className={classnames('desk-item-wrapper', {dragging, selected})}
@@ -72,7 +84,9 @@ export default class DeskItemWrapper extends Component {
 				{audioInput && <Pin wireType="audio" ioType="input" {...pinProps} />}
 				{audioOutput && <Pin wireType="audio" ioType="output" {...pinProps} />}
 				<div className="desk-item-header">
-					<div className="desk-item-icon"><Icon name="volume-up" size={16} /></div>
+					<div className={classnames('desk-item-icon', {disabled})} onClick={() => this.toggleActiveState()} onMouseDown={e => e.stopPropagation()}>
+						<Icon name={owner && owner.enabled ? 'volume-up' : 'volume-off'} size={16} />
+					</div>
 					<div className="desk-item-title">{name}</div>
 					{editable && <div className="desk-item-icon" onClick={e => onEdit()}><Icon name="edit" size={16} /></div>}
 					{removeable && <div className="desk-item-icon" onClick={e => this.handleRemove(e)}><Icon name="close" size={16} /></div>}

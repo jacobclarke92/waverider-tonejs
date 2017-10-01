@@ -5,7 +5,7 @@ import basicSynth from './instruments/basicSynth'
 import pluckSynth from './instruments/pluckSynth'
 import membraneSynth from './instruments/membraneSynth'
 
-export const instrumentSchema = '++id,type,midiChannel,midiDeviceId,instrument'
+export const instrumentSchema = '++id,enabled,type,midiChannel,midiDeviceId,instrument'
 
 export default {
 	master,
