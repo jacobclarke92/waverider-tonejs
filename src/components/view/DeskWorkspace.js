@@ -11,6 +11,7 @@ import { getDeskWires, getOwnerByDeskItem, validateConnection } from '../../desk
 import { EFFECT, BUS, INSTRUMENT, MASTER, LFO } from '../../constants/deskItemTypes'
 import { DESK } from '../../constants/uiViews'
 import { updateActiveElement } from '../../reducers/gui'
+import { removeEffect } from '../../reducers/effects'
 import { removeInstrument } from '../../reducers/instruments'
 import { moveDeskItem, connectWire, disconnectWire } from '../../reducers/desk'
 import instrumentLibrary from '../../instrumentLibrary'
@@ -238,7 +239,8 @@ class DeskWorkspace extends Component {
 	}
 
 	handleRemoveDeskItem(deskItem) {
-		this.props.dispatch(removeInstrument(deskItem.ownerId))
+		if(deskItem.type == EFFECT) this.props.dispatch(removeEffect(deskItem.ownerId))
+		if(deskItem.type == INSTRUMENT) this.props.dispatch(removeInstrument(deskItem.ownerId))
 	}
 
 	removeActiveItem() {
