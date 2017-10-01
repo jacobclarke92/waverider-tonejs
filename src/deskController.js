@@ -123,6 +123,18 @@ export function getDeskWires() {
 	return connections
 }
 
+export function getDeskItemsConnectedTo(deskItem) {
+	const { desk = [] } = store.getState()
+	return desk.filter(deskItem => {
+		if(deskItem.audioOutput && Object.keys(deskItem.audioOutputs).length > 0) {
+			Object.entries(deskItem.audioOutputs).forEach(([key, connection]) => {
+				if(connection.wireTo.deskItem.id == deskItem.id) return true
+			})
+		}
+		return false;
+	})
+}
+
 export function validateConnection(wireType, wireFrom, wireTo) {
 	const { desk = [] } = store.getState()
 	const fromDeskItem = _find(desk, {id: wireFrom.deskItem.id})

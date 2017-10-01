@@ -1,8 +1,9 @@
 import _merge from 'lodash/merge'
 import _cloneDeep from 'lodash/cloneDeep'
 import effectLibrary from '../effectLibrary'
+import { getDeskItemsConnectedTo } from '../deskController'
 import { deskItemTypeDefaults, EFFECT } from '../constants/deskItemTypes'
-import { add, getAll, updateById } from '../api/db'
+import { add, getAll, getFirstWhere, updateById, removeById } from '../api/db'
 
 const initialState = []
 
@@ -51,9 +52,11 @@ export const updateEffect = (id, updates) => ({type: UPDATE_EFFECT, id, updates}
 
 export const removeEffect = id => dispatch => 
 	removeById('effects', id).then(() => 
-		getBy('desk', 'ownerId', id).then(deskItem => 
-			removeById('desk', deskItem.id).then(() =>
+		getFirstWhere('desk', {type: EFFECT, ownerId: id}).then(deskItem => 
+			removeById('desk', deskItem.id).then(() => {
+				const connections = getDeskItemsConnectedTo(deskItem)
+				console.log('STRAY CONNECTIONS', connections)
 				dispatch({type: REMOVE_EFFECT, id})
-			).catch(e => console.warn('Unable to remove desk item for effect', id, e))
+			}).catch(e => console.warn('Unable to remove desk item for effect', id, e))
 		).catch(e => console.warn('Unable to find desk item for effect', id, e))
 	).catch(e => console.warn('Unable to remove effect', id, e))
