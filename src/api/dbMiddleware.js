@@ -1,11 +1,12 @@
 import _merge from 'lodash/merge'
 import _debounce from 'lodash/debounce'
 import _cloneDeep from 'lodash/cloneDeep'
-import { add, updateById } from './db'
+import db, { add, updateById } from './db'
 import { dbUpdateDebounce } from '../constants/timings'
 import { DESK_ITEM_MOVE } from '../reducers/desk'
 import { UPDATE_INSTRUMENT, ADD_INSTRUMENT, REMOVE_INSTRUMENT } from '../reducers/instruments'
 
+/*
 const instrumentUpdates = {}
 const instrumentUpdateFuncs = {}
 
@@ -25,11 +26,23 @@ function getUpdateFunction(functionsObj, table, id) {
 	}
 	return functionsObj[id]
 }
+*/
+
+const updateState = _debounce(({ instruments, desk, effects, devices }) => {
+	db.table('instruments').clear().then(() => db.table('instruments').bulkPut(instruments).then(() => console.log('instruments saved')))
+	db.table('effects').clear().then(() => db.table('effects').bulkPut(effects).then(() => console.log('effects saved')))
+	db.table('devices').clear().then(() => db.table('devices').bulkPut(devices).then(() => console.log('devices saved')))
+	db.table('desk').clear().then(() => db.table('desk').bulkPut(desk).then(() => console.log('desk saved')))
+}, dbUpdateDebounce)
 
 export default ({getState}) => next => action => {
 
 	const state = getState()
+	updateState(state)
+	/*
 	let updateFunction = null
+
+
 
 	switch(action.type) {
 		case UPDATE_INSTRUMENT:
@@ -44,7 +57,7 @@ export default ({getState}) => next => action => {
 			updateFunction(action.id, deskUpdates[action.id])
 			break
 	}
-
+	*/
 	const returnValue = next(action)
 	return returnValue
 }

@@ -65,18 +65,20 @@ export const connectWire = (wireFrom, wireTo, { wireType }) => {
 			}
 		}
 	}
-	return dispatch => 
+	const deskItem = newDeskItem
+	return /*dispatch => 
 		updateById('desk', wireFrom.deskItem.id, newDeskItem)
-			.then(deskItem => dispatch({type: DESK_CONNECT_WIRE, deskItem}))
-			.catch(e => console.warn('Unable to update desk item for wire connection', wireFrom))
+			.then(deskItem => dispatch(*/{type: DESK_CONNECT_WIRE, deskItem}/*))
+			.catch(e => console.warn('Unable to update desk item for wire connection', wireFrom))*/
 }
 
 export const disconnectWire = ({type, wireFrom, wireTo}) => {
 	const outputs = wireFrom.deskItem[type+'Outputs'] || {}
 	if(wireTo.deskItem.ownerId in outputs) delete outputs[wireTo.deskItem.ownerId]
 	const newDeskItem = {[type+'Outputs']: outputs}
-	return dispatch => 
+	const deskItem = newDeskItem
+	return /*dispatch => 
 		updateById('desk', wireFrom.deskItem.id, newDeskItem)
-			.then(deskItem => dispatch({type: DESK_DISCONNECT_WIRE, deskItem}))
-			.catch(e => console.warn('Unable to update desk item for wire disconnection', wireFrom))
+			.then(deskItem => dispatch(*/{type: DESK_DISCONNECT_WIRE, deskItem}/*))
+			.catch(e => console.warn('Unable to update desk item for wire disconnection', wireFrom))*/
 }
