@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom'
 import thunk from 'redux-thunk'
 import { createStore, compose, applyMiddleware } from 'redux'
 import { Provider } from 'react-redux'
-import './css/styles.css'
 
 import reducers from './reducers'
 import dbMiddleware from './api/dbMiddleware'
@@ -33,5 +32,9 @@ store.dispatch(loadEffects())
 store.dispatch(loadDevices())
 store.dispatch(loadDesk())
 
-
-ReactDOM.render(<Provider store={store}><App /></Provider>, document.getElementById('app'))
+ReactDOM.render(
+	<Provider store={store}>
+		<App />
+	</Provider>,
+	document.getElementById('app')
+)

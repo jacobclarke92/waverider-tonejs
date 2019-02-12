@@ -1,0 +1,17 @@
+{
+	"autorun": true,
+	"autokill": true,
+	"env": {},
+	"terminals": [
+		{
+			"name": "Watch",
+			"commands": ["cd [workspaceFolder]", "yarn", "yarn watch"],
+			"open": true
+		},
+		{
+			"name": "Project",
+			"commands": ["cd [workspaceFolder]"],
+			"open": true
+		}
+	]
+}
