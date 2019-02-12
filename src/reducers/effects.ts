@@ -1,18 +1,31 @@
+import { EffectType, DeskItemType } from '../types'
+import { Action } from 'redux'
 import _merge from 'lodash/merge'
 import _cloneDeep from 'lodash/cloneDeep'
 import effectLibrary from '../effectLibrary'
 import { getDeskItemsConnectedTo } from '../deskController'
 import { deskItemTypeDefaults, EFFECT } from '../constants/deskItemTypes'
 import { add, getAll, getFirstWhere, updateById, removeById } from '../api/db'
+import { PointObj } from '../utils/Point'
 
-const initialState = []
+export type State = EffectType[]
+
+interface ReducerAction extends Action {
+	id?: number
+	updates?: any
+	effects?: EffectType[]
+	effect?: EffectType
+	deskItem?: DeskItemType
+}
+
+const initialState: State = []
 
 export const LOAD_EFFECTS = 'LOAD_EFFECTS'
 export const ADD_EFFECT = 'ADD_EFFECT'
 export const REMOVE_EFFECT = 'REMOVE_EFFECT'
 export const UPDATE_EFFECT = 'UPDATE_EFFECT'
 
-export default function(state = initialState, action) {
+export default function(state: State = initialState, action: ReducerAction) {
 	switch (action.type) {
 		case LOAD_EFFECTS:
 			return action.effects || []
@@ -32,10 +45,10 @@ export const loadEffects = () => dispatch =>
 			if (effects.length > 0) return effects
 			else return []
 		})
-		.then(effects => dispatch({ type: LOAD_EFFECTS, effects }))
+		.then(effects => dispatch({ type: LOAD_EFFECTS, effects } as ReducerAction))
 		.catch(e => console.warn('Unable to load effects', e))
 
-export const addEffect = (type, position = { x: 0, y: 0 }) => {
+export const addEffect = (type, position: PointObj = { x: 0, y: 0 }) => {
 	const effectDef = effectLibrary[type]
 	if (!effectDef) return null
 	const newEffect = { enabled: true, type, ..._cloneDeep(effectDef.defaultValue) }
@@ -44,13 +57,13 @@ export const addEffect = (type, position = { x: 0, y: 0 }) => {
 		add('effects', newEffect)
 			.then(effect =>
 				add('desk', { ...newDeskItem, ownerId: effect.id })
-					.then(deskItem => dispatch({ type: ADD_EFFECT, effect, deskItem }))
-					.catch(e => console.warn('Unable to add desk item for effect', deskItem, newEffect))
+					.then(deskItem => dispatch({ type: ADD_EFFECT, effect, deskItem } as ReducerAction))
+					.catch(e => console.warn('Unable to add desk item for effect', newDeskItem, newEffect))
 			)
 			.catch(e => console.warn('Unable to add effect', newEffect))
 }
 
-export const updateEffect = (id, updates) => ({ type: UPDATE_EFFECT, id, updates })
+export const updateEffect = (id, updates) => ({ type: UPDATE_EFFECT, id, updates } as ReducerAction)
 
 export const removeEffect = id => dispatch =>
 	removeById('effects', id)
@@ -61,7 +74,7 @@ export const removeEffect = id => dispatch =>
 						.then(() => {
 							const connections = getDeskItemsConnectedTo(deskItem)
 							console.log('STRAY CONNECTIONS', connections)
-							dispatch({ type: REMOVE_EFFECT, id })
+							dispatch({ type: REMOVE_EFFECT, id } as ReducerAction)
 						})
 						.catch(e => console.warn('Unable to remove desk item for effect', id, e))
 				)

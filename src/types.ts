@@ -1,5 +1,7 @@
 import BaseEffect from './effects/BaseEffect'
 import { ReactType } from 'react'
+import { string } from 'prop-types'
+import { PointObj } from './utils/Point'
 
 declare global {
 	interface Navigator {
@@ -18,11 +20,22 @@ export type UiViewType = 'STAGE' | 'DESK' | 'MATRIX'
 export type OscType = 'sine' | 'triangle' | 'square' | 'sawtooth'
 export type DeskItem = 'EFFECT' | 'BUS' | 'INSTRUMENT' | 'MASTER' | 'LFO'
 export type NoteString = 'C' | 'C#' | 'D' | 'D#' | 'E' | 'F' | 'F#' | 'G' | 'G#' | 'A' | 'A#' | 'B'
+export type WireType = 'audio' | 'data'
 export type FileType = any // TODO
 export type CheckerFunc = (a: any, b: any) => boolean
 export type GenericProps = { [k: string]: any }
 
-export interface DeskItemType {
+export interface DeskItemType extends DeskItemIOType {
+	id?: number
+	name: string
+	ownerId: number
+	ownerType: string
+	type: DeskItem
+	slug: string
+	position: PointObj
+}
+
+export interface DeskItemIOType {
 	audioInput: boolean
 	audioOutput: boolean
 	dataInput: boolean
@@ -34,6 +47,12 @@ export interface DeskItemType {
 	dataOutputs?: {}
 	dataInputs?: {}
 }
+
+export interface Wire {
+	deskItem: DeskItemType
+}
+
+export interface Device {}
 
 export interface EnvelopeType {
 	attack: number
@@ -91,6 +110,7 @@ export type ParamsType = AnyParamType[]
 
 export type BaseEffectType = typeof BaseEffect
 export interface EffectType {
+	id: number
 	name: string
 	slug: string
 	Effect: BaseEffectType

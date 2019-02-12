@@ -1,4 +1,4 @@
-import { DeskItem, DeskItemType } from '../types'
+import { DeskItem, DeskItemIOType } from '../types'
 
 export const EFFECT = 'EFFECT'
 export const BUS = 'BUS'
@@ -6,7 +6,7 @@ export const INSTRUMENT = 'INSTRUMENT'
 export const MASTER = 'MASTER'
 export const LFO = 'LFO'
 
-export const deskItemTypeDefaults: { [key in DeskItem]: DeskItemType } = {
+export const deskItemTypeDefaults: { [key in DeskItem]: DeskItemIOType } = {
 	[MASTER]: {
 		audioInput: true,
 		audioOutput: false,

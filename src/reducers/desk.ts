@@ -1,8 +1,12 @@
-import { isArray, isObject } from '../utils/typeUtils'
+import { Wire, WireType } from '../types'
+import { Action, Dispatch } from 'redux'
+import { isArray } from '../utils/typeUtils'
 import { deskItemTypeDefaults, MASTER, BUS, INSTRUMENT, EFFECT, LFO } from '../constants/deskItemTypes'
 import { ADD_INSTRUMENT, REMOVE_INSTRUMENT } from './instruments'
 
 import { add, getAll, updateById } from '../api/db'
+import { DeskItemType } from '../types'
+import { PointObj } from '../utils/Point'
 
 export const LOAD_DESK = 'LOAD_DESK'
 export const DESK_ITEM_MOVE = 'DESK_ITEM_MOVE'
@@ -11,7 +15,16 @@ export const DESK_DISCONNECT_WIRE = 'DESK_DISCONNECT_WIRE'
 
 export const deskSchema = '++id,name,ownerId,ownerType,type,position,[type+ownerId]'
 
-const initialState = [
+export type State = DeskItemType[]
+
+interface ReducerAction extends Action {
+	id?: number
+	position?: PointObj
+	deskItem?: DeskItemType
+	desk?: any // TODO
+}
+
+const initialState: State = [
 	{
 		id: 1,
 		name: 'Master',
@@ -27,7 +40,7 @@ const initialState = [
 	},
 ]
 
-export default function(state = initialState, action) {
+export default function(state: State = initialState, action: ReducerAction) {
 	switch (action.type) {
 		case LOAD_DESK:
 			return action.desk || []
@@ -50,12 +63,17 @@ export const loadDesk = () => dispatch =>
 			if (desk.length > 0) return desk
 			return add('desk', initialState[0])
 		})
-		.then(desk => dispatch({ type: LOAD_DESK, desk: isArray(desk) ? desk : [desk] }))
+		.then(desk => dispatch({ type: LOAD_DESK, desk: isArray(desk) ? desk : [desk] } as ReducerAction))
 		.catch(e => console.warn('Unable to load desk state', e))
 
-export const moveDeskItem = (deskItem, position) => ({ type: DESK_ITEM_MOVE, id: deskItem.id, position })
+export const moveDeskItem = (deskItem: DeskItemType, position: PointObj) =>
+	({
+		type: DESK_ITEM_MOVE,
+		id: deskItem.id,
+		position,
+	} as ReducerAction)
 
-export const connectWire = (wireFrom, wireTo, { wireType }) => {
+export const connectWire = (wireFrom: Wire, wireTo: Wire, { wireType }: { wireType: WireType }) => {
 	const outputs = wireFrom.deskItem[wireType + 'Outputs'] || {}
 	const newDeskItem = {
 		[wireType + 'Outputs']: {
@@ -70,16 +88,19 @@ export const connectWire = (wireFrom, wireTo, { wireType }) => {
 	}
 	return dispatch =>
 		updateById('desk', wireFrom.deskItem.id, newDeskItem)
-			.then(deskItem => dispatch({ type: DESK_CONNECT_WIRE, deskItem }))
+			.then(deskItem => dispatch({ type: DESK_CONNECT_WIRE, deskItem } as ReducerAction))
 			.catch(e => console.warn('Unable to update desk item for wire connection', wireFrom))
 }
 
-export const disconnectWire = ({ type, wireFrom, wireTo }) => {
+export const disconnectWire = ({ type, wireFrom, wireTo }: { type: WireType; wireFrom: Wire; wireTo: Wire }) => {
 	const outputs = wireFrom.deskItem[type + 'Outputs'] || {}
 	if (wireTo.deskItem.ownerId in outputs) delete outputs[wireTo.deskItem.ownerId]
 	const newDeskItem = { [type + 'Outputs']: outputs }
 	return dispatch =>
 		updateById('desk', wireFrom.deskItem.id, newDeskItem)
-			.then(deskItem => dispatch({ type: DESK_DISCONNECT_WIRE, deskItem }))
-			.catch(e => console.warn('Unable to update desk item for wire disconnection', wireFrom))
+			.then(deskItem => dispatch({ type: DESK_DISCONNECT_WIRE, deskItem } as ReducerAction))
+			.catch(e => {
+				console.warn('Unable to update desk item for wire disconnection', wireFrom)
+				return false
+			})
 }
