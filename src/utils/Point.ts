@@ -1,11 +1,21 @@
+export interface PointObj {
+	x: number
+	y: number
+}
+
 export default class Point {
+	x: number
+	y: number
+
 	/**
 	 * Loaded constructor can take x and y or an object containing x and y
 	 * @param  {Number/Object} x - x position or object
 	 * @param  {Number} y - y position
 	 * @return {Point}
 	 */
-	constructor(x = 0, y = 0) {
+	constructor(x: number, y: number)
+	constructor(x: PointObj | Point)
+	constructor(x: any, y?: number) {
 		if (typeof x == 'object') {
 			this.x = x.x
 			this.y = x.y

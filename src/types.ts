@@ -1,12 +1,26 @@
 import BaseEffect from './effects/BaseEffect'
 import { ReactType } from 'react'
 
+declare global {
+	interface Navigator {
+		webkitTemporaryStorage: any
+		webkitPersistentStorage: any
+	}
+	interface Document {
+		exitPointerLock: () => void
+	}
+	interface HTMLElement {
+		requestPointerLock: () => void
+	}
+}
+
 export type UiViewType = 'STAGE' | 'DESK' | 'MATRIX'
 export type OscType = 'sine' | 'triangle' | 'square' | 'sawtooth'
 export type DeskItem = 'EFFECT' | 'BUS' | 'INSTRUMENT' | 'MASTER' | 'LFO'
 export type NoteString = 'C' | 'C#' | 'D' | 'D#' | 'E' | 'F' | 'F#' | 'G' | 'G#' | 'A' | 'A#' | 'B'
-
-export type FileType = any
+export type FileType = any // TODO
+export type CheckerFunc = (a: any, b: any) => boolean
+export type GenericProps = { [k: string]: any }
 
 export interface DeskItemType {
 	audioInput: boolean

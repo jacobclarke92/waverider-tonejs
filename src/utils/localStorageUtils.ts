@@ -1,4 +1,4 @@
-const defaultLocalStorageBytes = 1024 * 1024 * 128
+const defaultLocalStorageBytes: number = 1024 * 1024 * 128
 
 export const getStorageQuota = () =>
 	new Promise((resolve, reject) => {

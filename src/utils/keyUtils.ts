@@ -1,14 +1,14 @@
 import keycode from 'keycode'
 
-let shiftKeyPressed = false
-let ctrlKeyPressed = false
-let altKeyPressed = false
-let leftKeyPressed = false
-let rightKeyPressed = false
-let upKeyPressed = false
-let downKeyPressed = false
-let leftCommandKeyPressed = false
-let rightCommandKeyPressed = false
+let shiftKeyPressed: boolean = false
+let ctrlKeyPressed: boolean = false
+let altKeyPressed: boolean = false
+let leftKeyPressed: boolean = false
+let rightKeyPressed: boolean = false
+let upKeyPressed: boolean = false
+let downKeyPressed: boolean = false
+let leftCommandKeyPressed: boolean = false
+let rightCommandKeyPressed: boolean = false
 
 export const isShiftKeyPressed = () => shiftKeyPressed
 export const isCtrlKeyPressed = () => ctrlKeyPressed
@@ -19,10 +19,12 @@ export const isRightKeyPressed = () => rightKeyPressed
 export const isUpKeyPressed = () => upKeyPressed
 export const isDownKeyPressed = () => downKeyPressed
 
-const keyCallbacks = {}
-const keyUpCallbacks = {}
+type CallbackListenerObj = { [key: string]: Function[] }
 
-function handleKeyDown(event) {
+const keyCallbacks: CallbackListenerObj = {}
+const keyUpCallbacks: CallbackListenerObj = {}
+
+function handleKeyDown(event: Event) {
 	const inputIsFocused = isInputFocused()
 	const key = keycode(event)
 	switch (key) {
@@ -90,17 +92,17 @@ function handleKeyUp(event) {
 	}
 }
 
-export function init(element = document) {
+export function init(element: HTMLElement | Document = document) {
 	element.addEventListener('keydown', handleKeyDown)
 	element.addEventListener('keyup', handleKeyUp)
 }
 
-export function addKeyListener(keyCode, func) {
+export function addKeyListener(keyCode: string, func: Function) {
 	if (Object.keys(keyCallbacks).indexOf(keyCode) < 0) keyCallbacks[keyCode] = []
 	keyCallbacks[keyCode].push(func)
 }
 
-export function removeKeyListener(keyCode, func) {
+export function removeKeyListener(keyCode: string, func: Function) {
 	if (Object.keys(keyCallbacks).indexOf(keyCode) >= 0) {
 		for (let i = 0; i < keyCallbacks[keyCode].length; i++) {
 			if (keyCallbacks[keyCode][i] == func) keyCallbacks[keyCode].splice(i, 1)
@@ -111,12 +113,12 @@ export function removeKeyListener(keyCode, func) {
 export const addKeyDownListener = addKeyListener
 export const removeKeyDownListener = removeKeyListener
 
-export function addKeyUpListener(keyCode, func) {
+export function addKeyUpListener(keyCode: string, func: Function) {
 	if (Object.keys(keyUpCallbacks).indexOf(keyCode) < 0) keyUpCallbacks[keyCode] = []
 	keyUpCallbacks[keyCode].push(func)
 }
 
-export function removeKeyUpListener(keyCode, func) {
+export function removeKeyUpListener(keyCode: string, func: Function) {
 	if (Object.keys(keyUpCallbacks).indexOf(keyCode) >= 0) {
 		for (let i = 0; i < keyUpCallbacks[keyCode].length; i++) {
 			if (keyUpCallbacks[keyCode][i] == func) keyUpCallbacks[keyCode].splice(i, 1)

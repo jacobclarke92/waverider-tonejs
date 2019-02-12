@@ -1,6 +1,7 @@
 import { noteStrings } from '../constants/noteStrings'
+import { NoteString } from '../types'
 
-export const parseNoteToNumber = input => {
+export const parseNoteToNumber = (input: number | string): number | boolean => {
 	if (typeof input == 'number') input = input.toString()
 	input = input.toUpperCase().replace(' ', '')
 
@@ -18,7 +19,7 @@ export const parseNoteToNumber = input => {
 	return 12 * scale + noteIndex
 }
 
-const fixNote = note => {
+const fixNote = (note: string): NoteString | undefined => {
 	switch (note) {
 		case 'Db':
 			return 'C#'
@@ -36,9 +37,9 @@ const fixNote = note => {
 			return 'A#'
 		case 'Cb':
 		case 'B#':
-			return false
+			return undefined
 	}
-	return note
+	return note as NoteString
 }
 
-export const noteNumberToName = number => noteStrings[number % 12] + Math.floor(number / 12)
+export const noteNumberToName = (number: number): string => noteStrings[number % 12] + Math.floor(number / 12)
