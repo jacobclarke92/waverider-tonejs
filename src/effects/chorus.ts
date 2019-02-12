@@ -1,20 +1,8 @@
 import BaseEffect from './BaseEffect'
 import { Chorus } from 'tone'
+import { EffectType, ParamDefaultValueType, ParamsType } from '../types'
 
-export class ChorusEffect extends BaseEffect {
-	constructor(value = {}, dispatch) {
-		super(value, dispatch)
-	}
-
-	initEffect(callback = () => {}) {
-		if (this.instance) this.instance.dispose()
-		this.instance = new Chorus()
-		this.instance.connect(this.meter)
-		callback()
-	}
-}
-
-export const params = [
+export const params: ParamsType = [
 	{
 		label: 'Frequency',
 		path: 'frequency',
@@ -38,14 +26,30 @@ export const params = [
 		path: 'depth',
 		description: 'The depth of the chorus',
 		defaultValue: 0.7,
+		min: 0,
+		max: 1,
+		step: 0.05,
 	},
 ]
 
-export const defaultValue = {
+export const defaultValue: ParamDefaultValueType = {
 	effect: params.reduce((obj, { path, defaultValue }) => ({ ...obj, [path]: defaultValue }), {}),
 }
 
-export default {
+export class ChorusEffect extends BaseEffect {
+	constructor(value = {}, dispatch) {
+		super(value, dispatch)
+	}
+
+	initEffect(callback = () => {}) {
+		if (this.instance) this.instance.dispose()
+		this.instance = new Chorus()
+		this.instance.connect(this.meter)
+		callback()
+	}
+}
+
+const effect: EffectType = {
 	name: 'Chorus',
 	slug: 'chorus',
 	Effect: ChorusEffect,
@@ -53,3 +57,5 @@ export default {
 	defaultValue,
 	params,
 }
+
+export default effect

@@ -1,4 +1,6 @@
-export const defaultEnvelope = {
+import { OscType, EnvelopeType, OptionsParamType, NumberParamType } from '../types'
+
+export const defaultEnvelope: EnvelopeType = {
 	attack: 0.01,
 	decay: 0,
 	sustain: 1,
@@ -10,7 +12,7 @@ export const allInstrumentDefaults = {
 	midiChannel: null,
 }
 
-export const voicesParam = {
+export const voicesParam: NumberParamType = {
 	label: 'Voices',
 	path: 'voices',
 	defaultValue: 1,
@@ -19,18 +21,18 @@ export const voicesParam = {
 	step: 1,
 }
 
-export const oscTypeParam = {
+export const oscTypeParam: OptionsParamType = {
 	label: 'Osc. Type',
 	path: 'oscillator.type',
 	defaultValue: 'sine',
 	options: ['sine', 'triangle', 'square', 'sawtooth'],
 }
 
-export const envelopeParams = [
+export const envelopeParams: NumberParamType[] = [
 	{
 		label: 'Attack',
 		path: 'envelope.attack',
-		defaulValue: 0.01,
+		defaultValue: 0.01,
 		min: 0,
 		max: 5,
 		step: 0.01,
@@ -38,7 +40,7 @@ export const envelopeParams = [
 	{
 		label: 'Decay',
 		path: 'envelope.decay',
-		defaulValue: 0,
+		defaultValue: 0,
 		min: 0,
 		max: 5,
 		step: 0.01,
@@ -46,7 +48,7 @@ export const envelopeParams = [
 	{
 		label: 'Sustain',
 		path: 'envelope.sustain',
-		defaulValue: 1,
+		defaultValue: 1,
 		min: 0,
 		max: 1,
 		step: 0.01,
@@ -54,7 +56,7 @@ export const envelopeParams = [
 	{
 		label: 'Release',
 		path: 'envelope.release',
-		defaulValue: 0.2,
+		defaultValue: 0.2,
 		min: 0,
 		max: 5,
 		step: 0.01,

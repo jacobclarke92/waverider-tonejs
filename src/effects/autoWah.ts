@@ -1,20 +1,8 @@
 import BaseEffect from './BaseEffect'
 import { AutoWah } from 'tone'
+import { ParamsType, EffectType, ParamDefaultValueType } from '../types'
 
-export class AutoWahEffect extends BaseEffect {
-	constructor(value = {}, dispatch) {
-		super(value, dispatch)
-	}
-
-	initEffect(callback = () => {}) {
-		if (this.instance) this.instance.dispose()
-		this.instance = new AutoWah()
-		this.instance.connect(this.meter)
-		callback()
-	}
-}
-
-export const params = [
+export const params: ParamsType = [
 	{
 		label: 'Base Frequency',
 		path: 'baseFrequency',
@@ -44,11 +32,24 @@ export const params = [
 	},
 ]
 
-export const defaultValue = {
+export const defaultValue: ParamDefaultValueType = {
 	effect: params.reduce((obj, { path, defaultValue }) => ({ ...obj, [path]: defaultValue }), {}),
 }
 
-export default {
+export class AutoWahEffect extends BaseEffect {
+	constructor(value = {}, dispatch) {
+		super(value, dispatch)
+	}
+
+	initEffect(callback = () => {}) {
+		if (this.instance) this.instance.dispose()
+		this.instance = new AutoWah()
+		this.instance.connect(this.meter)
+		callback()
+	}
+}
+
+const effect: EffectType = {
 	name: 'Auto Wah',
 	slug: 'autoWah',
 	Effect: AutoWahEffect,
@@ -56,3 +57,5 @@ export default {
 	defaultValue,
 	params,
 }
+
+export default effect

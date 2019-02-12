@@ -1,21 +1,9 @@
 import BaseEffect from './BaseEffect'
 import { AutoPanner } from 'tone'
 import { oscTypeParam } from '../constants/params'
+import { EffectType, ParamsType, ParamDefaultValueType } from '../types'
 
-export class AutoPannerEffect extends BaseEffect {
-	constructor(value = {}, dispatch) {
-		super(value, dispatch)
-	}
-
-	initEffect(callback = () => {}) {
-		if (this.instance) this.instance.dispose()
-		this.instance = new AutoPanner()
-		this.instance.connect(this.meter)
-		callback()
-	}
-}
-
-export const params = [
+export const params: ParamsType = [
 	{
 		label: 'Frequency',
 		path: 'frequency',
@@ -40,11 +28,24 @@ export const params = [
 	},
 ]
 
-export const defaultValue = {
+export const defaultValue: ParamDefaultValueType = {
 	effect: params.reduce((obj, { path, defaultValue }) => ({ ...obj, [path]: defaultValue }), {}),
 }
 
-export default {
+export class AutoPannerEffect extends BaseEffect {
+	constructor(value = {}, dispatch) {
+		super(value, dispatch)
+	}
+
+	initEffect(callback = () => {}) {
+		if (this.instance) this.instance.dispose()
+		this.instance = new AutoPanner()
+		this.instance.connect(this.meter)
+		callback()
+	}
+}
+
+const effect: EffectType = {
 	name: 'Auto Panner',
 	slug: 'autoPanner',
 	Effect: AutoPannerEffect,
@@ -52,3 +53,4 @@ export default {
 	defaultValue,
 	params,
 }
+export default effect

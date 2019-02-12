@@ -1,5 +1,22 @@
 import BaseEffect from './BaseEffect'
 import { FeedbackEffect } from 'tone'
+import { ParamDefaultValueType, ParamsType, EffectType } from '../types'
+
+export const params: ParamsType = [
+	{
+		label: 'Feedback',
+		path: 'feedback',
+		description: 'The amount of signal which is fed back into the effect input',
+		defaultValue: 0.125,
+		min: 0,
+		max: 1,
+		step: 0.05,
+	},
+]
+
+export const defaultValue: ParamDefaultValueType = {
+	effect: params.reduce((obj, { path, defaultValue }) => ({ ...obj, [path]: defaultValue }), {}),
+}
 
 export class FeedbackEffectEffect extends BaseEffect {
 	constructor(value = {}, dispatch) {
@@ -14,20 +31,7 @@ export class FeedbackEffectEffect extends BaseEffect {
 	}
 }
 
-export const params = [
-	{
-		label: 'Feedback',
-		path: 'feedback',
-		description: 'The amount of signal which is fed back into the effect input',
-		defaultValue: 0.125,
-	},
-]
-
-export const defaultValue = {
-	effect: params.reduce((obj, { path, defaultValue }) => ({ ...obj, [path]: defaultValue }), {}),
-}
-
-export default {
+const effect: EffectType = {
 	name: 'Feedback Effect',
 	slug: 'feedbackEffect',
 	Effect: FeedbackEffectEffect,
@@ -35,3 +39,5 @@ export default {
 	defaultValue,
 	params,
 }
+
+export default effect
