@@ -1,6 +1,6 @@
 import WaveSurfer from 'wavesurfer'
 import base64toBlob from 'b64-to-blob'
-import { getFile } from './db'
+import { getFileByHash } from './db'
 import { getBlobUrl } from '../utils/blobUtils'
 
 const defaultOptions = {
@@ -45,5 +45,5 @@ export function getWaveformFromFile(file, options = {}) {
 }
 
 export function getWaveformFromFileHash(hash, options = {}) {
-	return getFile(hash).then(file => file && getWaveformFromFile(file, options))
+	return getFileByHash(hash).then(file => file && getWaveformFromFile(file, options))
 }
