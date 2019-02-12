@@ -6646,9 +6646,9 @@ to-regex@^3.0.1, to-regex@^3.0.2:
     regex-not "^1.0.2"
     safe-regex "^1.1.0"
 
-"tone@git://github.com/Tonejs/Tone.js.git#r10":
-  version "0.10.0"
-  resolved "git://github.com/Tonejs/Tone.js.git#13adf7a3eb39948588760e0bed5e43bf48c42d49"
+tone@^13.4.9:
+  version "13.4.9"
+  resolved "https://registry.yarnpkg.com/tone/-/tone-13.4.9.tgz#c5e9f69d0cdea6d2fa03e108766b10d5f9185dde"
 
 tough-cookie@~2.3.0:
   version "2.3.2"

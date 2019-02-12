@@ -70,7 +70,7 @@
 		"react-redux": "^5.0.6",
 		"redux": "^3.7.2",
 		"redux-thunk": "^2.2.0",
-		"tone": "git://github.com/Tonejs/Tone.js.git#r10",
+		"tone": "^13.4.9",
 		"wavesurfer.js": "^2.0.0-beta01"
 	}
 }
