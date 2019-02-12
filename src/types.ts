@@ -7,6 +7,7 @@ declare global {
 	interface Navigator {
 		webkitTemporaryStorage: any
 		webkitPersistentStorage: any
+		requestMIDIAccess: any
 	}
 	interface Document {
 		exitPointerLock: () => void
@@ -16,12 +17,14 @@ declare global {
 	}
 }
 
+export type KeyedObject = {[key: string]: any}
+export type NumericObject = {[key: number]: any}
+
 export type UiViewType = 'STAGE' | 'DESK' | 'MATRIX'
 export type OscType = 'sine' | 'triangle' | 'square' | 'sawtooth'
 export type DeskItem = 'EFFECT' | 'BUS' | 'INSTRUMENT' | 'MASTER' | 'LFO'
 export type NoteString = 'C' | 'C#' | 'D' | 'D#' | 'E' | 'F' | 'F#' | 'G' | 'G#' | 'A' | 'A#' | 'B'
 export type WireType = 'audio' | 'data'
-export type FileType = any // TODO
 export type CheckerFunc = (a: any, b: any) => boolean
 export type GenericProps = { [k: string]: any }
 
@@ -53,6 +56,16 @@ export interface Wire {
 }
 
 export interface Device {}
+
+export interface FileType {
+	id: number
+	filename: string
+	size: number
+	type: string
+	date: string
+	hash: string
+	blob: Blob
+}
 
 export interface Instrument {
 	enabled: boolean

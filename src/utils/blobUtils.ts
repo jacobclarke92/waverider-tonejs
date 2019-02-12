@@ -2,25 +2,25 @@ import Crypto from 'crypto-js'
 import 'crypto-js/sha1'
 import 'crypto-js/lib-typedarrays'
 
-export function readBlobAsText(blob: Blob) {
+export function readBlobAsText(blob: Blob):Promise<string> {
 	return new Promise((resolve, reject) => {
 		const fileReader = new FileReader()
-		fileReader.onload = (e: Event) => resolve(fileReader.result)
+		fileReader.onload = (e: ProgressEvent) => resolve(fileReader.result as string)
 		fileReader.onerror = reject
 		fileReader.readAsText(blob)
 	})
 }
 
-export function readBlobAsArrayBuffer(blob: Blob) {
+export function readBlobAsArrayBuffer(blob: Blob):Promise<ArrayBuffer> {
 	return new Promise((resolve, reject) => {
 		const fileReader = new FileReader()
-		fileReader.onload = e => resolve(fileReader.result)
+		fileReader.onload = e => resolve(fileReader.result as ArrayBuffer)
 		fileReader.onerror = reject
 		fileReader.readAsArrayBuffer(blob)
 	})
 }
 
-export function getHashFromBlob(blob: Blob) {
+export function getHashFromBlob(blob: Blob):Promise<string> {
 	return new Promise((resolve, reject) => {
 		readBlobAsArrayBuffer(blob)
 			.then(data => resolve(Crypto.SHA1(Crypto.lib.WordArray.create(data)).toString()))
@@ -28,6 +28,6 @@ export function getHashFromBlob(blob: Blob) {
 	})
 }
 
-export function getBlobUrl(blob: Blob) {
+export function getBlobUrl(blob: Blob): string {
 	return URL.createObjectURL(blob)
 }

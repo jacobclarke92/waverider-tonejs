@@ -5,16 +5,21 @@ import { add, updateById } from './db'
 import { dbUpdateDebounce } from '../constants/timings'
 import { DESK_ITEM_MOVE } from '../reducers/desk'
 import { UPDATE_INSTRUMENT, ADD_INSTRUMENT, REMOVE_INSTRUMENT } from '../reducers/instruments'
+import { KeyedObject } from '../types';
 
-const instrumentUpdates = {}
-const instrumentUpdateFuncs = {}
+type DbUpdateObjects = {[key: number]: KeyedObject}
+type DbUpdateFunction = (id: number, updates: KeyedObject) => void
+type DbUpdateFunctions = {[key: number]: DbUpdateFunction}
 
-const deskUpdates = {}
-const deskUpdateFuncs = {}
+const instrumentUpdates:DbUpdateObjects = {}
+const instrumentUpdateFuncs:DbUpdateFunctions = {}
 
-function getUpdateFunction(functionsObj, table, id) {
+const deskUpdates:DbUpdateObjects = {}
+const deskUpdateFuncs:DbUpdateFunctions = {}
+
+function getUpdateFunction(functionsObj:DbUpdateFunctions, table: string, id: number):DbUpdateFunction {
 	if (!(id in functionsObj)) {
-		functionsObj[id] = _debounce((id, updates) => {
+		functionsObj[id] = _debounce((id: number, updates: KeyedObject) => {
 			updateById(table, id, updates)
 				.then(entity => {
 					console.log(`${table} entity ${id} stored updates successfully`, updates)
@@ -26,9 +31,9 @@ function getUpdateFunction(functionsObj, table, id) {
 	return functionsObj[id]
 }
 
-export default ({ getState }) => next => action => {
+export default ({ getState }) => next => action => { // TODO
 	const state = getState()
-	let updateFunction = null
+	let updateFunction: DbUpdateFunction
 
 	switch (action.type) {
 		case UPDATE_INSTRUMENT:

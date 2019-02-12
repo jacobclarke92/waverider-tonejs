@@ -2291,13 +2291,9 @@ dev-ip@^1.0.1:
   version "1.0.1"
   resolved dev-ip-1.0.1.tgz#a76a3ed1855be7a012bb8ac16cb80f3c00dc28f0
 
-dexie@*:
+dexie@*, dexie@^2.0.4:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/dexie/-/dexie-2.0.4.tgz#6027a5e05879424e8f9979d8c14e7420f27e3a11"
-
-dexie@^2.0.0-beta.11:
-  version "2.0.0-beta.11"
-  resolved dexie-2.0.0-beta.11.tgz#980dde73146b4c147af0f84165d3ad5be8e952dc
 
 diffie-hellman@^5.0.0:
   version "5.0.2"
