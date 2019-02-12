@@ -9,7 +9,7 @@ export default class NumberInput extends Component {
 	}
 
 	componentDidMount() {
-		if(this.props.autoFocus) {
+		if (this.props.autoFocus) {
 			this.input.focus()
 			this.input.select()
 		}
@@ -18,11 +18,7 @@ export default class NumberInput extends Component {
 	render() {
 		const { onChange, beforeOnChange, ...props } = this.props
 		return (
-			<input 
-				type="number" 
-				ref={elem => this.input = elem}
-				onChange={e => onChange(beforeOnChange(e))} 
-				{...props} />
+			<input type="number" ref={elem => (this.input = elem)} onChange={e => onChange(beforeOnChange(e))} {...props} />
 		)
 	}
 }

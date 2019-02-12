@@ -8,7 +8,7 @@ export class MasterInstrument {
 		console.log('Mounting master...')
 		this.mounted = false
 		this.dispatch = dispatch
-		Object.keys(value).forEach(key => this[key] = value[key])
+		Object.keys(value).forEach(key => (this[key] = value[key]))
 		this.meter = new Meter()
 		this.initSynth(() => {
 			this.mounted = true
@@ -17,12 +17,12 @@ export class MasterInstrument {
 	}
 
 	update(value, oldValue) {
-		Object.keys(value).forEach(key => this[key] = value[key])
+		Object.keys(value).forEach(key => (this[key] = value[key]))
 	}
 
 	initSynth(callback = () => {}) {
-		if(this.submaster) this.submaster.dispose()
-		this.submaster = new Gain({gain: 1})
+		if (this.submaster) this.submaster.dispose()
+		this.submaster = new Gain({ gain: 1 })
 		this.submaster.connect(this.meter)
 		this.submaster.connect(Master)
 		callback()
@@ -32,14 +32,14 @@ export class MasterInstrument {
 	noteDown() {}
 
 	getToneSource() {
-		return (this.mounted && this.submaster) ? this.submaster : false
+		return this.mounted && this.submaster ? this.submaster : false
 	}
 }
 
 export const defaultValue = {
 	instrument: {
 		gain: 0.5,
-	}
+	},
 }
 
 export const params = [
@@ -50,7 +50,7 @@ export const params = [
 		min: 0,
 		max: 1,
 		step: 0.01,
-	}
+	},
 ]
 
 export default {

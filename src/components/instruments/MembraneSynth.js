@@ -15,76 +15,97 @@ class MembraneSynth extends Component {
 		const { attack, decay, sustain, release } = envelope
 		return (
 			<div className="membrane-synth">
-				<DeviceSelect value={midiDeviceId} onChange={midiDeviceId => dispatch(updateInstrument(id, {midiDeviceId}))} />
-				<ChannelSelect value={midiChannel} onChange={midiChannel => dispatch(updateInstrument(id, {midiChannel}))} />
-				<KnobInput 
-					label="Voices" 
-					min={1} 
-					max={12} 
-					step={1} 
-					value={voices} 
+				<DeviceSelect
+					value={midiDeviceId}
+					onChange={midiDeviceId => dispatch(updateInstrument(id, { midiDeviceId }))}
+				/>
+				<ChannelSelect value={midiChannel} onChange={midiChannel => dispatch(updateInstrument(id, { midiChannel }))} />
+				<KnobInput
+					label="Voices"
+					min={1}
+					max={12}
+					step={1}
+					value={voices}
 					defaultValue={defaultValue.instrument.voices}
-					onChange={voices => dispatch(updateInstrument(id, {instrument: {...instrument, voices}}))} />
-				<KnobInput 
-					label="Pitch Decay" 
-					min={0} 
-					max={1} 
-					step={0.01} 
-					value={pitchDecay} 
+					onChange={voices => dispatch(updateInstrument(id, { instrument: { ...instrument, voices } }))}
+				/>
+				<KnobInput
+					label="Pitch Decay"
+					min={0}
+					max={1}
+					step={0.01}
+					value={pitchDecay}
 					defaultValue={defaultValue.instrument.pitchDecay}
-					onChange={pitchDecay => dispatch(updateInstrument(id, {instrument: {...instrument, pitchDecay}}))} />
-				<KnobInput 
-					label="Octaves" 
-					min={0} 
-					max={12} 
-					step={1} 
-					value={octaves} 
+					onChange={pitchDecay => dispatch(updateInstrument(id, { instrument: { ...instrument, pitchDecay } }))}
+				/>
+				<KnobInput
+					label="Octaves"
+					min={0}
+					max={12}
+					step={1}
+					value={octaves}
 					defaultValue={defaultValue.instrument.octaves}
-					onChange={octaves => dispatch(updateInstrument(id, {instrument: {...instrument, octaves}}))} />
+					onChange={octaves => dispatch(updateInstrument(id, { instrument: { ...instrument, octaves } }))}
+				/>
 
 				<SelectInput
 					empty={false}
 					value={oscillator.type}
 					defaultValue={defaultValue.instrument.oscillator.type}
-					options={['square', 'triangle', 'sine', 'sawtooth'].map(value => ({value, text: value}))}
-					onChange={type => dispatch(updateInstrument(id, {instrument: {...instrument, oscillator: {...oscillator, type}}}))} />
-				
+					options={['square', 'triangle', 'sine', 'sawtooth'].map(value => ({ value, text: value }))}
+					onChange={type =>
+						dispatch(updateInstrument(id, { instrument: { ...instrument, oscillator: { ...oscillator, type } } }))
+					}
+				/>
+
 				<KnobInput
 					label="Attack"
 					value={attack}
 					min={0}
 					max={5}
 					step={0.01}
-					valueDisplay={value => value+'s'}
+					valueDisplay={value => value + 's'}
 					defaultValue={defaultValue.instrument.envelope.attack}
-					onChange={attack => dispatch(updateInstrument(id, {instrument: {...instrument, envelope: {...envelope, attack}}}))} />
+					onChange={attack =>
+						dispatch(updateInstrument(id, { instrument: { ...instrument, envelope: { ...envelope, attack } } }))
+					}
+				/>
 				<KnobInput
 					label="Decay"
 					value={decay}
 					min={0}
 					max={5}
 					step={0.01}
-					valueDisplay={value => value+'s'}
+					valueDisplay={value => value + 's'}
 					defaultValue={defaultValue.instrument.envelope.decay}
-					onChange={decay => dispatch(updateInstrument(id, {instrument: {...instrument, envelope: {...envelope, decay}}}))} />
+					onChange={decay =>
+						dispatch(updateInstrument(id, { instrument: { ...instrument, envelope: { ...envelope, decay } } }))
+					}
+				/>
 				<KnobInput
 					label="Sustain"
 					value={sustain}
 					min={0}
 					max={1}
 					step={0.01}
-					valueDisplay={value => Math.round(value*100)+'%'}
+					valueDisplay={value => Math.round(value * 100) + '%'}
 					defaultValue={defaultValue.instrument.envelope.sustain}
-					onChange={sustain => dispatch(updateInstrument(id, {instrument: {...instrument, envelope: {...envelope, sustain}}}))} />
+					onChange={sustain =>
+						dispatch(updateInstrument(id, { instrument: { ...instrument, envelope: { ...envelope, sustain } } }))
+					}
+				/>
 				<KnobInput
 					label="Release"
 					value={release}
 					min={0}
 					max={10}
 					step={0.01}
-					valueDisplay={value => value+'s'}
+					valueDisplay={value => value + 's'}
 					defaultValue={defaultValue.instrument.envelope.release}
-					onChange={release => dispatch(updateInstrument(id, {instrument: {...instrument, envelope: {...envelope, release}}}))} />
+					onChange={release =>
+						dispatch(updateInstrument(id, { instrument: { ...instrument, envelope: { ...envelope, release } } }))
+					}
+				/>
 			</div>
 		)
 	}

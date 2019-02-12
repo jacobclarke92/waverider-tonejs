@@ -27,12 +27,12 @@ export function getWaveformFromBlob(blob, options, hash = null) {
 			const waveformUri = WS.exportImage()
 			document.body.removeChild(container)
 			WS.destroy()
-			if(waveformUri) {
+			if (waveformUri) {
 				const waveformBlob = base64toBlob(waveformUri.slice('data:image/png;base64,'.length), 'image/png')
 				const waveformUrl = getBlobUrl(waveformBlob)
-				if(hash) waveforms[hash] = waveformUrl
+				if (hash) waveforms[hash] = waveformUrl
 				resolve(waveformUrl)
-			}else{
+			} else {
 				reject('Could not generate waveform')
 			}
 		})

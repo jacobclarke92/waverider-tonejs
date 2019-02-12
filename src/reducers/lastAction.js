@@ -1,1 +1,1 @@
-export default (state = {type: null}, action) => action
+export default (state = { type: null }, action) => action

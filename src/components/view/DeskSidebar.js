@@ -9,14 +9,14 @@ class DeskToolbar extends Component {
 		const { dispatch } = this.props
 		return (
 			<div className="toolbar-inner">
-				{Object.keys(effectLibrary).map(effectType => 
+				{Object.keys(effectLibrary).map(effectType => (
 					<button key={effectType} type="button" className="button-s" onClick={() => dispatch(addEffect(effectType))}>
-						{'Add '+effectLibrary[effectType].name}
+						{'Add ' + effectLibrary[effectType].name}
 					</button>
-				)}
+				))}
 			</div>
 		)
 	}
 }
 
-export default connect(({gui}) => ({gui}))(DeskToolbar)
+export default connect(({ gui }) => ({ gui }))(DeskToolbar)

@@ -2,13 +2,12 @@ import BaseEffect from './BaseEffect'
 import { BitCrusher } from 'tone'
 
 export class BitCrusherEffect extends BaseEffect {
-
 	constructor(value = {}, dispatch) {
 		super(value, dispatch)
 	}
 
 	initEffect(callback = () => {}) {
-		if(this.instance) this.instance.dispose()
+		if (this.instance) this.instance.dispose()
 		this.instance = new BitCrusher()
 		this.instance.connect(this.meter)
 		callback()
@@ -24,11 +23,11 @@ export const params = [
 		min: 1,
 		max: 8,
 		step: 1,
-	}
+	},
 ]
 
 export const defaultValue = {
-	effect: params.reduce((obj, {path, defaultValue}) => ({...obj, [path]: defaultValue}), {}),
+	effect: params.reduce((obj, { path, defaultValue }) => ({ ...obj, [path]: defaultValue }), {}),
 }
 
 export default {

@@ -18,10 +18,16 @@ export function init(_store) {
 
 function handleUpdate() {
 	const { lastAction, desk } = store.getState()
-	switch(lastAction.type) {
-		case LOAD_DESK: initConnections(desk); break
-		case DESK_CONNECT_WIRE: handleNewConnection(lastAction); break
-		case DESK_DISCONNECT_WIRE: handleRemoveConnection(lastAction); break
+	switch (lastAction.type) {
+		case LOAD_DESK:
+			initConnections(desk)
+			break
+		case DESK_CONNECT_WIRE:
+			handleNewConnection(lastAction)
+			break
+		case DESK_DISCONNECT_WIRE:
+			handleRemoveConnection(lastAction)
+			break
 	}
 	oldDesk = _cloneDeep(desk)
 }
@@ -35,44 +41,50 @@ function handleRemoveConnection(action) {
 }
 
 function initConnections(desk) {
-	for(let deskItem of desk) {
+	for (let deskItem of desk) {
 		connectAudioWires(deskItem)
 	}
 }
 
 function getSource(deskItem) {
 	let source = null
-	switch(deskItem.type) {
-		case MASTER: source = Master; break
-		case INSTRUMENT: source = getInstrumentInstance(deskItem.ownerId); break
-		case EFFECT: source = getEffectInstance(deskItem.ownerId); break
+	switch (deskItem.type) {
+		case MASTER:
+			source = Master
+			break
+		case INSTRUMENT:
+			source = getInstrumentInstance(deskItem.ownerId)
+			break
+		case EFFECT:
+			source = getEffectInstance(deskItem.ownerId)
+			break
 	}
 	return source
 }
 
 export function connectAudioWires(fromDeskItem, disconnectFirst = false) {
-	if(!fromDeskItem) {
+	if (!fromDeskItem) {
 		console.warn('No desk item provided to connectAudioWires')
 		return
 	}
 
 	const fromSource = getSource(fromDeskItem)
-	if(!fromSource) {
+	if (!fromSource) {
 		console.warn('Could not find source for output item', fromDeskItem)
 		return
 	}
 
 	const outputs = fromDeskItem.audioOutputs || {}
 	const connections = []
-	for(let ownerId in outputs) {
+	for (let ownerId in outputs) {
 		const toDeskItem = outputs[ownerId].wireTo.deskItem
 		// console.log('TO DESK ITEM', toDeskItem)
-		if(!toDeskItem) {
+		if (!toDeskItem) {
 			console.warn('Could not find input desk item for ownerId', ownerId)
 			continue
 		}
 		const toSource = getSource(toDeskItem)
-		if(!toSource) {
+		if (!toSource) {
 			console.warn('Could not find source for input item', toDeskItem)
 			continue
 		}
@@ -82,22 +94,25 @@ export function connectAudioWires(fromDeskItem, disconnectFirst = false) {
 
 	const attemptConnectingOutputs = () => {
 		const fromToneSource = fromSource.getToneSource()
-		if(fromToneSource) {
-			if(disconnectFirst) fromToneSource.disconnect()
-			if(connections.length > 0) {
+		if (fromToneSource) {
+			if (disconnectFirst) fromToneSource.disconnect()
+			if (connections.length > 0) {
 				fromToneSource.fan.apply(fromToneSource, connections)
-				if(fromSource.id in connectionAttempts) console.log(`Connected ${fromSource.type} after ${connectionAttempts[fromSource.id]} attempts`)
+				if (fromSource.id in connectionAttempts)
+					console.log(`Connected ${fromSource.type} after ${connectionAttempts[fromSource.id]} attempts`)
 			}
-		}else{
-			console.warn(`Unable to connect ${fromSource.type} (${fromSource.id}) because tone.js source is not available yet`)
-			if(!(fromSource.id in connectionAttempts)) connectionAttempts[fromSource.id] = 0
-			if(connectionAttempts[fromSource.id] < 5) {
+		} else {
+			console.warn(
+				`Unable to connect ${fromSource.type} (${fromSource.id}) because tone.js source is not available yet`
+			)
+			if (!(fromSource.id in connectionAttempts)) connectionAttempts[fromSource.id] = 0
+			if (connectionAttempts[fromSource.id] < 5) {
 				connectionAttempts[fromSource.id] += 1
 				setTimeout(() => {
 					console.log(`Attempting ${fromSource.type} output connection #${connectionAttempts[fromSource.id]}...`)
 					attemptConnectingOutputs()
 				}, 500)
-			}else {
+			} else {
 				console.warn('Max reconnection attempts reached')
 			}
 		}
@@ -108,17 +123,19 @@ export function connectAudioWires(fromDeskItem, disconnectFirst = false) {
 
 export function getDeskWires() {
 	const { desk = [] } = store.getState()
-	if(!desk.length) return []
+	if (!desk.length) return []
 	const connections = []
-	for(let fromItem of desk) {
-		if(fromItem.audioOutput) Object.keys(fromItem.audioOutputs).forEach(outputId => {
-			const wire = fromItem.audioOutputs[outputId]
-			connections.push(wire)
-		})
-		if(fromItem.dataOutput) Object.keys(fromItem.dataOutputs).forEach(outputId => {
-			const wire = fromItem.dataOutputs[outputId];
-			connections.push(wire)
-		})
+	for (let fromItem of desk) {
+		if (fromItem.audioOutput)
+			Object.keys(fromItem.audioOutputs).forEach(outputId => {
+				const wire = fromItem.audioOutputs[outputId]
+				connections.push(wire)
+			})
+		if (fromItem.dataOutput)
+			Object.keys(fromItem.dataOutputs).forEach(outputId => {
+				const wire = fromItem.dataOutputs[outputId]
+				connections.push(wire)
+			})
 	}
 	return connections
 }
@@ -126,27 +143,31 @@ export function getDeskWires() {
 export function getDeskItemsConnectedTo(deskItem) {
 	const { desk = [] } = store.getState()
 	return desk.filter(deskItem => {
-		if(deskItem.audioOutput && Object.keys(deskItem.audioOutputs).length > 0) {
+		if (deskItem.audioOutput && Object.keys(deskItem.audioOutputs).length > 0) {
 			Object.entries(deskItem.audioOutputs).forEach(([key, connection]) => {
-				if(connection.wireTo.deskItem.id == deskItem.id) return true
+				if (connection.wireTo.deskItem.id == deskItem.id) return true
 			})
 		}
-		return false;
+		return false
 	})
 }
 
 export function validateConnection(wireType, wireFrom, wireTo) {
 	const { desk = [] } = store.getState()
-	const fromDeskItem = _find(desk, {id: wireFrom.deskItem.id})
-	const toDeskItem = _find(desk, {id: wireTo.deskItem.id})
+	const fromDeskItem = _find(desk, { id: wireFrom.deskItem.id })
+	const toDeskItem = _find(desk, { id: wireTo.deskItem.id })
 
-	if(!fromDeskItem[wireType+'Output'] || !toDeskItem[wireType+'Input']) {
-		console.warn(`Invalid connection -- either ${wireFrom.deskItem.name} does not allow ${wireType} output or  ${wireTo.deskItem.name} does not allow ${wireType} input`);
+	if (!fromDeskItem[wireType + 'Output'] || !toDeskItem[wireType + 'Input']) {
+		console.warn(
+			`Invalid connection -- either ${wireFrom.deskItem.name} does not allow ${wireType} output or  ${
+				wireTo.deskItem.name
+			} does not allow ${wireType} input`
+		)
 		return false
 	}
 
-	const outputs = fromDeskItem[wireType+'Outputs'] || {}
-	if(toDeskItem.ownerId in outputs) {
+	const outputs = fromDeskItem[wireType + 'Outputs'] || {}
+	if (toDeskItem.ownerId in outputs) {
 		console.warn(`Connection already exists between ${wireFrom.deskItem.name} and ${wireTo.deskItem.name}`)
 		return false
 	}
@@ -156,7 +177,7 @@ export function validateConnection(wireType, wireFrom, wireTo) {
 
 export function getOwnerByDeskItem(deskItem) {
 	const { instruments = [], effects = [] } = store.getState()
-	if(deskItem.type == EFFECT) return _find(effects, {id: deskItem.ownerId})
-	if(deskItem.type == INSTRUMENT) return _find(instruments, {id: deskItem.ownerId})
+	if (deskItem.type == EFFECT) return _find(effects, { id: deskItem.ownerId })
+	if (deskItem.type == INSTRUMENT) return _find(instruments, { id: deskItem.ownerId })
 	return null
 }

@@ -28,7 +28,7 @@ class DeskWorkspace extends Component {
 		this.removeActiveItem = this.removeActiveItem.bind(this)
 		this.handlePointerDown = this.handlePointerDown.bind(this)
 		this.handlePointerUp = this.handlePointerUp.bind(this)
-		this.handleThrottledMouseMove = _throttle(this.handleThrottledMouseMove.bind(this), 1000/60)
+		this.handleThrottledMouseMove = _throttle(this.handleThrottledMouseMove.bind(this), 1000 / 60)
 		this.handleMouseMove = e => {
 			e.persist()
 			this.handleThrottledMouseMove(e)
@@ -47,7 +47,7 @@ class DeskWorkspace extends Component {
 			selectedDeskItem: null,
 			dragTarget: null,
 			mouseDownTargetOffset: null,
-			pan: {x: 0, y: 0},
+			pan: { x: 0, y: 0 },
 		}
 	}
 
@@ -69,36 +69,44 @@ class DeskWorkspace extends Component {
 
 		const pointer = new Point(getMousePosition(event))
 		const stagePointer = new Point(getRelativeMousePosition(event, this.interface))
-		
-		this.setState({pointer, stagePointer})
 
+		this.setState({ pointer, stagePointer })
 
-		const { mouseDown, mouseMoved, mouseDownPosition, mouseDownTargetOffset, mouseDownPan, dragTarget, overIO } = this.state
+		const {
+			mouseDown,
+			mouseMoved,
+			mouseDownPosition,
+			mouseDownTargetOffset,
+			mouseDownPan,
+			dragTarget,
+			overIO,
+		} = this.state
 
 		// enforce a minimum distance before allowing any kind of movement
-		if(!mouseMoved) {
-			if(mouseDown && pointer.distance(mouseDownPosition) < 10) return true
-			else this.setState({mouseMoved: true})
+		if (!mouseMoved) {
+			if (mouseDown && pointer.distance(mouseDownPosition) < 10) return true
+			else this.setState({ mouseMoved: true })
 		}
 
-		if(mouseDown) {
-			if(dragTarget) {
+		if (mouseDown) {
+			if (dragTarget) {
 				let placementPosition = new Point(stagePointer).subtract(mouseDownTargetOffset)
 
-				if(overIO) {
-					console.log('mousemove IO');
-				}else{
-					if(snapping) placementPosition = placementPosition.round(snapGrid)
+				if (overIO) {
+					console.log('mousemove IO')
+				} else {
+					if (snapping) placementPosition = placementPosition.round(snapGrid)
 					dispatch(moveDeskItem(dragTarget, placementPosition))
 				}
-			}else{
-				this.setState({pan: {
-					x: mouseDownPan.x + (pointer.x - mouseDownPosition.x),
-					y: mouseDownPan.y + (pointer.y - mouseDownPosition.y),
-				}})
+			} else {
+				this.setState({
+					pan: {
+						x: mouseDownPan.x + (pointer.x - mouseDownPosition.x),
+						y: mouseDownPan.y + (pointer.y - mouseDownPosition.y),
+					},
+				})
 			}
 		}
-
 	}
 
 	handlePointerDown(event) {
@@ -108,7 +116,7 @@ class DeskWorkspace extends Component {
 			mouseMoved: false,
 			dragTarget: null,
 			mouseDownPosition: getMousePosition(event),
-			mouseDownPan: {...this.state.pan},
+			mouseDownPan: { ...this.state.pan },
 		})
 	}
 
@@ -144,8 +152,8 @@ class DeskWorkspace extends Component {
 		console.log('pointer up for desk item')
 		event.stopPropagation()
 		event.nativeEvent.stopImmediatePropagation()
-		if(!this.state.mouseMoved) {
-			event.stopPropagation();
+		if (!this.state.mouseMoved) {
+			event.stopPropagation()
 			this.setState({
 				selectedDeskItem: deskItem,
 				mouseDown: false,
@@ -153,7 +161,7 @@ class DeskWorkspace extends Component {
 				selectedWire: null,
 			})
 			this.props.dispatch(updateActiveElement(deskItem.type, deskItem))
-		}else{
+		} else {
 			this.setState({
 				mouseDown: false,
 				dragTarget: null,
@@ -166,8 +174,8 @@ class DeskWorkspace extends Component {
 	}
 
 	handlePinOver(event, deskItem, { wireType, ioType, label, param }) {
-		this.setState({overPin: true})
-		if(this.state.wireFrom) {
+		this.setState({ overPin: true })
+		if (this.state.wireFrom) {
 			const pinStagePosition = getPositionWithinElem(event.target, this.interface, 0.5)
 			const pinDeskItemPosition = new Point(pinStagePosition).subtract(new Point(deskItem.position))
 			this.setState({
@@ -187,7 +195,7 @@ class DeskWorkspace extends Component {
 			overIO: false,
 			wireTo: null,
 			wireToValid: null,
-		});
+		})
 	}
 
 	handlePinPointerDown(event, deskItem, { wireType, ioType, param }) {
@@ -195,7 +203,7 @@ class DeskWorkspace extends Component {
 		event.preventDefault()
 		event.nativeEvent.stopImmediatePropagation()
 		console.log('WIRE DOWN', deskItem, wireType, ioType)
-		const pinStagePosition = getPositionWithinElem(event.target, this.interface, {x: 0.5, y: 0.5})
+		const pinStagePosition = getPositionWithinElem(event.target, this.interface, { x: 0.5, y: 0.5 })
 		const pinDeskItemPosition = new Point(pinStagePosition).subtract(new Point(deskItem.position))
 		this.setState({
 			wireType,
@@ -205,7 +213,7 @@ class DeskWorkspace extends Component {
 				deskItem,
 				position: pinStagePosition,
 				relativePosition: pinDeskItemPosition,
-			}
+			},
 		})
 	}
 
@@ -213,14 +221,14 @@ class DeskWorkspace extends Component {
 		event.stopPropagation()
 		event.preventDefault()
 		event.nativeEvent.stopImmediatePropagation()
-		if(this.state.wireToValid) {
+		if (this.state.wireToValid) {
 			const wireFrom = ioType == 'input' ? this.state.wireFrom : this.state.wireTo
 			const wireTo = ioType == 'input' ? this.state.wireTo : this.state.wireFrom
 			console.log('PLS CREATE WIRE')
-			console.log('params', {wireType, ioType})
+			console.log('params', { wireType, ioType })
 			console.log('wireFrom', wireFrom)
 			console.log('wireTo', wireTo)
-			if(validateConnection(wireType, wireFrom, wireTo)) {
+			if (validateConnection(wireType, wireFrom, wireTo)) {
 				this.props.dispatch(connectWire(wireFrom, wireTo, { wireType }))
 			}
 		}
@@ -234,57 +242,65 @@ class DeskWorkspace extends Component {
 		})
 	}
 
-	clearActiveItem() {
-
-	}
+	clearActiveItem() {}
 
 	handleRemoveDeskItem(deskItem) {
-		if(deskItem.type == EFFECT) this.props.dispatch(removeEffect(deskItem.ownerId))
-		if(deskItem.type == INSTRUMENT) this.props.dispatch(removeInstrument(deskItem.ownerId))
+		if (deskItem.type == EFFECT) this.props.dispatch(removeEffect(deskItem.ownerId))
+		if (deskItem.type == INSTRUMENT) this.props.dispatch(removeInstrument(deskItem.ownerId))
 	}
 
 	removeActiveItem() {
 		const { selectedWire, selectedDeskItem } = this.state
-		if(selectedWire) {
+		if (selectedWire) {
 			this.props.dispatch(disconnectWire(selectedWire))
-		}else if(selectedDeskItem) {
+		} else if (selectedDeskItem) {
 			this.handleRemoveDeskItem(selectedDeskItem)
 		}
 	}
 
 	render() {
 		const { dispatch, desk = [], instruments = [] } = this.props
-		const { pan, dragTarget, mouseDown, mouseMoved, stagePointer, selectedDeskItem, selectedWire, wireFrom, wireTo, wireToValid } = this.state
+		const {
+			pan,
+			dragTarget,
+			mouseDown,
+			mouseMoved,
+			stagePointer,
+			selectedDeskItem,
+			selectedWire,
+			wireFrom,
+			wireTo,
+			wireToValid,
+		} = this.state
 		const panning = mouseDown && mouseMoved && !dragTarget
 		const connections = getDeskWires()
 		// console.log(connections)
 		return (
-			<div 
-				ref={elem => this.container = elem} 
-				className={classname('desk-interface-container', {panning})}
+			<div
+				ref={elem => (this.container = elem)}
+				className={classname('desk-interface-container', { panning })}
 				onMouseMove={this.handleMouseMove}
-				onMouseDown={this.handlePointerDown} 
+				onMouseDown={this.handlePointerDown}
 				onMouseUp={this.handlePointerUp}>
-
-				<div 
-					ref={elem => this.interface = elem} 
+				<div
+					ref={elem => (this.interface = elem)}
 					className="desk-interface"
-					style={{transform: `translate(${pan.x}px, ${pan.y}px)`}}>
-
-					{connections.map(wire => 
-						<Wire 
+					style={{ transform: `translate(${pan.x}px, ${pan.y}px)` }}>
+					{connections.map(wire => (
+						<Wire
 							key={wire.id}
-							wireFrom={{...wire.wireFrom, deskItem: _find(desk, {id: wire.wireFrom.deskItem.id})}}
-							wireTo={{...wire.wireTo, deskItem: _find(desk, {id: wire.wireTo.deskItem.id})}}
+							wireFrom={{ ...wire.wireFrom, deskItem: _find(desk, { id: wire.wireFrom.deskItem.id }) }}
+							wireTo={{ ...wire.wireTo, deskItem: _find(desk, { id: wire.wireTo.deskItem.id }) }}
 							stagePointer={stagePointer}
 							selected={selectedWire && selectedWire.id === wire.id}
-							onSelect={() => this.setState({selectedWire: wire})} />
-					)}
+							onSelect={() => this.setState({ selectedWire: wire })}
+						/>
+					))}
 
-					{desk.map(deskItem => 
-						<DeskItem 
+					{desk.map(deskItem => (
+						<DeskItem
 							key={deskItem.id}
-							ref={elem => this.deskItemRefs[deskItem.id] = elem}
+							ref={elem => (this.deskItemRefs[deskItem.id] = elem)}
 							dispatch={dispatch}
 							deskItem={deskItem}
 							owner={getOwnerByDeskItem(deskItem)}
@@ -298,20 +314,15 @@ class DeskWorkspace extends Component {
 							onPointerDown={(e, elem) => this.handleItemPointerDown(e, elem, deskItem)}
 							onPointerUp={(e, elem) => this.handleItemPointerUp(e, elem, deskItem)}
 							onPinOut={event => this.handlePinOut(event)}
-							onPinOver={(event, params) => this.handlePinOver(event, deskItem, params)} 
+							onPinOver={(event, params) => this.handlePinOver(event, deskItem, params)}
 							onPinPointerDown={(event, params) => this.handlePinPointerDown(event, deskItem, params)}
-							onPinPointerUp={(event, params) => this.handlePinPointerUp(event, deskItem, params)} />
+							onPinPointerUp={(event, params) => this.handlePinPointerUp(event, deskItem, params)}
+						/>
+					))}
+
+					{wireFrom && (
+						<Wire active valid={wireToValid} wireFrom={wireFrom} wireTo={wireTo} stagePointer={stagePointer} />
 					)}
-
-					{wireFrom && 
-						<Wire
-							active
-							valid={wireToValid}
-							wireFrom={wireFrom}
-							wireTo={wireTo}
-							stagePointer={stagePointer} />
-					}
-
 				</div>
 			</div>
 		)
@@ -322,14 +333,11 @@ class DeskItem extends Component {
 	render() {
 		const { type, ownerType } = this.props.deskItem
 		let DeskComponent = null
-		if(type == MASTER) DeskComponent = MasterDeskItem
-		if(type == INSTRUMENT) DeskComponent = instrumentLibrary[ownerType].DeskItem
-		if(!DeskComponent) DeskComponent = DefaultDeskItem
-		return (
-			<DeskComponent {...this.props}  />
-		)
+		if (type == MASTER) DeskComponent = MasterDeskItem
+		if (type == INSTRUMENT) DeskComponent = instrumentLibrary[ownerType].DeskItem
+		if (!DeskComponent) DeskComponent = DefaultDeskItem
+		return <DeskComponent {...this.props} />
 	}
 }
 
-export default connect(({gui, desk, instruments}) => ({gui, desk, instruments}))(DeskWorkspace)
-
+export default connect(({ gui, desk, instruments }) => ({ gui, desk, instruments }))(DeskWorkspace)

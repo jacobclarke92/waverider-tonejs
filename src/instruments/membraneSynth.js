@@ -8,12 +8,11 @@ import MembraneSynthEditor from '../components/instruments/MembraneSynth'
 import MembraneSynthDeskItem from '../components/desk/MembraneSynth'
 
 export class MembraneSynthInstrument {
-
 	constructor(value = {}, dispatch) {
 		console.log('Mounting membraneSynth...')
 		this.mounted = false
 		this.dispatch = dispatch
-		Object.keys(value).forEach(key => this[key] = value[key])
+		Object.keys(value).forEach(key => (this[key] = value[key]))
 		this.reinitSynth = _debounce(this.initSynth, voicesUpdateDebounce)
 		this.triggerUpdateVoiceParams = _debounce(this.updateVoiceParams, paramUpdateDebounce)
 		this.meter = new Meter()
@@ -24,19 +23,29 @@ export class MembraneSynthInstrument {
 	}
 
 	update(value, oldValue) {
-		Object.keys(value).forEach(key => this[key] = value[key])
-		if(checkDifferenceAny(value.instrument, oldValue.instrument, ['voices'])) {
+		Object.keys(value).forEach(key => (this[key] = value[key]))
+		if (checkDifferenceAny(value.instrument, oldValue.instrument, ['voices'])) {
 			this.reinitSynth()
 			return
 		}
-		if(checkDifferenceAny(value.instrument, oldValue.instrument, ['pitchDecay', 'octaves', 'oscillator.type', 'envelope.attack', 'envelope.decay', 'envelope.sustain', 'envelope.release'])) {
+		if (
+			checkDifferenceAny(value.instrument, oldValue.instrument, [
+				'pitchDecay',
+				'octaves',
+				'oscillator.type',
+				'envelope.attack',
+				'envelope.decay',
+				'envelope.sustain',
+				'envelope.release',
+			])
+		) {
 			this.triggerUpdateVoiceParams()
 		}
 	}
 
 	initSynth(callback = () => {}) {
 		const { voices } = this.instrument
-		if(this.synth) this.synth.dispose()
+		if (this.synth) this.synth.dispose()
 		this.synth = new PolySynth(voices, MembraneSynth)
 		this.synth.set('volume', -39)
 		this.synth.connect(this.meter)
@@ -45,21 +54,21 @@ export class MembraneSynthInstrument {
 	}
 
 	updateVoiceParams() {
-		if(!this.synth) return
+		if (!this.synth) return
 		const { pitchDecay, octaves, envelope, oscillator } = this.instrument
-		this.synth.set({pitchDecay, octaves, envelope, oscillator})
+		this.synth.set({ pitchDecay, octaves, envelope, oscillator })
 	}
 
 	noteDown(note, velocity) {
-		if(this.mounted && this.synth) this.synth.triggerAttack(noteNumberToName(note), now(), velocity / 2)
+		if (this.mounted && this.synth) this.synth.triggerAttack(noteNumberToName(note), now(), velocity / 2)
 	}
 
 	noteUp(note) {
-		if(this.mounted && this.synth) this.synth.triggerRelease(noteNumberToName(note), now())
+		if (this.mounted && this.synth) this.synth.triggerRelease(noteNumberToName(note), now())
 	}
 
 	getToneSource() {
-		return (this.mounted && this.synth) ? this.synth : false
+		return this.mounted && this.synth ? this.synth : false
 	}
 }
 
@@ -69,14 +78,14 @@ export const defaultValue = {
 		voices: 1,
 		pitchDecay: 0.05,
 		octaves: 6,
-		oscillator: {type: 'sine'},
+		oscillator: { type: 'sine' },
 		envelope: {
 			attack: 0.001,
 			decay: 0.4,
 			sustain: 0.01,
 			release: 1.4,
 			attackCurve: 'exponential',
-		}
+		},
 	},
 }
 

@@ -3,13 +3,12 @@ import { AutoPanner } from 'tone'
 import { oscTypeParam } from '../constants/params'
 
 export class AutoPannerEffect extends BaseEffect {
-
 	constructor(value = {}, dispatch) {
 		super(value, dispatch)
 	}
 
 	initEffect(callback = () => {}) {
-		if(this.instance) this.instance.dispose()
+		if (this.instance) this.instance.dispose()
 		this.instance = new AutoPanner()
 		this.instance.connect(this.meter)
 		callback()
@@ -27,8 +26,8 @@ export const params = [
 		step: 1,
 	},
 	{
-		...oscTypeParam, 
-		path: 'type'
+		...oscTypeParam,
+		path: 'type',
 	},
 	{
 		label: 'Depth',
@@ -38,11 +37,11 @@ export const params = [
 		min: 0,
 		max: 1,
 		step: 0.01,
-	}
+	},
 ]
 
 export const defaultValue = {
-	effect: params.reduce((obj, {path, defaultValue}) => ({...obj, [path]: defaultValue}), {}),
+	effect: params.reduce((obj, { path, defaultValue }) => ({ ...obj, [path]: defaultValue }), {}),
 }
 
 export default {

@@ -8,21 +8,19 @@ class InstrumentList extends Component {
 	render() {
 		const { dispatch, instruments = [] } = this.props
 		return (
-			<div style={{padding: '4rem 2rem'}}>
+			<div style={{ padding: '4rem 2rem' }}>
 				<div className="instrument-buttons">
-					{Object.keys(instrumentLibrary).map(instrumentType => 
+					{Object.keys(instrumentLibrary).map(instrumentType => (
 						<button key={instrumentType} type="button" onClick={() => dispatch(addInstrument(instrumentType))}>
-							{'Add '+instrumentLibrary[instrumentType].name}
+							{'Add ' + instrumentLibrary[instrumentType].name}
 						</button>
-					)}
+					))}
 				</div>
-				<hr />				
+				<hr />
 				<div className="instrument-list">
 					{instruments.map(instrument => {
 						const InstrumentComponent = instrumentLibrary[instrument.type].Editor
-						return (
-							<InstrumentComponent key={instrument.id} {...instrument} />
-						)
+						return <InstrumentComponent key={instrument.id} {...instrument} />
 					})}
 				</div>
 			</div>
@@ -30,4 +28,4 @@ class InstrumentList extends Component {
 	}
 }
 
-export default connect(({instruments}) => ({instruments}))(InstrumentList)
+export default connect(({ instruments }) => ({ instruments }))(InstrumentList)

@@ -17,7 +17,7 @@ export class SimplerInstrument {
 		this.mounted = false
 		this.file = null
 		this.dispatch = dispatch
-		Object.keys(value).forEach(key => this[key] = value[key])
+		Object.keys(value).forEach(key => (this[key] = value[key]))
 		this.reinitSampler = _debounce(this.initSampler, voicesUpdateDebounce)
 		this.triggerUpdateVoiceParams = _debounce(this.updateVoiceParams, paramUpdateDebounce)
 		this.meter = new Meter()
@@ -28,39 +28,47 @@ export class SimplerInstrument {
 	}
 
 	update(value, oldValue) {
-		Object.keys(value).forEach(key => this[key] = value[key])
-		if(checkDifferenceAny(value.instrument, oldValue.instrument, ['voices', 'reverse'])) {
+		Object.keys(value).forEach(key => (this[key] = value[key]))
+		if (checkDifferenceAny(value.instrument, oldValue.instrument, ['voices', 'reverse'])) {
 			this.reinitSampler()
 			return
 		}
-		if(checkDifferenceAny(value.instrument, oldValue.instrument, ['trim'])) {
-			if(this.file) this.updateAudioFile(this.file.getUrl(), () => {
-				this.triggerUpdateVoiceParams()
-			})
+		if (checkDifferenceAny(value.instrument, oldValue.instrument, ['trim'])) {
+			if (this.file)
+				this.updateAudioFile(this.file.getUrl(), () => {
+					this.triggerUpdateVoiceParams()
+				})
 		}
-		if(checkDifferenceAny(value, oldValue, 'instrument.fileHash')) {
+		if (checkDifferenceAny(value, oldValue, 'instrument.fileHash')) {
 			this.loadAudioFile(value.instrument.fileHash, file => {
 				this.updateAudioFile(file.getUrl(), () => {
 					this.triggerUpdateVoiceParams()
 				})
 			})
 		}
-		if(checkDifferenceAny(value.instrument, oldValue.instrument, ['loop', 'envelope.attack', 'envelope.decay', 'envelope.sustain', 'envelope.release'])) {
+		if (
+			checkDifferenceAny(value.instrument, oldValue.instrument, [
+				'loop',
+				'envelope.attack',
+				'envelope.decay',
+				'envelope.sustain',
+				'envelope.release',
+			])
+		) {
 			this.triggerUpdateVoiceParams()
 		}
 	}
 
 	initSampler(callback = () => {}) {
 		const { voices, fileHash, reverse, loop, trim } = this.instrument
-		
-		if(this.sampler) this.sampler.dispose();
+
+		if (this.sampler) this.sampler.dispose()
 		this.sampler = new PolySynth(voices, Sampler)
 		this.sampler.set('volume', -39)
 		this.sampler.connect(this.meter)
-		
-		if(!fileHash) return callback()
+
+		if (!fileHash) return callback()
 		this.loadAudioFile(fileHash, file => {
-			
 			this.updateAudioFile(file.getUrl(), () => {
 				this.updateVoiceParams()
 				callback()
@@ -69,54 +77,60 @@ export class SimplerInstrument {
 	}
 
 	loadAudioFile(fileHash, callback = () => {}) {
-		if(!fileHash) return callback()
+		if (!fileHash) return callback()
 
-		getFileByHash(fileHash).then(file => {
-			console.log('Found audio for simpler', file)
-			this.file = file
+		getFileByHash(fileHash)
+			.then(file => {
+				console.log('Found audio for simpler', file)
+				this.file = file
 
-			// do something with this i guess
-			getNoteByFile(file)
-				.then(note => {
-					console.log(`Average note = ${note} (${noteStrings[note%12]})`)
-					const { baseNote } = this.instrument
-					if(this.instrument.baseNote == defaultValue.instrument.baseNote) {
-						this.dispatch(updateInstrument(this.id, {instrument: {
-							...this.instrument, 
-							calculatedBaseNote: note, 
-							baseNote: (baseNote == defaultValue.instrument.baseNote) ? note : baseNote,
-							cents: 0,
-						}}))
-					}
-				})
-				.catch(e => console.log('Could not get pitch of sample'))
+				// do something with this i guess
+				getNoteByFile(file)
+					.then(note => {
+						console.log(`Average note = ${note} (${noteStrings[note % 12]})`)
+						const { baseNote } = this.instrument
+						if (this.instrument.baseNote == defaultValue.instrument.baseNote) {
+							this.dispatch(
+								updateInstrument(this.id, {
+									instrument: {
+										...this.instrument,
+										calculatedBaseNote: note,
+										baseNote: baseNote == defaultValue.instrument.baseNote ? note : baseNote,
+										cents: 0,
+									},
+								})
+							)
+						}
+					})
+					.catch(e => console.log('Could not get pitch of sample'))
 
-			callback(file)
-		}).catch(e => console.warn('Unable to load audio for simpler', fileHash, e))
+				callback(file)
+			})
+			.catch(e => console.warn('Unable to load audio for simpler', fileHash, e))
 	}
 
 	updateAudioFile(url, callback = () => {}) {
-		if(!url) return
-		if(!this.sampler) return this.initSampler()
+		if (!url) return
+		if (!this.sampler) return this.initSampler()
 
 		let voicesLoaded = 0
 		const { voices, trim, reverse } = this.instrument
 		this.sampler.voices.forEach(voice => {
 			voice.player.load(url, () => {
 				const duration = voice.buffer.duration
-				if(!(trim.start === 0 && trim.end === 1)) {
+				if (!(trim.start === 0 && trim.end === 1)) {
 					voice.buffer = voice.buffer.slice(
-						duration * (reverse ? 1 - trim.end : trim.start), 
+						duration * (reverse ? 1 - trim.end : trim.start),
 						duration * (reverse ? 1 - trim.start : trim.end)
 					)
 				}
-				if(++voicesLoaded >= voices) callback()
+				if (++voicesLoaded >= voices) callback()
 			})
 		})
 	}
 
 	updateVoiceParams() {
-		if(!this.sampler) return this.initSampler()
+		if (!this.sampler) return this.initSampler()
 
 		const { reverse, loop, envelope } = this.instrument
 		this.sampler.set({
@@ -127,30 +141,30 @@ export class SimplerInstrument {
 	}
 
 	noteDown(note, velocity) {
-		if(this.mounted && this.sampler && this.file) {
+		if (this.mounted && this.sampler && this.file) {
 			this.sampler.triggerAttack(note - this.instrument.baseNote, now(), velocity / 2)
 		}
 	}
 
 	noteUp(note) {
-		if(this.mounted && this.sampler && this.file) {
+		if (this.mounted && this.sampler && this.file) {
 			this.sampler.triggerRelease(note - this.instrument.baseNote, now())
 		}
 	}
 
 	getPlaybackPositions() {
-		if(!this.mounted || !this.sampler || !this.sampler.voices) return []
+		if (!this.mounted || !this.sampler || !this.sampler.voices) return []
 		const positions = []
 		this.sampler.voices.forEach(voice => {
-			if(voice.player.state == 'started') {
+			if (voice.player.state == 'started') {
 				const startedEvents = voice.player._state._timeline.filter(event => event.state == 'started')
-				if(startedEvents.length) {
+				if (startedEvents.length) {
 					const lastStartedEvent = startedEvents.pop()
 					const duration = voice.player.buffer.duration
 					const playbackRate = voice.player.playbackRate
 					const elapsedTime = now() - lastStartedEvent.time
-					let durationPercent = elapsedTime / (duration/playbackRate)
-					if(this.instrument.loop) durationPercent = durationPercent%1
+					let durationPercent = elapsedTime / (duration / playbackRate)
+					if (this.instrument.loop) durationPercent = durationPercent % 1
 					positions.push(durationPercent)
 				}
 			}
@@ -159,7 +173,7 @@ export class SimplerInstrument {
 	}
 
 	getToneSource() {
-		return (this.mounted && this.sampler) ? this.sampler : false
+		return this.mounted && this.sampler ? this.sampler : false
 	}
 }
 
@@ -177,7 +191,7 @@ export const defaultValue = {
 			start: 0,
 			end: 1,
 		},
-		envelope: {...defaultEnvelope},
+		envelope: { ...defaultEnvelope },
 	},
 }
 

@@ -5,7 +5,6 @@ import { NOTE_ON, NOTE_OFF } from './api/midi'
 import { DESK_CONNECT_WIRE, DESK_DISCONNECT_WIRE } from './reducers/desk'
 import { LOAD_INSTRUMENTS, ADD_INSTRUMENT, REMOVE_INSTRUMENT, UPDATE_INSTRUMENT } from './reducers/instruments'
 
-
 let store = null
 let oldInstruments = []
 
@@ -17,28 +16,41 @@ export function init(_store) {
 }
 
 export function getInstrumentInstance(id) {
-	if(id in instances) return instances[id]
+	if (id in instances) return instances[id]
 	return false
 }
 
 export function isDeviceUsedByInstrument(deviceId) {
 	const { instruments } = store.getState()
-	const deviceIds = instruments.map(({midiDeviceId}) => midiDeviceId)
+	const deviceIds = instruments.map(({ midiDeviceId }) => midiDeviceId)
 	return deviceIds.indexOf(deviceId) >= 0
 }
 
 function handleUpdate() {
 	const { lastAction, instruments, desk } = store.getState()
-	switch(lastAction.type) {
-		case LOAD_INSTRUMENTS: initInstruments(instruments); break
-		case UPDATE_INSTRUMENT: updateInstrument(lastAction, instruments); break
-		case ADD_INSTRUMENT: initInstrument(lastAction.instrument); break
-		case REMOVE_INSTRUMENT: removeInstrument(lastAction.id); break
-		case NOTE_ON: 
-		case NOTE_OFF: handleNoteAction(lastAction, instruments); break
-		case DESK_CONNECT_WIRE: handleWireConnection(lastAction, desk); break
-		case DESK_DISCONNECT_WIRE: handleWireDisconnection(lastAction, desk); break
-
+	switch (lastAction.type) {
+		case LOAD_INSTRUMENTS:
+			initInstruments(instruments)
+			break
+		case UPDATE_INSTRUMENT:
+			updateInstrument(lastAction, instruments)
+			break
+		case ADD_INSTRUMENT:
+			initInstrument(lastAction.instrument)
+			break
+		case REMOVE_INSTRUMENT:
+			removeInstrument(lastAction.id)
+			break
+		case NOTE_ON:
+		case NOTE_OFF:
+			handleNoteAction(lastAction, instruments)
+			break
+		case DESK_CONNECT_WIRE:
+			handleWireConnection(lastAction, desk)
+			break
+		case DESK_DISCONNECT_WIRE:
+			handleWireDisconnection(lastAction, desk)
+			break
 	}
 	oldInstruments = _cloneDeep(instruments)
 }
@@ -53,34 +65,32 @@ function initInstrument(instrument) {
 	instances[instrument.id] = new Instrument(instrument, store.dispatch)
 }
 
-function updateInstrument({id}, instruments) {
-	const instrument = _find(instruments, {id})
-	const oldInstrument = _find(oldInstruments, {id})
-	if(!(id in instances)) initInstrument(instrument)
+function updateInstrument({ id }, instruments) {
+	const instrument = _find(instruments, { id })
+	const oldInstrument = _find(oldInstruments, { id })
+	if (!(id in instances)) initInstrument(instrument)
 	else instances[id].update(instrument, oldInstrument)
 }
 
 function removeInstrument(id) {
-	if(id in instances) {
+	if (id in instances) {
 		const source = instances[id].getToneSource()
-		if(source) source.dispose()
+		if (source) source.dispose()
 		delete instances[id]
 	}
 }
 
-function handleNoteAction({type, deviceId, channel, note, velocity}, instruments) {
-	const targetInstruments = instruments.filter(({enabled, midiDeviceId, midiChannel}) => enabled && (!midiDeviceId || midiDeviceId == deviceId) && (!midiChannel || midiChannel == channel))
+function handleNoteAction({ type, deviceId, channel, note, velocity }, instruments) {
+	const targetInstruments = instruments.filter(
+		({ enabled, midiDeviceId, midiChannel }) =>
+			enabled && (!midiDeviceId || midiDeviceId == deviceId) && (!midiChannel || midiChannel == channel)
+	)
 	targetInstruments.forEach(instrument => {
-		if(type == NOTE_ON) instances[instrument.id].noteDown(note, velocity)
-		else if(type == NOTE_OFF) instances[instrument.id].noteUp(note)
+		if (type == NOTE_ON) instances[instrument.id].noteDown(note, velocity)
+		else if (type == NOTE_OFF) instances[instrument.id].noteUp(note)
 	})
 }
 
-function handleWireConnection(action, desk) {
+function handleWireConnection(action, desk) {}
 
-}
-
-function handleWireDisconnection(action, desk) {
-
-}
-
+function handleWireDisconnection(action, desk) {}

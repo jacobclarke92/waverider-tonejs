@@ -13,7 +13,7 @@ const deskUpdates = {}
 const deskUpdateFuncs = {}
 
 function getUpdateFunction(functionsObj, table, id) {
-	if(!(id in functionsObj)) {
+	if (!(id in functionsObj)) {
 		functionsObj[id] = _debounce((id, updates) => {
 			updateById(table, id, updates)
 				.then(entity => {
@@ -26,12 +26,11 @@ function getUpdateFunction(functionsObj, table, id) {
 	return functionsObj[id]
 }
 
-export default ({getState}) => next => action => {
-
+export default ({ getState }) => next => action => {
 	const state = getState()
 	let updateFunction = null
 
-	switch(action.type) {
+	switch (action.type) {
 		case UPDATE_INSTRUMENT:
 			instrumentUpdates[action.id] = _merge(_cloneDeep(instrumentUpdates[action.id] || {}), action.updates)
 			updateFunction = getUpdateFunction(instrumentUpdateFuncs, 'instruments', action.id)
@@ -39,7 +38,7 @@ export default ({getState}) => next => action => {
 			break
 
 		case DESK_ITEM_MOVE:
-			deskUpdates[action.id] = _merge(_cloneDeep(deskUpdates[action.id] || {}), {position: action.position})
+			deskUpdates[action.id] = _merge(_cloneDeep(deskUpdates[action.id] || {}), { position: action.position })
 			updateFunction = getUpdateFunction(instrumentUpdateFuncs, 'desk', action.id)
 			updateFunction(action.id, deskUpdates[action.id])
 			break

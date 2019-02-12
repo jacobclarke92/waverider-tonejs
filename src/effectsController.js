@@ -13,17 +13,25 @@ export function init(_store) {
 }
 
 export function getEffectInstance(id) {
-	if(id in instances) return instances[id]
+	if (id in instances) return instances[id]
 	return false
 }
 
 function handleUpdate() {
 	const { lastAction, effects } = store.getState()
-	switch(lastAction.type) {
-		case LOAD_EFFECTS: initEffects(effects); break
-		case UPDATE_EFFECT: updateEffect(lastAction, effects); break
-		case ADD_EFFECT: initEffect(lastAction.effect); break
-		case REMOVE_EFFECT: removeEffect(lastAction.id); break
+	switch (lastAction.type) {
+		case LOAD_EFFECTS:
+			initEffects(effects)
+			break
+		case UPDATE_EFFECT:
+			updateEffect(lastAction, effects)
+			break
+		case ADD_EFFECT:
+			initEffect(lastAction.effect)
+			break
+		case REMOVE_EFFECT:
+			removeEffect(lastAction.id)
+			break
 	}
 	oldEffects = _cloneDeep(effects)
 }
@@ -38,17 +46,17 @@ function initEffect(effect) {
 	instances[effect.id] = new Effect(effect, store.dispatch)
 }
 
-function updateEffect({id}, effects) {
-	const effect = _find(effects, {id})
-	const oldEffect = _find(oldEffects, {id})
-	if(!(id in instances)) initEffect(effect)
+function updateEffect({ id }, effects) {
+	const effect = _find(effects, { id })
+	const oldEffect = _find(oldEffects, { id })
+	if (!(id in instances)) initEffect(effect)
 	else instances[id].update(effect, oldEffect)
 }
 
 function removeEffect(id) {
-	if(id in instances) {
+	if (id in instances) {
 		const source = instances[id].getToneSource()
-		if(source) source.dispose()
+		if (source) source.dispose()
 		delete instances[id]
 	}
 }

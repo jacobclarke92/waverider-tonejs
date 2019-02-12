@@ -2,13 +2,12 @@ import BaseEffect from './BaseEffect'
 import { Chorus } from 'tone'
 
 export class ChorusEffect extends BaseEffect {
-
 	constructor(value = {}, dispatch) {
 		super(value, dispatch)
 	}
 
 	initEffect(callback = () => {}) {
-		if(this.instance) this.instance.dispose()
+		if (this.instance) this.instance.dispose()
 		this.instance = new Chorus()
 		this.instance.connect(this.meter)
 		callback()
@@ -39,11 +38,11 @@ export const params = [
 		path: 'depth',
 		description: 'The depth of the chorus',
 		defaultValue: 0.7,
-	}
+	},
 ]
 
 export const defaultValue = {
-	effect: params.reduce((obj, {path, defaultValue}) => ({...obj, [path]: defaultValue}), {}),
+	effect: params.reduce((obj, { path, defaultValue }) => ({ ...obj, [path]: defaultValue }), {}),
 }
 
 export default {

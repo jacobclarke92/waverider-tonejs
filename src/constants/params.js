@@ -1,4 +1,3 @@
-
 export const defaultEnvelope = {
 	attack: 0.01,
 	decay: 0,

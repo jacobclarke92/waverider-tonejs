@@ -7,12 +7,11 @@ import PluckSynthEditor from '../components/instruments/PluckSynth'
 import PluckSynthDeskItem from '../components/desk/PluckSynth'
 
 export class PluckSynthInstrument {
-
 	constructor(value = {}, dispatch) {
 		console.log('Mounting pluckSynth...')
 		this.mounted = false
 		this.dispatch = dispatch
-		Object.keys(value).forEach(key => this[key] = value[key])
+		Object.keys(value).forEach(key => (this[key] = value[key]))
 		this.reinitSynth = _debounce(this.initSynth, voicesUpdateDebounce)
 		this.triggerUpdateVoiceParams = _debounce(this.updateVoiceParams, paramUpdateDebounce)
 		this.meter = new Meter()
@@ -23,19 +22,19 @@ export class PluckSynthInstrument {
 	}
 
 	update(value, oldValue) {
-		Object.keys(value).forEach(key => this[key] = value[key])
-		if(checkDifferenceAny(value.instrument, oldValue.instrument, 'voices')) {
+		Object.keys(value).forEach(key => (this[key] = value[key]))
+		if (checkDifferenceAny(value.instrument, oldValue.instrument, 'voices')) {
 			this.reinitSynth()
 			return
 		}
-		if(checkDifferenceAny(value.instrument, oldValue.instrument, ['attackNoise', 'resonance', 'dampening'])) {
+		if (checkDifferenceAny(value.instrument, oldValue.instrument, ['attackNoise', 'resonance', 'dampening'])) {
 			this.triggerUpdateVoiceParams()
 		}
 	}
 
 	initSynth(callback = () => {}) {
 		const { voices } = this.instrument
-		if(this.synth) this.synth.dispose()
+		if (this.synth) this.synth.dispose()
 		this.synth = new PolySynth(voices, PluckSynth)
 		this.synth.set('volume', -39)
 		this.synth.connect(this.meter)
@@ -44,21 +43,21 @@ export class PluckSynthInstrument {
 	}
 
 	updateVoiceParams() {
-		if(!this.synth) return
+		if (!this.synth) return
 		const { attackNoise, resonance, dampening } = this.instrument
-		this.synth.set({attackNoise, resonance, dampening})
+		this.synth.set({ attackNoise, resonance, dampening })
 	}
 
 	noteDown(note, velocity) {
-		if(this.mounted && this.synth) this.synth.triggerAttack(note, now(), velocity / 2)
+		if (this.mounted && this.synth) this.synth.triggerAttack(note, now(), velocity / 2)
 	}
 
 	noteUp(note) {
-		if(this.mounted && this.synth) this.synth.triggerRelease(note, now())
+		if (this.mounted && this.synth) this.synth.triggerRelease(note, now())
 	}
 
 	getToneSource() {
-		return (this.mounted && this.synth) ? this.synth : false
+		return this.mounted && this.synth ? this.synth : false
 	}
 }
 
@@ -106,5 +105,5 @@ export default {
 	Editor: PluckSynthEditor,
 	Instrument: PluckSynthInstrument,
 	DeskItem: PluckSynthDeskItem,
-	defaultValue,	
+	defaultValue,
 }

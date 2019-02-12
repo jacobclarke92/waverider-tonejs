@@ -13,33 +13,33 @@ class Header extends Component {
 			<header className="header">
 				<div className="header-inner">
 					<div className="header-left">
-						<button type="button" className="icon-button margin-r-m"><Icon name="play" /></button>
+						<button type="button" className="icon-button margin-r-m">
+							<Icon name="play" />
+						</button>
 						<button
 							type="button"
-							className={classnames({active: gui.view == STAGE})} 
+							className={classnames({ active: gui.view == STAGE })}
 							onClick={() => dispatch(updateView(STAGE))}>
 							Stage
 						</button>
 						<button
 							type="button"
-							className={classnames({active: gui.view == DESK})} 
+							className={classnames({ active: gui.view == DESK })}
 							onClick={() => dispatch(updateView(DESK))}>
 							Desk
 						</button>
-						<button 
-							type="button" 
-							className={classnames({active: gui.view == MATRIX})} 
+						<button
+							type="button"
+							className={classnames({ active: gui.view == MATRIX })}
 							onClick={() => dispatch(updateView(MATRIX))}>
 							Matrix
 						</button>
 					</div>
-					<div className="header-right">
-
-					</div>
+					<div className="header-right" />
 				</div>
 			</header>
 		)
 	}
 }
 
-export default connect(({gui}) => ({gui}))(Header)
+export default connect(({ gui }) => ({ gui }))(Header)

@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 
 export default class SelectInput extends Component {
-
 	static defaultProps = {
 		options: [],
 		empty: 'Please select ...',
@@ -26,12 +25,20 @@ export default class SelectInput extends Component {
 	}
 
 	renderOptions() {
-		const empty = this.props.empty !== false && (<option value={this.props.defaultValue} key={0}>{this.props.empty}</option>)
+		const empty = this.props.empty !== false && (
+			<option value={this.props.defaultValue} key={0}>
+				{this.props.empty}
+			</option>
+		)
 		const options = this.props.options.map((option, i) => {
 			const value = typeof option == 'string' ? option : option.value
 			const text = typeof option == 'string' ? option : option.text
-			const disabled = typeof option == 'string' ? false : (option.disabled || false)
-			return (<option key={i + 1} value={value} disabled={disabled}>{text}</option>)
+			const disabled = typeof option == 'string' ? false : option.disabled || false
+			return (
+				<option key={i + 1} value={value} disabled={disabled}>
+					{text}
+				</option>
+			)
 		})
 		return empty ? [empty, ...options] : options
 	}
