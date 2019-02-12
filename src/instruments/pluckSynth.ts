@@ -1,3 +1,4 @@
+import { InstrumentDefaultValueType, ParamsType, InstrumentType } from '../types'
 import { PluckSynth, PolySynth, Meter, now } from 'tone'
 import _debounce from 'lodash/throttle'
 import { paramUpdateDebounce, voicesUpdateDebounce } from '../constants/timings'
@@ -5,16 +6,20 @@ import { checkDifferenceAny, checkDifferenceAll } from '../utils/lifecycleUtils'
 import { allInstrumentDefaults, defaultEnvelope, voicesParam } from '../constants/params'
 import PluckSynthEditor from '../components/instruments/PluckSynth'
 import PluckSynthDeskItem from '../components/desk/PluckSynth'
+import BaseInstrument from './BaseInstrument'
 
-export class PluckSynthInstrument {
+export class PluckSynthInstrument extends BaseInstrument {
+	synth: PolySynth
+
 	constructor(value = {}, dispatch) {
+		super()
 		console.log('Mounting pluckSynth...')
 		this.mounted = false
 		this.dispatch = dispatch
 		Object.keys(value).forEach(key => (this[key] = value[key]))
 		this.reinitSynth = _debounce(this.initSynth, voicesUpdateDebounce)
 		this.triggerUpdateVoiceParams = _debounce(this.updateVoiceParams, paramUpdateDebounce)
-		this.meter = new Meter()
+		this.meter = new Meter(0.5)
 		this.initSynth(() => {
 			this.mounted = true
 			console.log('pluckSynth mounted', this)
@@ -61,7 +66,7 @@ export class PluckSynthInstrument {
 	}
 }
 
-export const defaultValue = {
+export const defaultValue: InstrumentDefaultValueType = {
 	...allInstrumentDefaults,
 	instrument: {
 		voices: 4,
@@ -71,7 +76,7 @@ export const defaultValue = {
 	},
 }
 
-export const params = [
+export const params: ParamsType = [
 	voicesParam,
 	{
 		label: 'Attack Noise',
@@ -99,11 +104,14 @@ export const params = [
 	},
 ]
 
-export default {
+const instrument: InstrumentType = {
 	name: 'Pluck Synth',
 	slug: 'pluckSynth',
 	Editor: PluckSynthEditor,
 	Instrument: PluckSynthInstrument,
 	DeskItem: PluckSynthDeskItem,
 	defaultValue,
+	params,
 }
+
+export default instrument

@@ -1,6 +1,6 @@
 import BaseEffect from './BaseEffect'
 import { AutoFilter } from 'tone'
-import { ParamsType, EffectType, ParamDefaultValueType } from '../types'
+import { ParamsType, EffectType, EffectDefaultValueType } from '../types'
 
 export const params: ParamsType = [
 	{
@@ -32,7 +32,7 @@ export const params: ParamsType = [
 	},
 ]
 
-export const defaultValue: ParamDefaultValueType = {
+export const defaultValue: EffectDefaultValueType = {
 	effect: params.reduce((obj, { path, defaultValue }) => ({ ...obj, [path]: defaultValue }), {}),
 }
 

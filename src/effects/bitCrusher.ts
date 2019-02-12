@@ -1,6 +1,6 @@
 import BaseEffect from './BaseEffect'
 import { BitCrusher } from 'tone'
-import { EffectType, ParamsType, ParamDefaultValueType } from '../types'
+import { EffectType, ParamsType, EffectDefaultValueType } from '../types'
 
 export const params: ParamsType = [
 	{
@@ -14,7 +14,7 @@ export const params: ParamsType = [
 	},
 ]
 
-export const defaultValue: ParamDefaultValueType = {
+export const defaultValue: EffectDefaultValueType = {
 	effect: params.reduce((obj, { path, defaultValue }) => ({ ...obj, [path]: defaultValue }), {}),
 }
 

@@ -1,6 +1,6 @@
 import BaseEffect from './BaseEffect'
 import { FeedbackDelay, Time } from 'tone'
-import { EffectType, ParamDefaultValueType, ParamsType } from '../types'
+import { EffectType, EffectDefaultValueType, ParamsType } from '../types'
 
 export const params: ParamsType = [
 	{
@@ -23,7 +23,7 @@ export const params: ParamsType = [
 	},
 ]
 
-export const defaultValue: ParamDefaultValueType = {
+export const defaultValue: EffectDefaultValueType = {
 	effect: params.reduce((obj, { path, defaultValue }) => ({ ...obj, [path]: defaultValue }), {}),
 }
 

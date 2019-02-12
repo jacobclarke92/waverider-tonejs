@@ -1,15 +1,18 @@
-import React from 'react'
+import { ParamsType } from '../types'
 import { Master, Gain, Meter, now } from 'tone'
+import BaseInstrument from './BaseInstrument'
 import MasterDeskItem from '../components/desk/Master'
-import { allInstrumentDefaults, defaultEnvelope, envelopeParams, voicesParam, oscTypeParam } from '../constants/params'
 
-export class MasterInstrument {
+export class MasterInstrument extends BaseInstrument {
+	submaster: Gain
+
 	constructor(value = {}, dispatch) {
+		super()
 		console.log('Mounting master...')
 		this.mounted = false
 		this.dispatch = dispatch
 		Object.keys(value).forEach(key => (this[key] = value[key]))
-		this.meter = new Meter()
+		this.meter = new Meter(0.5)
 		this.initSynth(() => {
 			this.mounted = true
 			console.log('Master mounted', this)
@@ -21,9 +24,12 @@ export class MasterInstrument {
 	}
 
 	initSynth(callback = () => {}) {
+		// @ts-ignore
 		if (this.submaster) this.submaster.dispose()
-		this.submaster = new Gain({ gain: 1 })
+		this.submaster = new Gain(1)
+		// @ts-ignore
 		this.submaster.connect(this.meter)
+		// @ts-ignore
 		this.submaster.connect(Master)
 		callback()
 	}
@@ -42,7 +48,7 @@ export const defaultValue = {
 	},
 }
 
-export const params = [
+export const params: ParamsType = [
 	{
 		label: 'Gain',
 		path: 'gain',
@@ -56,7 +62,7 @@ export const params = [
 export default {
 	name: 'Master',
 	slug: 'master',
-	Editor: () => <div />,
+	Editor: () => null,
 	Instrument: MasterInstrument,
 	DeskItem: MasterDeskItem,
 	defaultValue,

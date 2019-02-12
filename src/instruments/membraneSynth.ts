@@ -1,24 +1,29 @@
-import { Synth, PolySynth, Meter, now } from 'tone'
+import { InstrumentDefaultValueType, ParamsType, InstrumentType } from '../types'
+import { MembraneSynth, PolySynth, Meter, now } from 'tone'
 import _debounce from 'lodash/throttle'
 import { paramUpdateDebounce, voicesUpdateDebounce } from '../constants/timings'
-import { checkDifferenceAny, checkDifferenceAll } from '../utils/lifecycleUtils'
-import { allInstrumentDefaults, defaultEnvelope, envelopeParams, voicesParam, oscTypeParam } from '../constants/params'
+import { checkDifferenceAny } from '../utils/lifecycleUtils'
+import { allInstrumentDefaults, envelopeParams, voicesParam, oscTypeParam } from '../constants/params'
 import { noteNumberToName } from '../utils/noteUtils'
-import BasicSynthDeskItem from '../components/desk/BasicSynth'
-import BasicSynthEditor from '../components/instruments/BasicSynth'
+import MembraneSynthEditor from '../components/instruments/MembraneSynth'
+import MembraneSynthDeskItem from '../components/desk/MembraneSynth'
+import BaseInstrument from './BaseInstrument'
 
-export class BasicSynthInstrument {
+export class MembraneSynthInstrument extends BaseInstrument {
+	synth: PolySynth
+
 	constructor(value = {}, dispatch) {
-		console.log('Mounting basicSynth...')
+		super()
+		console.log('Mounting membraneSynth...')
 		this.mounted = false
 		this.dispatch = dispatch
 		Object.keys(value).forEach(key => (this[key] = value[key]))
 		this.reinitSynth = _debounce(this.initSynth, voicesUpdateDebounce)
 		this.triggerUpdateVoiceParams = _debounce(this.updateVoiceParams, paramUpdateDebounce)
-		this.meter = new Meter()
+		this.meter = new Meter(0.5)
 		this.initSynth(() => {
 			this.mounted = true
-			console.log('basicSynth mounted', this)
+			console.log('membraneSynth mounted', this)
 		})
 	}
 
@@ -30,7 +35,8 @@ export class BasicSynthInstrument {
 		}
 		if (
 			checkDifferenceAny(value.instrument, oldValue.instrument, [
-				'portamento',
+				'pitchDecay',
+				'octaves',
 				'oscillator.type',
 				'envelope.attack',
 				'envelope.decay',
@@ -45,7 +51,7 @@ export class BasicSynthInstrument {
 	initSynth(callback = () => {}) {
 		const { voices } = this.instrument
 		if (this.synth) this.synth.dispose()
-		this.synth = new PolySynth(voices, Synth)
+		this.synth = new PolySynth(voices, MembraneSynth)
 		this.synth.set('volume', -39)
 		this.synth.connect(this.meter)
 		this.updateVoiceParams()
@@ -54,15 +60,17 @@ export class BasicSynthInstrument {
 
 	updateVoiceParams() {
 		if (!this.synth) return
-		const { portamento, envelope, oscillator } = this.instrument
-		this.synth.set({ portamento, envelope, oscillator })
+		const { pitchDecay, octaves, envelope, oscillator } = this.instrument
+		this.synth.set({ pitchDecay, octaves, envelope, oscillator })
 	}
 
 	noteDown(note, velocity) {
+		// @ts-ignore
 		if (this.mounted && this.synth) this.synth.triggerAttack(noteNumberToName(note), now(), velocity / 2)
 	}
 
 	noteUp(note) {
+		// @ts-ignore
 		if (this.mounted && this.synth) this.synth.triggerRelease(noteNumberToName(note), now())
 	}
 
@@ -71,36 +79,53 @@ export class BasicSynthInstrument {
 	}
 }
 
-export const defaultValue = {
+export const defaultValue: InstrumentDefaultValueType = {
 	...allInstrumentDefaults,
 	instrument: {
 		voices: 1,
-		portamento: 0,
-		envelope: { ...defaultEnvelope },
+		pitchDecay: 0.05,
+		octaves: 6,
 		oscillator: { type: 'sine' },
+		envelope: {
+			attack: 0.001,
+			decay: 0.4,
+			sustain: 0.01,
+			release: 1.4,
+			attackCurve: 'exponential',
+		},
 	},
 }
 
-export const params = [
+export const params: ParamsType = [
 	voicesParam,
 	oscTypeParam,
 	{
-		label: 'Portamento',
-		path: 'portamento',
-		defaultValue: 1,
+		label: 'Pitch Decay',
+		path: 'pitchDecay',
+		defaultValue: 0.05,
 		min: 0,
 		max: 1,
 		step: 0.02,
 	},
+	{
+		label: 'Octaves',
+		path: 'octaves',
+		defaultValue: 6,
+		min: 0,
+		max: 12,
+		step: 1,
+	},
 	...envelopeParams,
 ]
 
-export default {
-	name: 'Basic Synth',
-	slug: 'basicSynth',
-	Instrument: BasicSynthInstrument,
-	Editor: BasicSynthEditor,
-	DeskItem: BasicSynthDeskItem,
+const instrument: InstrumentType = {
+	name: 'Membrane Synth',
+	slug: 'membraneSynth',
+	Editor: MembraneSynthEditor,
+	Instrument: MembraneSynthInstrument,
+	DeskItem: MembraneSynthDeskItem,
 	defaultValue,
 	params,
 }
+
+export default instrument

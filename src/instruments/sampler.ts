@@ -1,12 +1,18 @@
 import { allInstrumentDefaults } from '../constants/params'
+import { Meter } from 'tone'
+import BaseInstrument from './BaseInstrument'
+import { InstrumentDefaultValueType, ParamsType, InstrumentType } from '../types'
 
-export class SamplerInstrument {
+export class SamplerInstrument extends BaseInstrument {
+	sampler: any
+
 	constructor(value = {}, dispatch) {
+		super()
 		console.log('Mounting sampler...')
 		this.mounted = false
 		this.dispatch = dispatch
 		Object.keys(value).forEach(key => (this[key] = value[key]))
-		this.meter = new Meter()
+		this.meter = new Meter(0.5)
 		this.initSynth(() => {
 			this.mounted = true
 			console.log('Sampler mounted', this)
@@ -20,11 +26,11 @@ export class SamplerInstrument {
 	}
 
 	noteDown(note, velocity) {
-		if (this.mounted && this.synth) this.synth.triggerAttack(note, now(), velocity / 2)
+		// if (this.mounted && this.synth) this.synth.triggerAttack(note, now(), velocity / 2)
 	}
 
 	noteUp(note) {
-		if (this.mounted && this.synth) this.synth.triggerRelease(note, now())
+		// if (this.mounted && this.synth) this.synth.triggerRelease(note, now())
 	}
 
 	getToneSource() {
@@ -32,17 +38,21 @@ export class SamplerInstrument {
 	}
 }
 
-export const defaultValue = {
+export const defaultValue: InstrumentDefaultValueType = {
 	...allInstrumentDefaults,
 	instrument: {},
 }
 
-export const params = []
+export const params: ParamsType = []
 
-export default {
+const instrument: InstrumentType = {
 	name: 'Sampler',
 	slug: 'sampler',
 	Editor: null,
+	Instrument: null,
+	DeskItem: null,
 	defaultValue,
 	params,
 }
+
+export default instrument

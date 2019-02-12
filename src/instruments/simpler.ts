@@ -10,9 +10,16 @@ import { updateInstrument } from '../reducers/instruments'
 
 import SimplerEditor from '../components/instruments/Simpler'
 import { allInstrumentDefaults, defaultEnvelope, envelopeParams, voicesParam } from '../constants/params'
+import BaseInstrument from './BaseInstrument'
+import { ParamsType, InstrumentType, FileType } from '../types'
 
-export class SimplerInstrument {
+export class SimplerInstrument extends BaseInstrument {
+	sampler: PolySynth
+	reinitSampler: () => void
+	file: null | FileType
+
 	constructor(value = {}, dispatch) {
+		super()
 		console.log('Mounting simpler...')
 		this.mounted = false
 		this.file = null
@@ -20,7 +27,7 @@ export class SimplerInstrument {
 		Object.keys(value).forEach(key => (this[key] = value[key]))
 		this.reinitSampler = _debounce(this.initSampler, voicesUpdateDebounce)
 		this.triggerUpdateVoiceParams = _debounce(this.updateVoiceParams, paramUpdateDebounce)
-		this.meter = new Meter()
+		this.meter = new Meter(0.5)
 		this.initSampler(() => {
 			this.mounted = true
 			console.log('Simpler mounted', this)
@@ -40,7 +47,7 @@ export class SimplerInstrument {
 				})
 		}
 		if (checkDifferenceAny(value, oldValue, 'instrument.fileHash')) {
-			this.loadAudioFile(value.instrument.fileHash, file => {
+			this.loadAudioFile(value.instrument.fileHash as string, file => {
 				this.updateAudioFile(file.getUrl(), () => {
 					this.triggerUpdateVoiceParams()
 				})
@@ -63,6 +70,7 @@ export class SimplerInstrument {
 		const { voices, fileHash, reverse, loop, trim } = this.instrument
 
 		if (this.sampler) this.sampler.dispose()
+		// @ts-ignore
 		this.sampler = new PolySynth(voices, Sampler)
 		this.sampler.set('volume', -39)
 		this.sampler.connect(this.meter)
@@ -76,7 +84,7 @@ export class SimplerInstrument {
 		})
 	}
 
-	loadAudioFile(fileHash, callback = () => {}) {
+	loadAudioFile(fileHash: string, callback: (file?: FileType) => void) {
 		if (!fileHash) return callback()
 
 		getFileByHash(fileHash)
@@ -109,16 +117,19 @@ export class SimplerInstrument {
 			.catch(e => console.warn('Unable to load audio for simpler', fileHash, e))
 	}
 
-	updateAudioFile(url, callback = () => {}) {
+	updateAudioFile(url: string, callback: () => void) {
 		if (!url) return
 		if (!this.sampler) return this.initSampler()
 
 		let voicesLoaded = 0
 		const { voices, trim, reverse } = this.instrument
 		this.sampler.voices.forEach(voice => {
+			// @ts-ignore
 			voice.player.load(url, () => {
+				// @ts-ignore
 				const duration = voice.buffer.duration
 				if (!(trim.start === 0 && trim.end === 1)) {
+					// @ts-ignore
 					voice.buffer = voice.buffer.slice(
 						duration * (reverse ? 1 - trim.end : trim.start),
 						duration * (reverse ? 1 - trim.start : trim.end)
@@ -142,12 +153,14 @@ export class SimplerInstrument {
 
 	noteDown(note, velocity) {
 		if (this.mounted && this.sampler && this.file) {
+			// @ts-ignore
 			this.sampler.triggerAttack(note - this.instrument.baseNote, now(), velocity / 2)
 		}
 	}
 
 	noteUp(note) {
 		if (this.mounted && this.sampler && this.file) {
+			// @ts-ignore
 			this.sampler.triggerRelease(note - this.instrument.baseNote, now())
 		}
 	}
@@ -156,11 +169,15 @@ export class SimplerInstrument {
 		if (!this.mounted || !this.sampler || !this.sampler.voices) return []
 		const positions = []
 		this.sampler.voices.forEach(voice => {
+			// @ts-ignore
 			if (voice.player.state == 'started') {
+				// @ts-ignore
 				const startedEvents = voice.player._state._timeline.filter(event => event.state == 'started')
 				if (startedEvents.length) {
 					const lastStartedEvent = startedEvents.pop()
+					// @ts-ignore
 					const duration = voice.player.buffer.duration
+					// @ts-ignore
 					const playbackRate = voice.player.playbackRate
 					const elapsedTime = now() - lastStartedEvent.time
 					let durationPercent = elapsedTime / (duration / playbackRate)
@@ -195,14 +212,14 @@ export const defaultValue = {
 	},
 }
 
-export const params = [
+export const params: ParamsType = [
 	voicesParam,
 	{
 		label: 'Base Note',
 		path: 'baseNote',
 		defaultValue: 0,
 		min: 0,
-		max: 128,
+		max: 127,
 		step: 1,
 		type: 'note',
 	},
@@ -245,11 +262,14 @@ export const params = [
 	...envelopeParams,
 ]
 
-export default {
+const instrument: InstrumentType = {
 	name: 'Simpler',
 	slug: 'simpler',
 	Editor: SimplerEditor,
 	Instrument: SimplerInstrument,
+	DeskItem: () => null,
 	defaultValue,
 	params,
 }
+
+export default instrument

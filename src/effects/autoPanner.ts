@@ -1,7 +1,7 @@
 import BaseEffect from './BaseEffect'
 import { AutoPanner } from 'tone'
 import { oscTypeParam } from '../constants/params'
-import { EffectType, ParamsType, ParamDefaultValueType } from '../types'
+import { EffectType, ParamsType, EffectDefaultValueType } from '../types'
 
 export const params: ParamsType = [
 	{
@@ -28,7 +28,7 @@ export const params: ParamsType = [
 	},
 ]
 
-export const defaultValue: ParamDefaultValueType = {
+export const defaultValue: EffectDefaultValueType = {
 	effect: params.reduce((obj, { path, defaultValue }) => ({ ...obj, [path]: defaultValue }), {}),
 }
 
