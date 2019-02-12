@@ -24,8 +24,8 @@ export const removeNoteDownListener = func =>
 	(noteDownListeners = noteDownListeners.filter(listener => listener != func))
 export const removeNoteUpListener = func => (noteUpListeners = noteUpListeners.filter(listener => listener != func))
 
-export function init(_store) {
-	store = _store
+export function init(_store?: any) { // TODO
+	if(_store) store = _store
 	if (navigator.requestMIDIAccess) {
 		navigator.requestMIDIAccess({ sysex: false }).then(handleMidiSuccess, handleMidiFailure)
 	} else {
