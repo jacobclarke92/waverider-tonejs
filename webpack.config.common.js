@@ -1,11 +1,9 @@
 const { resolve } = require('path')
 
 module.exports = {
-	resolve: {
-		extensions: ['.ts', '.tsx', '.js', '.jsx'],
-	},
 	context: resolve(__dirname, 'src'),
 	resolve: {
+		extensions: ['.ts', '.tsx', '.js', '.jsx'],
 		alias: {
 			wavesurfer: 'wavesurfer.js/src/wavesurfer.js',
 		},
