@@ -54,6 +54,15 @@ export interface Wire {
 
 export interface Device {}
 
+export interface Instrument {
+	enabled: boolean
+	id: number
+	type: string // TODO
+	instrument: any // TODO
+	midiChannel: null | number
+	midiDeviceId: null | number
+}
+
 export interface EnvelopeType {
 	attack: number
 	decay: number
