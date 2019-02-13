@@ -5,13 +5,13 @@ import { isArray } from '../utils/typeUtils'
 import { add, getAll, getFirstWhere, updateById, removeById } from '../api/db'
 import instrumentLibrary from '../instrumentLibrary'
 import { deskItemTypeDefaults, INSTRUMENT, MASTER } from '../constants/deskItemTypes'
-import { Instrument } from '../types';
-import { Action } from 'redux';
+import { Instrument } from '../types'
+import { Action } from 'redux'
 
-export const LOAD_INSTRUMENTS = 'LOAD_INSTRUMENTS'
-export const ADD_INSTRUMENT = 'ADD_INSTRUMENT'
-export const REMOVE_INSTRUMENT = 'REMOVE_INSTRUMENT'
-export const UPDATE_INSTRUMENT = 'UPDATE_INSTRUMENT'
+export const LOAD_INSTRUMENTS: string = 'LOAD_INSTRUMENTS'
+export const ADD_INSTRUMENT: string = 'ADD_INSTRUMENT'
+export const REMOVE_INSTRUMENT: string = 'REMOVE_INSTRUMENT'
+export const UPDATE_INSTRUMENT: string = 'UPDATE_INSTRUMENT'
 
 export type State = Instrument[]
 
@@ -22,7 +22,7 @@ interface ReducerAction extends Action {
 	updates?: any // TODO
 }
 
-const initialState:State = [
+const initialState: State = [
 	{
 		enabled: true,
 		id: 1,
@@ -33,7 +33,7 @@ const initialState:State = [
 	},
 ]
 
-export default function(state:State = initialState, action:ReducerAction) {
+export default function(state: State = initialState, action: ReducerAction) {
 	switch (action.type) {
 		case LOAD_INSTRUMENTS:
 			return action.instruments || []
@@ -56,7 +56,10 @@ export const loadInstruments = () => dispatch =>
 			else return add('instruments', initialState[0])
 		})
 		.then(instruments =>
-			dispatch({ type: LOAD_INSTRUMENTS, instruments: isArray(instruments) ? instruments : [instruments] } as ReducerAction)
+			dispatch({
+				type: LOAD_INSTRUMENTS,
+				instruments: isArray(instruments) ? instruments : [instruments],
+			} as ReducerAction)
 		)
 		.catch(e => console.warn('Unable to load instruments', e))
 

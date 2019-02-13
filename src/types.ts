@@ -7,7 +7,6 @@ declare global {
 	interface Navigator {
 		webkitTemporaryStorage: any
 		webkitPersistentStorage: any
-		requestMIDIAccess: any
 	}
 	interface Document {
 		exitPointerLock: () => void
@@ -17,8 +16,8 @@ declare global {
 	}
 }
 
-export type KeyedObject = {[key: string]: any}
-export type NumericObject = {[key: number]: any}
+export type KeyedObject = { [key: string]: any }
+export type NumericObject = { [key: number]: any }
 
 export type UiViewType = 'STAGE' | 'DESK' | 'MATRIX'
 export type OscType = 'sine' | 'triangle' | 'square' | 'sawtooth'
@@ -55,7 +54,9 @@ export interface Wire {
 	deskItem: DeskItemType
 }
 
-export interface Device {}
+export interface Device extends WebMidi.MIDIPort {
+	disconnected: boolean
+}
 
 export interface FileType {
 	id: number
@@ -73,7 +74,7 @@ export interface Instrument {
 	type: string // TODO
 	instrument: any // TODO
 	midiChannel: null | number
-	midiDeviceId: null | number
+	midiDeviceId: null | string
 }
 
 export interface EnvelopeType {
@@ -119,7 +120,7 @@ export type EffectDefaultValueType = {
 }
 
 export interface AllInstrumentDefaultValuesType {
-	midiDeviceId: null | number
+	midiDeviceId: null | string
 	midiChannel: null | number
 }
 
