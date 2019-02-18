@@ -65,7 +65,8 @@ export interface FileType {
 	type: string
 	date: string
 	hash: string
-	blob: Blob
+	blob?: Blob
+	data?: Blob
 }
 
 export interface Instrument {
