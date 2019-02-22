@@ -1,19 +1,18 @@
 import { Player, Analyser } from 'tone'
-import { updateFileById } from './db'
+import { updateFileById, FileEntity } from './db'
 
-export const getNote = soundUrl =>
+export const getNote = (soundUrl: string): Promise<number> =>
 	new Promise((resolve, reject) => {
 		let analysing = true
 		const analyser = new Analyser('waveform', 1024)
 		analyser.type = 'waveform'
-		analyser.returnType = 'float'
 
-		const noteStore = {}
+		const noteStore: { [k: number]: number } = {}
 		let mostReoccuring = 0
-		let mostLikelyNote = null
+		let mostLikelyNote: number = null
 
 		const analyserFrame = () => {
-			const buffer = analyser.analyse()
+			const buffer = analyser.getValue()
 			const pitch = autoCorrelate(buffer, 1024)
 			if (pitch !== -1) {
 				const note = noteFromPitch(pitch)
@@ -23,12 +22,12 @@ export const getNote = soundUrl =>
 					mostLikelyNote = note
 				}
 			}
-			if (analysing) requestAnimationFrame(analyserFrame)
+			if (analysing) window.requestAnimationFrame(analyserFrame)
 		}
 
 		const player = new Player(soundUrl, () => {
 			player.start()
-			requestAnimationFrame(analyserFrame)
+			window.requestAnimationFrame(analyserFrame)
 			setTimeout(() => {
 				analysing = false
 				if (mostLikelyNote) resolve(mostLikelyNote)
@@ -37,11 +36,11 @@ export const getNote = soundUrl =>
 		}).connect(analyser)
 	})
 
-export const getNoteByFile = file =>
+export const getNoteByFile = (file: FileEntity): Promise<number> =>
 	new Promise((resolve, reject) => {
 		if (file.note) resolve(file.note)
 		else
-			getNote(file.getUrl())
+			getNote(file.url)
 				.then(note =>
 					updateFileById(file.id, { note })
 						.then(() => resolve(note))
@@ -50,20 +49,20 @@ export const getNoteByFile = file =>
 				.catch(reject)
 	})
 
-export const noteFromPitch = frequency => {
+export const noteFromPitch = (frequency: number): number => {
 	const noteNum = 12 * (Math.log(frequency / 440) / Math.log(2))
 	return Math.round(noteNum) + 110
 }
 
-export const frequencyFromNoteNumber = note => 440 * Math.pow(2, (note - 110) / 12)
+export const frequencyFromNoteNumber = (note: number): number => 440 * Math.pow(2, (note - 110) / 12)
 
-export const centsOffFromPitch = (frequency, note) =>
+export const centsOffFromPitch = (frequency: number, note: number) =>
 	Math.floor((1200 * Math.log(frequency / frequencyFromNoteNumber(note))) / Math.log(2))
 
 // borrowed from https://github.com/cwilso/PitchDetect/blob/master/js/pitchdetect.js
 const minSamples = 0
 const goodEnoughCorrelation = 0.9
-const autoCorrelate = (buf, sampleRate) => {
+const autoCorrelate = (buf: Float32Array, sampleRate: number): number => {
 	const size = buf.length
 	const maxSamples = Math.floor(size / 2)
 	let bestOffset = -1
@@ -72,8 +71,8 @@ const autoCorrelate = (buf, sampleRate) => {
 	let foundGoodCorrelation = false
 	let correlations = new Array(maxSamples)
 
-	for (var i = 0; i < size; i++) {
-		var val = buf[i]
+	for (let i = 0; i < size; i++) {
+		const val = buf[i]
 		rms += val * val
 	}
 	rms = Math.sqrt(rms / size)

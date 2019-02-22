@@ -53,7 +53,7 @@ type DeskTableSchema = {
 	position: PointObj
 }
 
-class FileEntity {
+export class FileEntity {
 	id: number
 	filename: string
 	size: number
@@ -258,9 +258,9 @@ export const addFile = (blob: Blob) =>
 			.catch(error => {})
 	)
 
-export const getFileBy = (field: string | string[], value: any): Promise<FileType> => getBy('files', field, value)
-export const getFileById = (id: number): Promise<FileType> => getFileBy('id', id)
-export const getFileByHash = (hash: string): Promise<FileType> => getFileBy('hash', hash)
+export const getFileBy = (field: string | string[], value: any): Promise<FileEntity> => getBy('files', field, value)
+export const getFileById = (id: number): Promise<FileEntity> => getFileBy('id', id)
+export const getFileByHash = (hash: string): Promise<FileEntity> => getFileBy('hash', hash)
 export const updateFileBy = (field: string | string[], value: any, updates: { [key: string]: any } = {}) =>
 	updateBy('files', field, value, updates)
 export const updateFileById = (id: number, updates: { [key: string]: any }) => updateById('files', id, updates)
