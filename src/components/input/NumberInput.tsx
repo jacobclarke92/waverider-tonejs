@@ -1,6 +1,16 @@
-import React, { Component } from 'react'
+import React, { Component, FormEvent } from 'react'
 
-export default class NumberInput extends Component {
+interface Props {
+	autoFocus: boolean
+	value: number
+	onChange: (val: number) => void
+	onBlur: (e: FormEvent<HTMLInputElement>) => void
+	beforeOnChange: (e: FormEvent<HTMLInputElement>) => number
+}
+
+export default class NumberInput extends Component<Props> {
+	input: HTMLInputElement
+
 	static defaultProps = {
 		autoFocus: false,
 		value: 0,

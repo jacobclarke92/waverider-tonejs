@@ -1,6 +1,16 @@
 import React, { Component } from 'react'
 
-export default class Donut extends Component {
+interface Props {
+	size?: number
+	span?: number
+	rotate?: number
+	percent?: number
+	extraValues?: number[]
+	thickness?: number
+	signed: boolean
+}
+
+export default class Donut extends Component<Props> {
 	static defaultProps = {
 		size: 50, // px
 		span: 234, // degrees

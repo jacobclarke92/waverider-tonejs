@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, MouseEvent, CSSProperties } from 'react'
 import _throttle from 'lodash/throttle'
 import { clamp, roundToMultiple } from '../../utils/mathUtils'
 import { addKeyListener, removeKeyListener, isAltKeyPressed } from '../../utils/keyUtils'
@@ -6,8 +6,43 @@ import { addKeyListener, removeKeyListener, isAltKeyPressed } from '../../utils/
 import Donut from './Donut'
 import NumberInput from './NumberInput'
 import PointerLockWrapper from '../PointerLockWrapper'
+import { PointObj } from '../../utils/Point'
 
-export default class KnobInput extends Component {
+type LabelPosition = 'top' | 'right' | 'bottom' | 'left'
+type InputValidatorFunc = (val: number) => number | false
+interface Props {
+	min?: number
+	max?: number
+	step?: number
+	value?: number
+	defaultValue?: number
+	extraValues?: number[]
+	signed?: boolean
+	label: string
+	labelPosition?: LabelPosition
+	trackSpan?: number
+	trackRotate?: number
+	trackSize?: number
+	trackThickness?: number
+	dragSensitivity?: number
+	inputProps: { [k: string]: any }
+	inputValidator?: InputValidatorFunc
+	inputValueIsDisplayValue?: boolean
+	loading?: boolean
+	onChange: (val: number) => void
+	valueDisplay?: (val: string | number) => string
+}
+
+interface State {
+	editing: boolean
+	inputValue: number
+}
+
+export default class KnobInput extends Component<Props, State> {
+	stepNotch: number
+	dragValue: number
+	inputValidator: InputValidatorFunc
+
 	static defaultProps = {
 		min: 0,
 		max: 127,
@@ -24,17 +59,15 @@ export default class KnobInput extends Component {
 		trackThickness: 8,
 		dragSensitivity: 128,
 		inputProps: {},
-		inputValidator: null,
 		inputValueIsDisplayValue: false,
 		loading: false,
 		onChange: () => {},
 		valueDisplay: value => value,
 	}
 
-	constructor(props) {
+	constructor(props: Props) {
 		super(props)
 		const { value, min, max, step, dragSensitivity, inputValidator } = props
-		this.input = null
 		this.stepNotch = ((max - min) * step) / dragSensitivity
 		this.dragValue = value
 		this.setInputValue = this.setInputValue.bind(this)
@@ -46,13 +79,13 @@ export default class KnobInput extends Component {
 		}
 	}
 
-	handleMouseDown(event) {
+	handleMouseDown(event: MouseEvent<HTMLElement>) {
 		const { value, defaultValue, onChange } = this.props
 		this.dragValue = value
 		if (isAltKeyPressed()) onChange(defaultValue)
 	}
 
-	handleMovement({ x, y }) {
+	handleMovement({ x, y }: PointObj) {
 		const { min, max, step, onChange } = this.props
 		const amount = -y * this.stepNotch
 		this.dragValue += amount
@@ -62,12 +95,12 @@ export default class KnobInput extends Component {
 		onChange(newValue)
 	}
 
-	handleDoubleClick() {
+	handleDoubleClick(event: MouseEvent<HTMLElement>) {
 		const { inputValueIsDisplayValue, value, valueDisplay } = this.props
 		this.setState(
 			{
 				editing: true,
-				inputValue: inputValueIsDisplayValue ? valueDisplay(value) : value,
+				inputValue: value, //inputValueIsDisplayValue ? valueDisplay(value) : value,
 			},
 			() => {
 				addKeyListener('enter', this.setInputValue)
@@ -114,7 +147,7 @@ export default class KnobInput extends Component {
 		const valuePercent = (value - min) / (max - min)
 		const extraValuePercents = extraValues.map(val => (val - min) / (max - min))
 
-		let knobStyles = {}
+		let knobStyles: CSSProperties = {}
 		if (labelPosition == 'top' || labelPosition == 'bottom') knobStyles = { ...knobStyles, width: trackSize }
 		if (labelPosition == 'left' || labelPosition == 'right') knobStyles = { ...knobStyles, height: trackSize }
 
@@ -132,7 +165,7 @@ export default class KnobInput extends Component {
 						<div className="knob-track">
 							<Donut
 								{...trackProps}
-								signed={signed !== null ? signed : min < 0 && max > 0}
+								signed={typeof signed == 'boolean' ? signed : min < 0 && max > 0}
 								percent={valuePercent}
 								extraValues={extraValuePercents}
 							/>

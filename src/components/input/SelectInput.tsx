@@ -1,6 +1,23 @@
 import React, { Component } from 'react'
 
-export default class SelectInput extends Component {
+type OptionValue = string | number // | boolean | null
+type OptionObj = {
+	value: OptionValue
+	text: string
+	disabled: boolean
+}
+interface Props {
+	options: OptionObj[]
+	empty?: string | false
+	value: OptionValue
+	defaultValue?: OptionValue
+	onChange: (val: OptionValue) => void
+	coerceValueToOptions?: boolean
+	readOnly?: boolean
+	className?: string
+}
+
+export default class SelectInput extends Component<Props> {
 	static defaultProps = {
 		options: [],
 		empty: 'Please select ...',
