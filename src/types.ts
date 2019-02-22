@@ -1,6 +1,5 @@
 import BaseEffect from './effects/BaseEffect'
 import { ReactType } from 'react'
-import { string } from 'prop-types'
 import { PointObj } from './utils/Point'
 
 declare global {
