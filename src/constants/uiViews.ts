@@ -1,5 +1,5 @@
-import { UiViewType } from '../types'
+import { UiView } from '../types'
 
-export const STAGE: UiViewType = 'STAGE'
-export const DESK: UiViewType = 'DESK'
-export const MATRIX: UiViewType = 'MATRIX'
+export const STAGE: UiView = 'STAGE'
+export const DESK: UiView = 'DESK'
+export const MATRIX: UiView = 'MATRIX'

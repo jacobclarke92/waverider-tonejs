@@ -1,8 +1,8 @@
 import { STAGE, DESK, MATRIX } from '../constants/uiViews'
 import _merge from 'lodash/merge'
 import _cloneDeep from 'lodash/cloneDeep'
-import { Action } from 'redux';
-import { UiViewType, DeskItemType } from '../types';
+import { Action } from 'redux'
+import { UiView, DeskItemType } from '../types'
 
 export const UPDATE_VIEW = 'UPDATE_VIEW'
 export const UPDATE_VIEW_UI_STATE = 'UPDATE_VIEW_UI_STATE'
@@ -15,24 +15,24 @@ export interface ViewState {
 }
 
 export type State = {
-	view: UiViewType,
-	viewStates: {[key: string]: ViewState},
-	activeElement: null | ActiveElement,
+	view: UiView
+	viewStates: { [key: string]: ViewState }
+	activeElement: null | ActiveElement
 }
 
 export type ActiveElement = {
-	type: DeskItemType,
-	element: null | HTMLElement,
+	type: DeskItemType
+	element: null | HTMLElement
 }
 
 interface ReducerAction extends Action {
-	view?: UiViewType
+	view?: UiView
 	updates?: any // TODO
 	element?: HTMLElement
 	deskItemType: DeskItemType
 }
 
-const initialState:State = {
+const initialState: State = {
 	view: DESK,
 	activeElement: null,
 	viewStates: {
@@ -47,7 +47,7 @@ const initialState:State = {
 	},
 }
 
-export default function(state:State = initialState, action:ReducerAction) {
+export default function(state: State = initialState, action: ReducerAction) {
 	switch (action.type) {
 		case UPDATE_VIEW:
 			return { ...state, view: action.view }
@@ -63,6 +63,8 @@ export default function(state:State = initialState, action:ReducerAction) {
 }
 
 export const updateView = view => ({ type: UPDATE_VIEW, view } as ReducerAction)
-export const updateViewUiState = (view, updates = {}) => ({ type: UPDATE_VIEW_UI_STATE, view, updates } as ReducerAction)
+export const updateViewUiState = (view, updates = {}) =>
+	({ type: UPDATE_VIEW_UI_STATE, view, updates } as ReducerAction)
 
-export const updateActiveElement = (deskItemType, element) => ({ type: UPDATE_ACTIVE_ELEMENT, deskItemType, element } as ReducerAction)
+export const updateActiveElement = (deskItemType, element) =>
+	({ type: UPDATE_ACTIVE_ELEMENT, deskItemType, element } as ReducerAction)

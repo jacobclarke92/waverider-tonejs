@@ -19,8 +19,8 @@ declare global {
 export type KeyedObject = { [key: string]: any }
 export type NumericObject = { [key: number]: any }
 
-export type UiViewType = 'STAGE' | 'DESK' | 'MATRIX'
-export type OscType = 'sine' | 'triangle' | 'square' | 'sawtooth'
+export type UiView = 'STAGE' | 'DESK' | 'MATRIX'
+export type Osc = 'sine' | 'triangle' | 'square' | 'sawtooth'
 export type DeskItem = 'EFFECT' | 'BUS' | 'INSTRUMENT' | 'MASTER' | 'LFO'
 export type NoteString = 'C' | 'C#' | 'D' | 'D#' | 'E' | 'F' | 'F#' | 'G' | 'G#' | 'A' | 'A#' | 'B'
 export type WireType = 'audio' | 'data'

@@ -1,4 +1,4 @@
-import { OscType, EnvelopeType, OptionsParamType, NumberParamType } from '../types'
+import { EnvelopeType, OptionsParamType, NumberParamType } from '../types'
 
 export const defaultEnvelope: EnvelopeType = {
 	attack: 0.01,
