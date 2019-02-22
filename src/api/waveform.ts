@@ -1,18 +1,19 @@
-import WaveSurfer from 'wavesurfer'
+import WaveSurfer, { WaveSurferOptions } from 'wavesurfer.js'
 import base64toBlob from 'b64-to-blob'
 import { getFileByHash } from './db'
 import { getBlobUrl } from '../utils/blobUtils'
+import { FileType } from '../types'
 
-const defaultOptions = {
+const defaultOptions: WaveSurferOptions = {
 	waveColor: '#FFF',
 	minPxPerSec: 3000,
 	normalize: false,
 	splitChannels: true,
 }
 
-const waveforms = {}
+const waveforms: { [k: string]: string } = {}
 
-export function getWaveformFromBlob(blob, options, hash = null) {
+export function getWaveformFromBlob(blob: Blob, options, hash?: string): Promise<string> {
 	return new Promise((resolve, reject) => {
 		const container = document.createElement('div')
 		container.setAttribute('id', 'waveform-renderer')
@@ -40,10 +41,10 @@ export function getWaveformFromBlob(blob, options, hash = null) {
 	})
 }
 
-export function getWaveformFromFile(file, options = {}) {
+export function getWaveformFromFile(file: FileType, options: WaveSurferOptions = {}): string | Promise<string> {
 	return file.hash in waveforms ? waveforms[file.hash] : getWaveformFromBlob(file.blob, options, file.hash)
 }
 
-export function getWaveformFromFileHash(hash, options = {}) {
+export function getWaveformFromFileHash(hash: string, options: WaveSurferOptions = {}): Promise<string> {
 	return getFileByHash(hash).then(file => file && getWaveformFromFile(file, options))
 }

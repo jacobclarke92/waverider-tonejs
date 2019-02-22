@@ -5,7 +5,7 @@ module.exports = {
 	resolve: {
 		extensions: ['.ts', '.tsx', '.js', '.jsx'],
 		alias: {
-			wavesurfer: 'wavesurfer.js/src/wavesurfer.js',
+			'wavesurfer.js': 'wavesurfer.js/src/wavesurfer.js',
 		},
 	},
 	module: {
