@@ -1,4 +1,5 @@
 import BaseEffect from './effects/BaseEffect'
+import BaseInstrument from './instruments/BaseInstrument'
 import { ReactType } from 'react'
 import { PointObj } from './utils/Point'
 
@@ -50,7 +51,10 @@ export interface DeskItemIOType {
 }
 
 export interface Wire {
+	param?: any // TODO
 	deskItem: DeskItemType
+	position: PointObj
+	relativePosition: PointObj
 }
 
 export interface Device extends WebMidi.MIDIPort {
@@ -132,21 +136,21 @@ export interface InstrumentDefaultValueType extends AllInstrumentDefaultValuesTy
 export type AnyParamType = NumberParamType | OptionsParamType | NoteParamType | BooleanParamType
 export type ParamsType = AnyParamType[]
 
-export type BaseEffectType = typeof BaseEffect
 export interface EffectType {
-	id: number
+	id?: number
 	name: string
 	slug: string
-	Effect: BaseEffectType
-	Editor: () => any
+	Effect: typeof BaseEffect
+	Editor: ReactType
 	defaultValue: EffectDefaultValueType
 	params: ParamsType
 }
 
 export interface InstrumentType {
+	id?: number
 	name: string
 	slug: string
-	Instrument: any
+	Instrument: typeof BaseInstrument
 	Editor: ReactType
 	DeskItem: ReactType
 	defaultValue: InstrumentDefaultValueType

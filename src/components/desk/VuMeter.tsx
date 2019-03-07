@@ -2,8 +2,21 @@ import React, { Component } from 'react'
 import { MASTER, INSTRUMENT, EFFECT } from '../../constants/deskItemTypes'
 import { getEffectInstance } from '../../effectsController'
 import { getInstrumentInstance } from '../../instrumentsController'
+import BaseEffect from '../../effects/BaseEffect'
 
-export default class VuMeter extends Component {
+interface Props {
+	id: number
+	type: string
+}
+
+interface State {
+	level: number
+}
+
+export default class VuMeter extends Component<Props, State> {
+	raf: number
+	instance: BaseEffect
+
 	constructor(props) {
 		super(props)
 		this.instance = null
@@ -31,7 +44,7 @@ export default class VuMeter extends Component {
 	monitorLevel() {
 		if (!this.instance) this.getInstance()
 		if (this.instance) {
-			const level = this.instance.meter ? this.instance.meter.value : 0
+			const level = this.instance.meter ? this.instance.meter.getValue() : 0
 			this.setState({ level })
 		}
 		this.raf = requestAnimationFrame(this.monitorLevel)

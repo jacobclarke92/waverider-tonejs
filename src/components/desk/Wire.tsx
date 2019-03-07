@@ -1,8 +1,19 @@
-import React, { Component } from 'react'
-import classname from 'classname'
-import Point from '../../utils/Point'
+import React, { Component, CSSProperties } from 'react'
+import cn from 'classname'
+import Point, { PointObj } from '../../utils/Point'
+import { Wire } from '../../types'
 
-export default class Wire extends Component {
+interface Props {
+	active?: boolean
+	valid?: boolean
+	selected?: boolean
+	onSelect?: () => void
+	wireFrom: Wire
+	wireTo: Wire
+	stagePointer: Point
+}
+
+export default class WireComponent extends Component<Props> {
 	static defaultProps = {
 		active: false,
 		valid: false,
@@ -39,34 +50,34 @@ export default class Wire extends Component {
 		}
 
 		// Set SVG path start
-		const pathStart = {
+		const pathStart: PointObj = {
 			x: fromPos.x < toPos.x ? 0 : width,
 			y: fromPos.y < toPos.y ? 0 : height,
 		}
 
 		// Set SVG path end
-		const pathEnd = {
+		const pathEnd: PointObj = {
 			x: fromPos.x < toPos.x ? width : 0,
 			y: fromPos.y < toPos.y ? height : 0,
 		}
 
 		// Set bezier control point 1
-		const ctrlPt1 = {
+		const ctrlPt1: PointObj = {
 			x: vertical ? pathStart.x + diffX * bend : pathStart.x + diffX / curve,
 			y: vertical ? pathStart.y + diffY / curve : pathStart.y + diffY * bend,
 		}
 
 		// Set bezier control point 2
-		const ctrlPt2 = {
+		const ctrlPt2: PointObj = {
 			x: vertical ? pathEnd.x - diffX * bend : pathEnd.x - diffX / curve,
 			y: vertical ? pathEnd.y - diffY / curve : pathEnd.y - diffY * bend,
 		}
 
-		const path = `M${pathStart.x},${pathStart.y} C${ctrlPt1.x},${ctrlPt1.y} ${ctrlPt2.x},${ctrlPt2.y} ${pathEnd.x},${
-			pathEnd.y
-		}`
+		const path: string = `M${pathStart.x},${pathStart.y} C${ctrlPt1.x},${ctrlPt1.y} ${ctrlPt2.x},${ctrlPt2.y} ${
+			pathEnd.x
+		},${pathEnd.y}`
 
-		const styles = {
+		const styles: CSSProperties = {
 			width,
 			height,
 			left: Math.min(toPos.x, fromPos.x),
@@ -74,7 +85,7 @@ export default class Wire extends Component {
 		}
 
 		return (
-			<svg className={classname('wire', { valid, active, selected })} viewBox={`0 0 ${width} ${height}`} style={styles}>
+			<svg className={cn('wire', { valid, active, selected })} viewBox={`0 0 ${width} ${height}`} style={styles}>
 				<path d={path} strokeWidth={3} stroke="currentColor" />
 				<path d={path} strokeWidth={16} stroke="rgba(255,255,255,0)" onClick={e => this.handleClick()} />
 			</svg>

@@ -1,11 +1,16 @@
 import React, { Component } from 'react'
+import { DeskItemType } from '../../types'
 
 import VuMeter from './VuMeter'
 import DeskItemWrapper from './DeskItemWrapper'
 
-export default class DefaultDeskItem extends Component {
+interface Props {
+	deskItem: DeskItemType
+}
+
+export default class DefaultDeskItem extends Component<Props> {
 	render() {
-		const { ownerId, type, dataInput, dataOutput } = this.props.deskItem || {}
+		const { ownerId, type } = this.props.deskItem
 		return (
 			<DeskItemWrapper {...this.props}>
 				<div className="desk-item desk-item-default">

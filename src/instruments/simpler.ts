@@ -2,7 +2,7 @@ import { Sampler, PolySynth, Meter, now } from 'tone'
 import _debounce from 'lodash/throttle'
 import { paramUpdateDebounce, voicesUpdateDebounce } from '../constants/timings'
 
-import { getFileByHash } from '../api/db'
+import { getFileByHash, FileEntity } from '../api/db'
 import { getNoteByFile } from '../api/pitch'
 import { noteStrings } from '../constants/noteStrings'
 import { checkDifferenceAny, checkDifferenceAll } from '../utils/lifecycleUtils'
@@ -11,12 +11,12 @@ import { updateInstrument } from '../reducers/instruments'
 import SimplerEditor from '../components/instruments/Simpler'
 import { allInstrumentDefaults, defaultEnvelope, envelopeParams, voicesParam } from '../constants/params'
 import BaseInstrument from './BaseInstrument'
-import { ParamsType, InstrumentType, FileType } from '../types'
+import { ParamsType, InstrumentType } from '../types'
 
 export class SimplerInstrument extends BaseInstrument {
 	sampler: PolySynth
 	reinitSampler: () => void
-	file: null | FileType
+	file: null | FileEntity
 
 	constructor(value = {}, dispatch) {
 		super()
@@ -42,13 +42,13 @@ export class SimplerInstrument extends BaseInstrument {
 		}
 		if (checkDifferenceAny(value.instrument, oldValue.instrument, ['trim'])) {
 			if (this.file)
-				this.updateAudioFile(this.file.getUrl(), () => {
+				this.updateAudioFile(this.file.url, () => {
 					this.triggerUpdateVoiceParams()
 				})
 		}
 		if (checkDifferenceAny(value, oldValue, 'instrument.fileHash')) {
 			this.loadAudioFile(value.instrument.fileHash as string, file => {
-				this.updateAudioFile(file.getUrl(), () => {
+				this.updateAudioFile(file.url, () => {
 					this.triggerUpdateVoiceParams()
 				})
 			})
@@ -77,14 +77,14 @@ export class SimplerInstrument extends BaseInstrument {
 
 		if (!fileHash) return callback()
 		this.loadAudioFile(fileHash, file => {
-			this.updateAudioFile(file.getUrl(), () => {
+			this.updateAudioFile(file.url, () => {
 				this.updateVoiceParams()
 				callback()
 			})
 		})
 	}
 
-	loadAudioFile(fileHash: string, callback: (file?: FileType) => void) {
+	loadAudioFile(fileHash: string, callback: (file?: FileEntity) => void) {
 		if (!fileHash) return callback()
 
 		getFileByHash(fileHash)

@@ -14,7 +14,8 @@ export default class Point {
 	 * @return {Point}
 	 */
 	constructor(x: number, y: number)
-	constructor(x: PointObj | Point)
+	constructor(x: PointObj)
+	constructor(x: Point)
 	constructor(x: any, y?: number) {
 		if (typeof x == 'object') {
 			this.x = x.x
@@ -26,39 +27,41 @@ export default class Point {
 		return this
 	}
 
-	abs() {
+	abs(): Point {
 		this.x = Math.abs(this.x)
 		this.y = Math.abs(this.y)
 		return this
 	}
 
-	add(/* point1, point2, ... */) {
-		if (arguments.length === 1 && typeof arguments[0] == 'number') {
-			this.x += arguments[0]
-			this.y += arguments[0]
+	add(...args: number[] | Point[] | PointObj[]): Point {
+		if (!args.length) return this
+		if (typeof args[0] == 'number') {
+			this.x += args[0] as number
+			this.y += args[0] as number
 		} else {
-			for (let argument of arguments) {
-				this.x += argument.x
-				this.y += argument.y
+			for (let arg of args as Point[] | PointObj[]) {
+				this.x += arg.x
+				this.y += arg.y
 			}
 		}
 		return this
 	}
 
-	subtract(/* point1, point2, ... */) {
-		if (arguments.length === 1 && typeof arguments[0] == 'number') {
-			this.x -= arguments[0]
-			this.y -= arguments[0]
+	subtract(...args: number[] | Point[] | PointObj[]): Point {
+		if (!args.length) return this
+		if (typeof args[0] == 'number') {
+			this.x -= args[0] as number
+			this.y -= args[0] as number
 		} else {
-			for (let argument of arguments) {
-				this.x -= argument.x
-				this.y -= argument.y
+			for (let arg of args as Point[] | PointObj[]) {
+				this.x -= arg.x
+				this.y -= arg.y
 			}
 		}
 		return this
 	}
 
-	multiply(point) {
+	multiply(point: number | Point | PointObj): Point {
 		if (typeof point == 'number') {
 			this.x *= point
 			this.y *= point
@@ -69,7 +72,7 @@ export default class Point {
 		return this
 	}
 
-	divide(point) {
+	divide(point: number | Point | PointObj): Point {
 		if (typeof point == 'number') {
 			this.x /= point
 			this.y /= point
@@ -80,21 +83,21 @@ export default class Point {
 		return this
 	}
 
-	round(amount = 1) {
+	round(amount: number = 1): Point {
 		this.x = amount * Math.round(this.x / amount)
 		this.y = amount * Math.round(this.y / amount)
 		return this
 	}
 
-	distance(point) {
+	distance(point: Point | PointObj): number {
 		return Math.sqrt(Math.pow(point.x - this.x, 2) + Math.pow(point.y - this.y, 2))
 	}
 
-	angle(point) {
+	angle(point: Point | PointObj): number {
 		return Math.atan2(point.y - this.y, point.x - this.x)
 	}
 
-	normalize(scale = 1) {
+	normalize(scale: number = 1): Point {
 		const norm = Math.sqrt(this.x * this.x + this.y * this.y)
 		if (norm !== 0) {
 			this.x = (scale * this.x) / norm
@@ -103,7 +106,7 @@ export default class Point {
 		return this
 	}
 
-	limit(max) {
+	limit(max: number): Point {
 		if (this.x * this.x + this.y * this.y > max * max) {
 			this.normalize()
 			this.multiply(max)
@@ -111,7 +114,7 @@ export default class Point {
 		return this
 	}
 
-	toObject() {
+	toObject(): PointObj {
 		return { x: this.x, y: this.y }
 	}
 }
