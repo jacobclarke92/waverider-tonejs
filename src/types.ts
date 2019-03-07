@@ -1,5 +1,5 @@
-import BaseEffect from './effects/BaseEffect'
-import BaseInstrument from './instruments/BaseInstrument'
+import { BaseEffectConstructor } from './effects/BaseEffect'
+import { BaseInstrumentConstructor } from './instruments/BaseInstrument'
 import { ReactType } from 'react'
 import { PointObj } from './utils/Point'
 
@@ -140,7 +140,7 @@ export interface EffectType {
 	id?: number
 	name: string
 	slug: string
-	Effect: typeof BaseEffect
+	Effect: BaseEffectConstructor
 	Editor: ReactType
 	defaultValue: EffectDefaultValueType
 	params: ParamsType
@@ -150,7 +150,7 @@ export interface InstrumentType {
 	id?: number
 	name: string
 	slug: string
-	Instrument: typeof BaseInstrument
+	Instrument: BaseInstrumentConstructor
 	Editor: ReactType
 	DeskItem: ReactType
 	defaultValue: InstrumentDefaultValueType

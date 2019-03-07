@@ -1,5 +1,9 @@
-import { InstrumentDefaultValueType } from '../types'
+import { InstrumentDefaultValueType, GenericProps } from '../types'
 import { Meter } from 'tone'
+
+export interface BaseInstrumentConstructor {
+	new (value: GenericProps, dispatch: Function): BaseInstrument
+}
 
 export default class BaseInstrument implements InstrumentDefaultValueType {
 	id?: any

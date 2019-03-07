@@ -1,4 +1,9 @@
 import { Meter } from 'tone'
+import { GenericProps } from '../types'
+
+export interface BaseEffectConstructor {
+	new (value: GenericProps, dispatch: Function): BaseEffect
+}
 
 export default class BaseEffect {
 	mounted: boolean
@@ -7,7 +12,7 @@ export default class BaseEffect {
 	meter: Meter
 	instance: any
 
-	constructor(value = {}, dispatch) {
+	constructor(value: GenericProps = {}, dispatch: Function) {
 		Object.keys(value).forEach(key => (this[key] = value[key]))
 		console.log(`Mounting ${this.type}...`)
 		this.mounted = false
