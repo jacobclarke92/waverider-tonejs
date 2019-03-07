@@ -72,12 +72,17 @@ export const getPositionWithinElem = (
 	}
 }
 
+// TODO e: any
 export const getMousePosition = (e: any): PointObj => ({
 	x: !!e.touches ? e.touches[0].pageX : e.pageX,
 	y: !!e.touches ? e.touches[0].pageY : e.pageY,
 })
 
-export const getRelativeMousePosition = (e: any, elem: HTMLElement, contain: boolean = true): PointObj => {
+export interface MousePosition extends PointObj {
+	percent: PointObj
+}
+
+export const getRelativeMousePosition = (e: MouseEvent, elem: HTMLElement, contain: boolean = true): MousePosition => {
 	const rect = getRect(elem)
 	const mouse = getMousePosition(e)
 	const position = {

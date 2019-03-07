@@ -1,7 +1,12 @@
 import React, { Component } from 'react'
 import SelectInput from './input/SelectInput'
 
-export default class ChannelSelect extends Component {
+interface Props {
+	value: null | number
+	onChange: (val: null | number) => void
+}
+
+export default class ChannelSelect extends Component<Props> {
 	render() {
 		const deviceOptions = [
 			{ value: null, text: 'All Ch.' },

@@ -1,7 +1,16 @@
-import React, { Component, Children, cloneElement } from 'react'
+import React, { Component, Children, cloneElement, ReactType, ReactNode, ReactElement } from 'react'
 import { requestPointerLock, exitPointerLock } from '../utils/screenUtils'
+import { PointObj } from '../utils/Point'
 
-export default class PointerLockWrapper extends Component {
+interface Props {
+	children: ReactType
+	onMovement: (position: PointObj) => void
+}
+
+export default class PointerLockWrapper extends Component<Props> {
+	elem: HTMLElement
+	mouseDown: boolean
+
 	static defaultProps = {
 		onMovement: () => {},
 	}
@@ -22,7 +31,7 @@ export default class PointerLockWrapper extends Component {
 		document.removeEventListener('mouseup', this.handleMouseUp)
 	}
 
-	handleMouseDown(event, child) {
+	handleMouseDown(event: MouseEvent, child) {
 		if (!this.elem) return
 		this.mouseDown = true
 		requestPointerLock(this.elem)
@@ -31,15 +40,15 @@ export default class PointerLockWrapper extends Component {
 		event.preventDefault() // stops highlighting
 	}
 
-	handleMouseMove(event) {
+	handleMouseMove(event: MouseEvent) {
 		if (this.mouseDown)
 			this.props.onMovement({
-				x: event.movementX || event.mozMovementX || 0,
-				y: event.movementY || event.mozMovementY || 0,
+				x: event.movementX /*|| event.mozMovementX*/ || 0,
+				y: event.movementY /*|| event.mozMovementY*/ || 0,
 			})
 	}
 
-	handleMouseUp(event) {
+	handleMouseUp(event: MouseEvent) {
 		if (this.mouseDown) {
 			exitPointerLock()
 			document.removeEventListener('mousemove', this.handleMouseMove)
@@ -48,10 +57,10 @@ export default class PointerLockWrapper extends Component {
 	}
 
 	render() {
-		const child = Children.only(this.props.children)
+		const child = Children.only(this.props.children) as ReactElement<any>
 		return cloneElement(child, {
-			ref: elem => (this.elem = elem),
-			onMouseDown: e => this.handleMouseDown(e, child),
+			ref: (elem: HTMLElement) => (this.elem = elem),
+			onMouseDown: (e: MouseEvent) => this.handleMouseDown(e, child),
 		})
 	}
 }

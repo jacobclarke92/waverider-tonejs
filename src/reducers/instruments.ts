@@ -7,6 +7,7 @@ import instrumentLibrary from '../instrumentLibrary'
 import { deskItemTypeDefaults, INSTRUMENT, MASTER } from '../constants/deskItemTypes'
 import { Instrument } from '../types'
 import { Action } from 'redux'
+import { PointObj } from '../utils/Point'
 
 export const LOAD_INSTRUMENTS: string = 'LOAD_INSTRUMENTS'
 export const ADD_INSTRUMENT: string = 'ADD_INSTRUMENT'
@@ -63,7 +64,7 @@ export const loadInstruments = () => dispatch =>
 		)
 		.catch(e => console.warn('Unable to load instruments', e))
 
-export const addInstrument = (type, position = { x: 0, y: 0 }) => {
+export const addInstrument = (type: string, position: PointObj = { x: 0, y: 0 }) => {
 	const instrumentDef = instrumentLibrary[type]
 	if (!instrumentDef) return null
 	const newInstrument = { enabled: true, type, ..._cloneDeep(instrumentDef.defaultValue) }

@@ -7,9 +7,31 @@ import { checkDifferenceAny } from '../utils/lifecycleUtils'
 import { getInstrumentInstance } from '../instrumentsController'
 
 import DropzoneWrapper from './DropzoneWrapper'
-import AudioTrim from './AudioTrim'
+import AudioTrim, { TrimType } from './AudioTrim'
 
-export default class Waveform extends Component {
+interface Props {
+	instrumentId: number // TODO
+	width?: number
+	height?: number
+	fileHash?: string
+	reverse?: boolean
+	trim?: TrimType
+	disableFileDrop?: boolean
+	onTrimChange?: (newTrim: TrimType, oldTrim: TrimType) => void
+	onPreviewAudio?: () => void // TODO
+	onReceivedFiles?: () => void // TODO
+}
+
+interface State {
+	waveformUrl: null | string
+	fileName: null | string
+	trim: TrimType
+	notePositions: number[]
+}
+
+export default class Waveform extends Component<Props, State> {
+	raf: number
+
 	static defaultProps = {
 		width: 600,
 		height: 200,
@@ -51,10 +73,10 @@ export default class Waveform extends Component {
 		if (checkDifferenceAny(this.props, newProps, 'trim')) this.setState({ trim: newProps.trim })
 	}
 
-	loadFileFromHash(fileHash = this.props.fileHash) {
+	loadFileFromHash(fileHash: string = this.props.fileHash) {
 		getFileByHash(fileHash)
 			.then(file => {
-				this.setState({ fileName: file.name })
+				this.setState({ fileName: file.filename })
 				return getWaveformFromFile(file)
 			})
 			.then(waveformUrl => this.setState({ waveformUrl }))

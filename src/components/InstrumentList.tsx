@@ -3,8 +3,13 @@ import { connect } from 'react-redux'
 
 import instrumentLibrary from '../instrumentLibrary'
 import { addInstrument } from '../reducers/instruments'
+import { ReduxStoreType, Instrument, ThunkDispatchProp } from '../types'
 
-class InstrumentList extends Component {
+interface StateProps {
+	instruments: Instrument[]
+}
+
+class InstrumentList extends Component<ThunkDispatchProp & StateProps> {
 	render() {
 		const { dispatch, instruments = [] } = this.props
 		return (
@@ -28,4 +33,4 @@ class InstrumentList extends Component {
 	}
 }
 
-export default connect(({ instruments }) => ({ instruments }))(InstrumentList)
+export default connect(({ instruments }: ReduxStoreType): StateProps => ({ instruments }))(InstrumentList)

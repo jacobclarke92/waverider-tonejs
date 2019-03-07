@@ -1,7 +1,15 @@
+import { ReactType } from 'react'
+import { ThunkDispatch } from 'redux-thunk'
+import { AnyAction } from 'redux'
 import { BaseEffectConstructor } from './effects/BaseEffect'
 import { BaseInstrumentConstructor } from './instruments/BaseInstrument'
-import { ReactType } from 'react'
 import { PointObj } from './utils/Point'
+import { State as DeskState } from './reducers/desk'
+import { State as DevicesState } from './reducers/devices'
+import { State as EffectsState } from './reducers/effects'
+import { State as GuiState } from './reducers/gui'
+import { State as InstrumentsState } from './reducers/instruments'
+import { State as LastActionState } from './reducers/lastAction'
 
 declare global {
 	interface Navigator {
@@ -24,6 +32,8 @@ export type Osc = 'sine' | 'triangle' | 'square' | 'sawtooth'
 export type DeskItem = 'EFFECT' | 'BUS' | 'INSTRUMENT' | 'MASTER' | 'LFO'
 export type NoteString = 'C' | 'C#' | 'D' | 'D#' | 'E' | 'F' | 'F#' | 'G' | 'G#' | 'A' | 'A#' | 'B'
 export type WireType = 'audio' | 'data'
+export type SizeType = 'xs' | 's' | 'm' | 'l' | 'xl'
+export type IOType = 'input' | 'output'
 export type CheckerFunc = (a: any, b: any) => boolean
 export type GenericProps = { [k: string]: any }
 
@@ -155,4 +165,19 @@ export interface InstrumentType {
 	DeskItem: ReactType
 	defaultValue: InstrumentDefaultValueType
 	params: ParamsType
+}
+
+export interface ReduxStoreType {
+	desk: DeskState
+	devices: DevicesState
+	effects: EffectsState
+	gui: GuiState
+	instruments: InstrumentsState
+	lastAction: LastActionState
+}
+
+export type ThunkDispatchType = ThunkDispatch<ReduxStoreType, void, AnyAction>
+
+export interface ThunkDispatchProp {
+	dispatch: ThunkDispatchType
 }

@@ -1,15 +1,24 @@
-import React, { Component } from 'react'
+import React, { Component, CSSProperties } from 'react'
 import iconLibrary from '../iconLibrary'
+import { SizeType } from '../types'
 
-const sizes = {
-	xsmall: 12,
-	small: 18,
-	medium: 24,
-	large: 32,
-	xlarge: 48,
+const sizes: { [k in SizeType]: number } = {
+	xs: 12,
+	s: 18,
+	m: 24,
+	l: 32,
+	xl: 48,
 }
 
-export default class Icon extends Component {
+interface Props {
+	name: string
+	size?: number | SizeType
+	style?: CSSProperties
+	width?: number
+	height?: number
+}
+
+export default class Icon extends Component<Props> {
 	static defaultProps = {
 		size: 'medium',
 		style: {},

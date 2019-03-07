@@ -4,7 +4,7 @@ type OptionValue = string | number // | boolean | null
 type OptionObj = {
 	value: OptionValue
 	text: string
-	disabled: boolean
+	disabled?: boolean
 }
 interface Props {
 	options: OptionObj[]

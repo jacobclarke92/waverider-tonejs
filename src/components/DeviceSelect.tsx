@@ -1,8 +1,18 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import SelectInput from './input/SelectInput'
+import { ReduxStoreType, Device, ThunkDispatchProp } from '../types'
 
-class DeviceSelect extends Component {
+interface Props {
+	value: null | string
+	onChange: (value: null | string) => void
+}
+
+interface StateProps {
+	devices: Device[]
+}
+
+class DeviceSelect extends Component<ThunkDispatchProp & StateProps & Props> {
 	render() {
 		const { devices, ...rest } = this.props
 		const deviceOptions = [
@@ -17,4 +27,4 @@ class DeviceSelect extends Component {
 	}
 }
 
-export default connect(({ devices }) => ({ devices }))(DeviceSelect)
+export default connect(({ devices }: ReduxStoreType): StateProps => ({ devices }))(DeviceSelect)

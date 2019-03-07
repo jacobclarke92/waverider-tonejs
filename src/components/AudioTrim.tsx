@@ -1,7 +1,26 @@
 import React, { Component } from 'react'
-import { getRelativeMousePosition } from '../utils/screenUtils'
+import { getRelativeMousePosition, MousePosition } from '../utils/screenUtils'
+import { PointObj } from '../utils/Point'
 
-export default class AudioTrim extends Component {
+type DragType = false | 'move' | 'start' | 'end'
+
+export interface TrimType {
+	start: number
+	end: number
+}
+
+interface Props {
+	onChange: (trim: TrimType) => void
+	onAfterChange: (trim: TrimType, previousTrim: TrimType) => void
+	trim: TrimType
+}
+
+export default class AudioTrim extends Component<Props> {
+	dragging: DragType
+	initDragMousePosition: MousePosition
+	previousPosition: TrimType
+	container: HTMLDivElement
+
 	static defaultProps = {
 		onChange: () => {},
 		onAfterChange: () => {},
@@ -35,12 +54,12 @@ export default class AudioTrim extends Component {
 		event.preventDefault()
 	}
 
-	handleMouseUp(event) {
+	handleMouseUp(event: MouseEvent) {
 		if (this.dragging) this.props.onAfterChange(this.props.trim, this.previousPosition)
 		this.dragging = false
 	}
 
-	handleMouseMove(event) {
+	handleMouseMove(event: MouseEvent) {
 		if (!this.dragging) return
 
 		const mousePosition = getRelativeMousePosition(event, this.container)

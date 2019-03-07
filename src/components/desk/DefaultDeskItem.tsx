@@ -1,14 +1,12 @@
 import React, { Component } from 'react'
-import { DeskItemType } from '../../types'
+import { ThunkDispatchProp } from '../../types'
 
 import VuMeter from './VuMeter'
 import DeskItemWrapper from './DeskItemWrapper'
+import { DeskItemProps } from '../view/DeskWorkspace'
+import { PinMouseEventProps } from './Pin'
 
-interface Props {
-	deskItem: DeskItemType
-}
-
-export default class DefaultDeskItem extends Component<Props> {
+export default class DefaultDeskItem extends Component<ThunkDispatchProp & PinMouseEventProps & DeskItemProps> {
 	render() {
 		const { ownerId, type } = this.props.deskItem
 		return (

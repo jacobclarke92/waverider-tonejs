@@ -4,9 +4,15 @@ import _find from 'lodash/find'
 import classname from 'classname'
 import { connect } from 'react-redux'
 
-import Point from '../../utils/Point'
+import Point, { PointObj } from '../../utils/Point'
 import { addKeyListener, removeKeyListener } from '../../utils/keyUtils'
-import { getRelativeMousePosition, getMousePosition, getPositionWithinElem, getRect } from '../../utils/screenUtils'
+import {
+	getRelativeMousePosition,
+	getMousePosition,
+	getPositionWithinElem,
+	getRect,
+	MousePosition,
+} from '../../utils/screenUtils'
 import { getDeskWires, getOwnerByDeskItem, validateConnection } from '../../deskController'
 import { EFFECT, BUS, INSTRUMENT, MASTER, LFO } from '../../constants/deskItemTypes'
 import { DESK } from '../../constants/uiViews'
@@ -19,9 +25,50 @@ import Wire from '../desk/Wire'
 import MasterDeskItem from '../desk/Master'
 import DefaultDeskItem from '../desk/DefaultDeskItem'
 
+import { NumericObject, ThunkDispatchProp, ReduxStoreType, IOType, WireType, DeskItemType } from '../../types'
+import { PinMouseEventProps, PinParams, PinMouseEventType } from '../desk/Pin'
+import { DeskItemMouseEventType } from '../desk/DeskItemWrapper'
+import { State as GuiStore } from '../../reducers/gui'
+import { State as DeskStore } from '../../reducers/desk'
+import { State as InstrumentsStore } from '../../reducers/instruments'
+
 const snapGrid = 10
 
-class DeskWorkspace extends Component {
+interface Props {}
+
+interface StateProps {
+	gui: GuiStore
+	desk: DeskStore
+	instruments: InstrumentsStore
+}
+
+interface State {
+	mouseDown: boolean
+	mouseMoved: boolean
+	overIO: boolean
+	overPin: boolean
+	ioType: null | IOType
+	wireType: null | WireType
+	wireToValid: boolean
+	wireFrom: any // TODO
+	wireTo: any // TODO
+	selectedWire: any // TODO
+	selectedDeskItem: DeskItemType // TODO
+	dragTarget: any //TOOD
+	mouseDownTargetOffset?: MousePosition
+	mouseDownPosition?: PointObj
+	mouseDownPan?: PointObj
+	pan: PointObj
+	pointer?: Point
+	stagePointer?: Point
+}
+
+class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, State> {
+	container: HTMLDivElement
+	interface: HTMLDivElement
+	handleMouseMove: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
+	deskItemRefs: NumericObject
+
 	constructor(props) {
 		super(props)
 		this.clearActiveItem = this.clearActiveItem.bind(this)
@@ -38,6 +85,7 @@ class DeskWorkspace extends Component {
 			mouseDown: false,
 			mouseMoved: false,
 			overIO: false,
+			overPin: false,
 			wireFrom: null,
 			wireTo: null,
 			wireToValid: false,
@@ -46,7 +94,6 @@ class DeskWorkspace extends Component {
 			selectedWire: null,
 			selectedDeskItem: null,
 			dragTarget: null,
-			mouseDownTargetOffset: null,
 			pan: { x: 0, y: 0 },
 		}
 	}
@@ -109,7 +156,7 @@ class DeskWorkspace extends Component {
 		}
 	}
 
-	handlePointerDown(event) {
+	handlePointerDown(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
 		console.log('pointer down for stage')
 		this.setState({
 			mouseDown: true,
@@ -120,7 +167,7 @@ class DeskWorkspace extends Component {
 		})
 	}
 
-	handlePointerUp(event) {
+	handlePointerUp(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
 		console.log('pointer up for stage')
 		this.setState({
 			mouseDown: false,
@@ -135,7 +182,7 @@ class DeskWorkspace extends Component {
 		})
 	}
 
-	handleItemPointerDown(event, element, deskItem) {
+	handleItemPointerDown(event: DeskItemMouseEventType, element: HTMLElement, deskItem: DeskItemType) {
 		console.log('pointer down for ', deskItem)
 		event.stopPropagation()
 		event.nativeEvent.stopImmediatePropagation()
@@ -148,7 +195,7 @@ class DeskWorkspace extends Component {
 		})
 	}
 
-	handleItemPointerUp(event, element, deskItem) {
+	handleItemPointerUp(event: DeskItemMouseEventType, element: HTMLElement, deskItem: DeskItemType) {
 		console.log('pointer up for desk item')
 		event.stopPropagation()
 		event.nativeEvent.stopImmediatePropagation()
@@ -173,10 +220,10 @@ class DeskWorkspace extends Component {
 		}
 	}
 
-	handlePinOver(event, deskItem, { wireType, ioType, label, param }) {
+	handlePinOver(event: PinMouseEventType, deskItem: DeskItemType, { wireType, ioType, label, param }: PinParams) {
 		this.setState({ overPin: true })
 		if (this.state.wireFrom) {
-			const pinStagePosition = getPositionWithinElem(event.target, this.interface, 0.5)
+			const pinStagePosition = getPositionWithinElem(event.target as HTMLElement, this.interface, 0.5)
 			const pinDeskItemPosition = new Point(pinStagePosition).subtract(new Point(deskItem.position))
 			this.setState({
 				wireToValid: this.state.wireType == wireType && this.state.ioType != ioType,
@@ -190,7 +237,7 @@ class DeskWorkspace extends Component {
 		}
 	}
 
-	handlePinOut() {
+	handlePinOut(event: PinMouseEventType) {
 		this.setState({
 			overIO: false,
 			wireTo: null,
@@ -198,12 +245,12 @@ class DeskWorkspace extends Component {
 		})
 	}
 
-	handlePinPointerDown(event, deskItem, { wireType, ioType, param }) {
+	handlePinPointerDown(event: PinMouseEventType, deskItem: DeskItemType, { wireType, ioType, param }: PinParams) {
 		event.stopPropagation()
 		event.preventDefault()
 		event.nativeEvent.stopImmediatePropagation()
 		console.log('WIRE DOWN', deskItem, wireType, ioType)
-		const pinStagePosition = getPositionWithinElem(event.target, this.interface, { x: 0.5, y: 0.5 })
+		const pinStagePosition = getPositionWithinElem(event.target as HTMLElement, this.interface, { x: 0.5, y: 0.5 })
 		const pinDeskItemPosition = new Point(pinStagePosition).subtract(new Point(deskItem.position))
 		this.setState({
 			wireType,
@@ -217,7 +264,7 @@ class DeskWorkspace extends Component {
 		})
 	}
 
-	handlePinPointerUp(event, deskItem, { wireType, ioType }) {
+	handlePinPointerUp(event: PinMouseEventType, deskItem: DeskItemType, { wireType, ioType }: PinParams) {
 		event.stopPropagation()
 		event.preventDefault()
 		event.nativeEvent.stopImmediatePropagation()
@@ -244,7 +291,7 @@ class DeskWorkspace extends Component {
 
 	clearActiveItem() {}
 
-	handleRemoveDeskItem(deskItem) {
+	handleRemoveDeskItem(deskItem: DeskItemType) {
 		if (deskItem.type == EFFECT) this.props.dispatch(removeEffect(deskItem.ownerId))
 		if (deskItem.type == INSTRUMENT) this.props.dispatch(removeInstrument(deskItem.ownerId))
 	}
@@ -277,13 +324,13 @@ class DeskWorkspace extends Component {
 		// console.log(connections)
 		return (
 			<div
-				ref={elem => (this.container = elem)}
+				ref={(elem: HTMLDivElement) => (this.container = elem)}
 				className={classname('desk-interface-container', { panning })}
 				onMouseMove={this.handleMouseMove}
 				onMouseDown={this.handlePointerDown}
 				onMouseUp={this.handlePointerUp}>
 				<div
-					ref={elem => (this.interface = elem)}
+					ref={(elem: HTMLDivElement) => (this.interface = elem)}
 					className="desk-interface"
 					style={{ transform: `translate(${pan.x}px, ${pan.y}px)` }}>
 					{connections.map(wire => (
@@ -329,7 +376,22 @@ class DeskWorkspace extends Component {
 	}
 }
 
-class DeskItem extends Component {
+export interface DeskItemProps {
+	deskItem: DeskItemType
+	selected?: boolean
+	dragging?: boolean
+	editable?: boolean
+	removeable?: boolean
+	owner?: any // TODO
+	onEdit?: () => void
+	onRemove: () => void
+	onPointerDown: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, elem: HTMLElement) => void
+	onPointerUp: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, elem: HTMLElement) => void
+	wiring: boolean
+	validWire: boolean
+}
+
+class DeskItem extends Component<ThunkDispatchProp & PinMouseEventProps & DeskItemProps> {
 	render() {
 		const { type, ownerType } = this.props.deskItem
 		let DeskComponent = null
@@ -340,4 +402,6 @@ class DeskItem extends Component {
 	}
 }
 
-export default connect(({ gui, desk, instruments }) => ({ gui, desk, instruments }))(DeskWorkspace)
+export default connect(({ gui, desk, instruments }: ReduxStoreType): StateProps => ({ gui, desk, instruments }))(
+	DeskWorkspace
+)
