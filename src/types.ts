@@ -37,6 +37,35 @@ export type IOType = 'input' | 'output'
 export type CheckerFunc = (a: any, b: any) => boolean
 export type GenericProps = { [k: string]: any }
 
+export interface Wire {
+	param?: any // TODO
+	deskItem: DeskItemType
+	position: PointObj
+	relativePosition: PointObj
+}
+
+export interface WireJoin {
+	type: WireType
+	id: string
+	wireFrom: Wire
+	wireTo: Wire
+}
+
+export type WireJoins = { [k: number]: WireJoin }
+
+export interface DeskItemIOType {
+	audioInput: boolean
+	audioOutput: boolean
+	dataInput: boolean
+	dataOutput: boolean
+	editable: boolean
+	removeable: boolean
+	audioOutputs?: WireJoins
+	audioInputs?: WireJoins
+	dataOutputs?: WireJoins
+	dataInputs?: WireJoins
+}
+
 export interface DeskItemType extends DeskItemIOType {
 	id?: number
 	name: string
@@ -46,27 +75,6 @@ export interface DeskItemType extends DeskItemIOType {
 	slug: string
 	position: PointObj
 }
-
-export interface DeskItemIOType {
-	audioInput: boolean
-	audioOutput: boolean
-	dataInput: boolean
-	dataOutput: boolean
-	editable: boolean
-	removeable: boolean
-	audioOutputs?: {}
-	audioInputs?: {}
-	dataOutputs?: {}
-	dataInputs?: {}
-}
-
-export interface Wire {
-	param?: any // TODO
-	deskItem: DeskItemType
-	position: PointObj
-	relativePosition: PointObj
-}
-
 export interface Device extends WebMidi.MIDIPort {
 	disconnected: boolean
 }
@@ -88,6 +96,14 @@ export interface Instrument {
 	id: number
 	type: string // TODO
 	instrument: any // TODO
+	midiChannel: null | number
+	midiDeviceId: null | string
+}
+
+export interface Effect {
+	enabled: boolean
+	id: number
+	type: string // TODO
 	midiChannel: null | number
 	midiDeviceId: null | string
 }
@@ -135,8 +151,8 @@ export type EffectDefaultValueType = {
 }
 
 export interface AllInstrumentDefaultValuesType {
-	midiDeviceId: null | string
-	midiChannel: null | number
+	midiDeviceId?: string
+	midiChannel?: number
 }
 
 export interface InstrumentDefaultValueType extends AllInstrumentDefaultValuesType {

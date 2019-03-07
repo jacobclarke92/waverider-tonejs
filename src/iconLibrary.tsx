@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
 
-export default {
+const iconLibrary: { [k: string]: ReactNode } = {
 	play: <path d="M8 5v14l11-7z" />,
 	pause: <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />,
 	'volume-down': <path d="M18.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM5 9v6h4l5 5V4L9 9H5z" />,
@@ -18,3 +18,5 @@ export default {
 		<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
 	),
 }
+
+export default iconLibrary

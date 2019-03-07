@@ -6,6 +6,7 @@ export interface BaseEffectConstructor {
 }
 
 export default class BaseEffect {
+	id?: number
 	mounted: boolean
 	type: string
 	dispatch: Function

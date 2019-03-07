@@ -1,56 +1,71 @@
-import { NumericObject, Instrument } from './types'
-import instrumentLibrary from './instrumentLibrary'
 import _find from 'lodash/find'
 import _cloneDeep from 'lodash/cloneDeep'
-import { NOTE_ON, NOTE_OFF, MidiMessageAction } from './api/midi'
-import { DESK_CONNECT_WIRE, DESK_DISCONNECT_WIRE } from './reducers/desk'
-import { LOAD_INSTRUMENTS, ADD_INSTRUMENT, REMOVE_INSTRUMENT, UPDATE_INSTRUMENT } from './reducers/instruments'
 
-let store: any = null // TODO
+import instrumentLibrary from './instrumentLibrary'
+
+import { Store } from 'redux'
+import { Instrument, ReduxStoreType } from './types'
+import BaseInstrument, { BaseInstrumentConstructor } from './instruments/BaseInstrument'
+import { NOTE_ON, NOTE_OFF, MidiMessageAction } from './api/midi'
+import {
+	DESK_CONNECT_WIRE,
+	DESK_DISCONNECT_WIRE,
+	ActionObj as DeskActionObj,
+	State as DeskStore,
+} from './reducers/desk'
+import {
+	LOAD_INSTRUMENTS,
+	ADD_INSTRUMENT,
+	REMOVE_INSTRUMENT,
+	UPDATE_INSTRUMENT,
+	ActionObj as InstrumentsActionObj,
+} from './reducers/instruments'
+
+let store: Store = null
 let oldInstruments: Instrument[] = []
 
-const instances: NumericObject = {}
+const instances: { [k: number]: BaseInstrument } = {}
 
 export function init(_store) {
 	store = _store
 	store.subscribe(handleUpdate)
 }
 
-export function getInstrumentInstance(id: number) {
+export function getInstrumentInstance(id: number): BaseInstrument | false {
 	if (id in instances) return instances[id]
 	return false
 }
 
 export function isDeviceUsedByInstrument(deviceId: string): boolean {
-	const { instruments }: { instruments: Instrument[] } = store.getState() as any // TODO
+	const { instruments }: { instruments: Instrument[] } = store.getState() as ReduxStoreType
 	const deviceIds = instruments.map(({ midiDeviceId }) => midiDeviceId)
 	return deviceIds.indexOf(deviceId) >= 0
 }
 
 function handleUpdate() {
-	const { lastAction, instruments, desk } = store.getState() as any // TODO
+	const { lastAction, instruments, desk } = store.getState() as ReduxStoreType
 	switch (lastAction.type) {
 		case LOAD_INSTRUMENTS:
 			initInstruments(instruments)
 			break
 		case UPDATE_INSTRUMENT:
-			updateInstrument(lastAction, instruments)
+			updateInstrument((lastAction as InstrumentsActionObj).id, instruments)
 			break
 		case ADD_INSTRUMENT:
-			initInstrument(lastAction.instrument)
+			initInstrument((lastAction as InstrumentsActionObj).instrument)
 			break
 		case REMOVE_INSTRUMENT:
-			removeInstrument(lastAction.id)
+			removeInstrument((lastAction as InstrumentsActionObj).id)
 			break
 		case NOTE_ON:
 		case NOTE_OFF:
-			handleNoteAction(lastAction, instruments)
+			handleNoteAction(lastAction as MidiMessageAction, instruments)
 			break
 		case DESK_CONNECT_WIRE:
-			handleWireConnection(lastAction, desk)
+			handleWireConnection(lastAction as DeskActionObj, desk)
 			break
 		case DESK_DISCONNECT_WIRE:
-			handleWireDisconnection(lastAction, desk)
+			handleWireDisconnection(lastAction as DeskActionObj, desk)
 			break
 	}
 	oldInstruments = _cloneDeep(instruments)
@@ -62,12 +77,15 @@ function initInstruments(instruments: Instrument[]) {
 }
 
 function initInstrument(instrument: Instrument) {
-	const Instrument = instrumentLibrary[instrument.type].Instrument
-	instances[instrument.id] = new Instrument(instrument, store.dispatch)
+	if (!instrument) return
+	if (!(instrument.type in instrumentLibrary)) return
+	const InstrumentClass: BaseInstrumentConstructor = instrumentLibrary[instrument.type].Instrument
+	instances[instrument.id] = new InstrumentClass(instrument, store.dispatch)
 }
 
 // TODO
-function updateInstrument({ id }, instruments: Instrument[]) {
+function updateInstrument(id: number, instruments: Instrument[]) {
+	if (!id) return
 	const instrument = _find(instruments, { id })
 	if (!instrument) return
 	const oldInstrument = _find(oldInstruments, { id })
@@ -77,6 +95,7 @@ function updateInstrument({ id }, instruments: Instrument[]) {
 
 // TODO
 function removeInstrument(id: number) {
+	if (!id) return
 	if (id in instances) {
 		const source = instances[id].getToneSource()
 		if (source) source.dispose()
@@ -95,6 +114,6 @@ function handleNoteAction({ type, deviceId, channel, note, velocity }: MidiMessa
 	})
 }
 
-function handleWireConnection(action, desk) {}
+function handleWireConnection(action: DeskActionObj, desk: DeskStore) {}
 
-function handleWireDisconnection(action, desk) {}
+function handleWireDisconnection(action: DeskActionObj, desk: DeskStore) {}

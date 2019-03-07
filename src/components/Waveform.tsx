@@ -8,6 +8,7 @@ import { getInstrumentInstance } from '../instrumentsController'
 
 import DropzoneWrapper from './DropzoneWrapper'
 import AudioTrim, { TrimType } from './AudioTrim'
+import { SimplerInstrument } from '../instruments/simpler'
 
 interface Props {
 	instrumentId: number // TODO
@@ -85,7 +86,7 @@ export default class Waveform extends Component<Props, State> {
 	animate() {
 		const { instrumentId, trim } = this.props
 		const { notePositions } = this.state
-		const instrument = getInstrumentInstance(instrumentId)
+		const instrument = getInstrumentInstance(instrumentId) as SimplerInstrument
 		if (instrument) {
 			const duration = trim.end - trim.start
 			const newNotePositions = instrument

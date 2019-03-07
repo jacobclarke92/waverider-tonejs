@@ -1,52 +1,64 @@
 import _find from 'lodash/find'
 import _cloneDeep from 'lodash/cloneDeep'
 import { Master } from 'tone'
+
 import { getEffectInstance } from './effectsController'
 import { getInstrumentInstance } from './instrumentsController'
-import { LOAD_DESK, DESK_CONNECT_WIRE, DESK_DISCONNECT_WIRE } from './reducers/desk'
 import { MASTER, BUS, INSTRUMENT, EFFECT, LFO } from './constants/deskItemTypes'
 
-let store = null
-let oldDesk = []
+import { Store } from 'redux'
+import { ReduxStoreType, DeskItemType, WireJoins, WireJoin, WireType, Wire } from './types'
+import {
+	LOAD_DESK,
+	DESK_CONNECT_WIRE,
+	DESK_DISCONNECT_WIRE,
+	ActionObj as DeskActionObj,
+	State as DeskStore,
+} from './reducers/desk'
+import BaseEffect from './effects/BaseEffect'
+import BaseInstrument from './instruments/BaseInstrument'
+
+let store: Store = null
+let oldDesk: DeskStore = []
 
 const connectionAttempts = {}
 
-export function init(_store) {
+export function init(_store: Store) {
 	store = _store
 	store.subscribe(handleUpdate)
 }
 
 function handleUpdate() {
-	const { lastAction, desk } = store.getState()
+	const { lastAction, desk } = store.getState() as ReduxStoreType
 	switch (lastAction.type) {
 		case LOAD_DESK:
 			initConnections(desk)
 			break
 		case DESK_CONNECT_WIRE:
-			handleNewConnection(lastAction)
+			handleNewConnection(lastAction as DeskActionObj)
 			break
 		case DESK_DISCONNECT_WIRE:
-			handleRemoveConnection(lastAction)
+			handleRemoveConnection(lastAction as DeskActionObj)
 			break
 	}
 	oldDesk = _cloneDeep(desk)
 }
 
-function handleNewConnection(action) {
+function handleNewConnection(action: DeskActionObj) {
 	connectAudioWires(action.deskItem)
 }
 
-function handleRemoveConnection(action) {
+function handleRemoveConnection(action: DeskActionObj) {
 	connectAudioWires(action.deskItem, true)
 }
 
-function initConnections(desk) {
+function initConnections(desk: DeskStore) {
 	for (let deskItem of desk) {
 		connectAudioWires(deskItem)
 	}
 }
 
-function getSource(deskItem) {
+function getSource(deskItem: DeskItemType): false | BaseEffect | BaseInstrument {
 	let source = null
 	switch (deskItem.type) {
 		case MASTER:
@@ -62,7 +74,7 @@ function getSource(deskItem) {
 	return source
 }
 
-export function connectAudioWires(fromDeskItem, disconnectFirst = false) {
+export function connectAudioWires(fromDeskItem: DeskItemType, disconnectFirst: boolean = false) {
 	if (!fromDeskItem) {
 		console.warn('No desk item provided to connectAudioWires')
 		return
@@ -74,7 +86,7 @@ export function connectAudioWires(fromDeskItem, disconnectFirst = false) {
 		return
 	}
 
-	const outputs = fromDeskItem.audioOutputs || {}
+	const outputs: WireJoins = fromDeskItem.audioOutputs || {}
 	const connections = []
 	for (let ownerId in outputs) {
 		const toDeskItem = outputs[ownerId].wireTo.deskItem
@@ -99,17 +111,17 @@ export function connectAudioWires(fromDeskItem, disconnectFirst = false) {
 			if (connections.length > 0) {
 				fromToneSource.fan.apply(fromToneSource, connections)
 				if (fromSource.id in connectionAttempts)
-					console.log(`Connected ${fromSource.type} after ${connectionAttempts[fromSource.id]} attempts`)
+					console.log(`Connected ${fromDeskItem.type} after ${connectionAttempts[fromSource.id]} attempts`)
 			}
 		} else {
 			console.warn(
-				`Unable to connect ${fromSource.type} (${fromSource.id}) because tone.js source is not available yet`
+				`Unable to connect ${fromDeskItem.type} (${fromSource.id}) because tone.js source is not available yet`
 			)
 			if (!(fromSource.id in connectionAttempts)) connectionAttempts[fromSource.id] = 0
 			if (connectionAttempts[fromSource.id] < 5) {
 				connectionAttempts[fromSource.id] += 1
 				setTimeout(() => {
-					console.log(`Attempting ${fromSource.type} output connection #${connectionAttempts[fromSource.id]}...`)
+					console.log(`Attempting ${fromDeskItem.type} output connection #${connectionAttempts[fromSource.id]}...`)
 					attemptConnectingOutputs()
 				}, 500)
 			} else {
@@ -144,18 +156,19 @@ export function getDeskItemsConnectedTo(deskItem) {
 	const { desk = [] } = store.getState()
 	return desk.filter(deskItem => {
 		if (deskItem.audioOutput && Object.keys(deskItem.audioOutputs).length > 0) {
-			Object.entries(deskItem.audioOutputs).forEach(([key, connection]) => {
+			for (let key in deskItem.audioOutputs) {
+				const connection = deskItem.audioOutputs[key]
 				if (connection.wireTo.deskItem.id == deskItem.id) return true
-			})
+			}
 		}
 		return false
 	})
 }
 
-export function validateConnection(wireType, wireFrom, wireTo) {
-	const { desk = [] } = store.getState()
-	const fromDeskItem = _find(desk, { id: wireFrom.deskItem.id })
-	const toDeskItem = _find(desk, { id: wireTo.deskItem.id })
+export function validateConnection(wireType: WireType, wireFrom: Wire, wireTo: Wire) {
+	const { desk } = store.getState() as ReduxStoreType
+	const fromDeskItem: DeskItemType = _find(desk, { id: wireFrom.deskItem.id })
+	const toDeskItem: DeskItemType = _find(desk, { id: wireTo.deskItem.id })
 
 	if (!fromDeskItem[wireType + 'Output'] || !toDeskItem[wireType + 'Input']) {
 		console.warn(
@@ -175,8 +188,8 @@ export function validateConnection(wireType, wireFrom, wireTo) {
 	return true
 }
 
-export function getOwnerByDeskItem(deskItem) {
-	const { instruments = [], effects = [] } = store.getState()
+export function getOwnerByDeskItem(deskItem: DeskItemType) {
+	const { instruments, effects } = store.getState() as ReduxStoreType
 	if (deskItem.type == EFFECT) return _find(effects, { id: deskItem.ownerId })
 	if (deskItem.type == INSTRUMENT) return _find(instruments, { id: deskItem.ownerId })
 	return null

@@ -16,7 +16,7 @@ export const UPDATE_INSTRUMENT: string = 'UPDATE_INSTRUMENT'
 
 export type State = Instrument[]
 
-interface ReducerAction extends Action {
+export interface ActionObj extends Action {
 	id?: number
 	instrument?: Instrument
 	instruments?: Instrument[]
@@ -34,7 +34,7 @@ const initialState: State = [
 	},
 ]
 
-export default function(state: State = initialState, action: ReducerAction) {
+export default function(state: State = initialState, action: ActionObj) {
 	switch (action.type) {
 		case LOAD_INSTRUMENTS:
 			return action.instruments || []
@@ -60,7 +60,7 @@ export const loadInstruments = () => dispatch =>
 			dispatch({
 				type: LOAD_INSTRUMENTS,
 				instruments: isArray(instruments) ? instruments : [instruments],
-			} as ReducerAction)
+			} as ActionObj)
 		)
 		.catch(e => console.warn('Unable to load instruments', e))
 
@@ -79,13 +79,13 @@ export const addInstrument = (type: string, position: PointObj = { x: 0, y: 0 })
 		add('instruments', newInstrument)
 			.then(instrument =>
 				add('desk', { ...newDeskItem, ownerId: instrument.id })
-					.then(deskItem => dispatch({ type: ADD_INSTRUMENT, instrument, deskItem } as ReducerAction))
+					.then(deskItem => dispatch({ type: ADD_INSTRUMENT, instrument, deskItem } as ActionObj))
 					.catch(e => console.warn('Unable to add desk item for instrument', newDeskItem, newInstrument))
 			)
 			.catch(e => console.warn('Unable to add instrument', newInstrument))
 }
 
-export const updateInstrument = (id, updates) => ({ type: UPDATE_INSTRUMENT, id, updates } as ReducerAction)
+export const updateInstrument = (id, updates) => ({ type: UPDATE_INSTRUMENT, id, updates } as ActionObj)
 
 export const removeInstrument = id => dispatch =>
 	removeById('instruments', id)
@@ -93,7 +93,7 @@ export const removeInstrument = id => dispatch =>
 			getFirstWhere('desk', { type: INSTRUMENT, ownerId: id })
 				.then(deskItem =>
 					removeById('desk', deskItem.id)
-						.then(() => dispatch({ type: REMOVE_INSTRUMENT, id } as ReducerAction))
+						.then(() => dispatch({ type: REMOVE_INSTRUMENT, id } as ActionObj))
 						.catch(e => console.warn('Unable to remove desk item for instrument', id, e))
 				)
 				.catch(e => console.warn('Unable to find desk item for instrument', id, e))

@@ -17,7 +17,7 @@ export const deskSchema = '++id,name,ownerId,ownerType,type,position,[type+owner
 
 export type State = DeskItemType[]
 
-interface ReducerAction extends Action {
+export interface ActionObj extends Action {
 	id?: number
 	position?: PointObj
 	deskItem?: DeskItemType
@@ -40,7 +40,7 @@ const initialState: State = [
 	},
 ]
 
-export default function(state: State = initialState, action: ReducerAction) {
+export default function(state: State = initialState, action: ActionObj) {
 	switch (action.type) {
 		case LOAD_DESK:
 			return action.desk || []
@@ -63,7 +63,7 @@ export const loadDesk = () => dispatch =>
 			if (desk.length > 0) return desk
 			return add('desk', initialState[0])
 		})
-		.then(desk => dispatch({ type: LOAD_DESK, desk: isArray(desk) ? desk : [desk] } as ReducerAction))
+		.then(desk => dispatch({ type: LOAD_DESK, desk: isArray(desk) ? desk : [desk] } as ActionObj))
 		.catch(e => console.warn('Unable to load desk state', e))
 
 export const moveDeskItem = (deskItem: DeskItemType, position: PointObj) =>
@@ -71,7 +71,7 @@ export const moveDeskItem = (deskItem: DeskItemType, position: PointObj) =>
 		type: DESK_ITEM_MOVE,
 		id: deskItem.id,
 		position,
-	} as ReducerAction)
+	} as ActionObj)
 
 export const connectWire = (wireFrom: Wire, wireTo: Wire, { wireType }: { wireType: WireType }) => {
 	const outputs = wireFrom.deskItem[wireType + 'Outputs'] || {}
@@ -88,7 +88,7 @@ export const connectWire = (wireFrom: Wire, wireTo: Wire, { wireType }: { wireTy
 	}
 	return dispatch =>
 		updateById('desk', wireFrom.deskItem.id, newDeskItem)
-			.then(deskItem => dispatch({ type: DESK_CONNECT_WIRE, deskItem } as ReducerAction))
+			.then(deskItem => dispatch({ type: DESK_CONNECT_WIRE, deskItem } as ActionObj))
 			.catch(e => console.warn('Unable to update desk item for wire connection', wireFrom))
 }
 
@@ -98,7 +98,7 @@ export const disconnectWire = ({ type, wireFrom, wireTo }: { type: WireType; wir
 	const newDeskItem = { [type + 'Outputs']: outputs }
 	return dispatch =>
 		updateById('desk', wireFrom.deskItem.id, newDeskItem)
-			.then(deskItem => dispatch({ type: DESK_DISCONNECT_WIRE, deskItem } as ReducerAction))
+			.then(deskItem => dispatch({ type: DESK_DISCONNECT_WIRE, deskItem } as ActionObj))
 			.catch(e => {
 				console.warn('Unable to update desk item for wire disconnection', wireFrom)
 				return false

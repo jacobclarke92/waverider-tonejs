@@ -42,6 +42,13 @@ interface StateProps {
 	instruments: InstrumentsStore
 }
 
+interface DeskWireReference {
+	param: string
+	deskItem: DeskItemType
+	position: PointObj
+	relativePosition: PointObj
+}
+
 interface State {
 	mouseDown: boolean
 	mouseMoved: boolean
@@ -50,8 +57,8 @@ interface State {
 	ioType: null | IOType
 	wireType: null | WireType
 	wireToValid: boolean
-	wireFrom: any // TODO
-	wireTo: any // TODO
+	wireFrom: DeskWireReference // TODO
+	wireTo: DeskWireReference // TODO
 	selectedWire: any // TODO
 	selectedDeskItem: DeskItemType // TODO
 	dragTarget: any //TOOD

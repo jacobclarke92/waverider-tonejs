@@ -151,23 +151,23 @@ export class SimplerInstrument extends BaseInstrument {
 		})
 	}
 
-	noteDown(note, velocity) {
+	noteDown(note: number, velocity: number) {
 		if (this.mounted && this.sampler && this.file) {
 			// @ts-ignore
 			this.sampler.triggerAttack(note - this.instrument.baseNote, now(), velocity / 2)
 		}
 	}
 
-	noteUp(note) {
+	noteUp(note: number) {
 		if (this.mounted && this.sampler && this.file) {
 			// @ts-ignore
 			this.sampler.triggerRelease(note - this.instrument.baseNote, now())
 		}
 	}
 
-	getPlaybackPositions() {
+	getPlaybackPositions(): number[] {
 		if (!this.mounted || !this.sampler || !this.sampler.voices) return []
-		const positions = []
+		const positions: number[] = []
 		this.sampler.voices.forEach(voice => {
 			// @ts-ignore
 			if (voice.player.state == 'started') {

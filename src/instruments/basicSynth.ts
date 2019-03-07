@@ -63,12 +63,12 @@ export class BasicSynthInstrument extends BaseInstrument {
 		this.synth.set({ portamento, envelope, oscillator })
 	}
 
-	noteDown(note, velocity) {
+	noteDown(note: number, velocity: number) {
 		// @ts-ignore
 		if (this.mounted && this.synth) this.synth.triggerAttack(noteNumberToName(note), now(), velocity / 2)
 	}
 
-	noteUp(note) {
+	noteUp(note: number) {
 		// @ts-ignore
 		if (this.mounted && this.synth) this.synth.triggerRelease(noteNumberToName(note), now())
 	}
