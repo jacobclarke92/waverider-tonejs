@@ -7,7 +7,7 @@ import Icon from '../Icon'
 import { GenericProps, ThunkDispatchProp } from '../../types'
 import { DeskItemProps } from '../view/DeskWorkspace'
 
-export type DeskItemMouseEventType = DeskItemMouseEventType
+export type DeskItemMouseEventType = React.MouseEvent<HTMLDivElement, MouseEvent>
 
 export default class DeskItemWrapper extends Component<ThunkDispatchProp & PinMouseEventProps & DeskItemProps> {
 	deskItemElem: HTMLElement

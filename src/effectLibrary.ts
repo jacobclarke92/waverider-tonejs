@@ -1,3 +1,4 @@
+import { EffectType } from './types'
 import autoFilter from './effects/autoFilter'
 import bitCrusher from './effects/bitCrusher'
 import chorus from './effects/chorus'
@@ -7,7 +8,7 @@ import feedbackEffect from './effects/feedbackEffect'
 
 export const effectSchema = '++id,enabled,type,effect'
 
-export default {
+const effects: { [k: string]: EffectType } = {
 	feedbackEffect,
 	feedbackDelay,
 	distortion,
@@ -15,3 +16,5 @@ export default {
 	bitCrusher,
 	autoFilter,
 }
+
+export default effects

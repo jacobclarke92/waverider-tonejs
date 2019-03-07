@@ -4,7 +4,14 @@ import { connect } from 'react-redux'
 import effectLibrary from '../../effectLibrary'
 import { addEffect } from '../../reducers/effects'
 
-class DeskToolbar extends Component {
+import { ThunkDispatchProp, ReduxStoreType } from '../../types'
+import { State as GuiStore } from '../../reducers/gui'
+
+interface StateProps {
+	gui: GuiStore
+}
+
+class DeskToolbar extends Component<ThunkDispatchProp & StateProps> {
 	render() {
 		const { dispatch } = this.props
 		return (
@@ -19,4 +26,4 @@ class DeskToolbar extends Component {
 	}
 }
 
-export default connect(({ gui }) => ({ gui }))(DeskToolbar)
+export default connect(({ gui }: ReduxStoreType) => ({ gui }))(DeskToolbar)

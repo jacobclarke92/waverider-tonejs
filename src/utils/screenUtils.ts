@@ -82,7 +82,8 @@ export interface MousePosition extends PointObj {
 	percent: PointObj
 }
 
-export const getRelativeMousePosition = (e: MouseEvent, elem: HTMLElement, contain: boolean = true): MousePosition => {
+// TODO e: any
+export const getRelativeMousePosition = (e: any, elem: HTMLElement, contain: boolean = true): MousePosition => {
 	const rect = getRect(elem)
 	const mouse = getMousePosition(e)
 	const position = {
