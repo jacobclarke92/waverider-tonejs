@@ -13,6 +13,6 @@ module.exports = merge(commonConfig, {
 		publicPath: '/dist/',
 		filename: '[name].js',
 	},
-	devtool: 'cheap-module-eval-source-map',
+	devtool: 'eval-source-map',
 	// plugins: [new BundleAnalyzerPlugin()],
 })
