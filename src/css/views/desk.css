@@ -1,16 +1,16 @@
 .desk-interface-container {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	overflow: hidden;
-	
-	&.panning {
-		cursor: grabbing;
-	}
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  &.panning {
+    cursor: grabbing;
+  }
 }
 
 .desk-interface {
-	position: absolute;
+  position: absolute;
 }

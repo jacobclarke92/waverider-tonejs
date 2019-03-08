@@ -1,5 +1,5 @@
 .icon {
-	& path {
-		fill: currentColor
-	}
+  & path {
+    fill: currentColor;
+  }
 }

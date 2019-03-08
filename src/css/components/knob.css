@@ -1,46 +1,45 @@
 .knob {
-	position: relative;
-	display: inline-block;
+  position: relative;
+  display: inline-block;
 
-	&.label-bottom {
-		& .knob-label {
-			margin-top: -0.5em;
-		}
-	}
+  &.label-bottom {
+    & .knob-label {
+      margin-top: -0.5em;
+    }
+  }
 
-	& + .knob {
-		margin-left: var(--margin-s);
-	}
+  & + .knob {
+    margin-left: var(--margin-s);
+  }
 }
 
-	.knob-inner {
-		position: relative;
-		display: block;
-	}
+.knob-inner {
+  position: relative;
+  display: block;
+}
 
-		.knob-value {
-			position: absolute;
-			top: 50%;
-			transform: translateY(-50%);
-			width: 100%;
-			text-align: center;
-		}
+.knob-value {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  text-align: center;
+}
 
-		.knob-label {
-			display: block;
-			width: 100%;
-			text-align: center;
-		}
-
+.knob-label {
+  display: block;
+  width: 100%;
+  text-align: center;
+}
 
 .donut {
-	& .donut-ring {
-		stroke: var(--shade-800);
-	}
-	& .donut-segment {
-		stroke: var(--primary);
-	}
-	& .donut-line {
-		stroke: var(--tertiary);
-	}
+  & .donut-ring {
+    stroke: var(--shade-800);
+  }
+  & .donut-segment {
+    stroke: var(--primary);
+  }
+  & .donut-line {
+    stroke: var(--tertiary);
+  }
 }

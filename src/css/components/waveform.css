@@ -1,58 +1,62 @@
 :root {
-    --triangle-size: 8px;
+  --triangle-size: 8px;
 }
 
 .waveform-container {
-    position: relative;
-    width: 600px;
-    height: 200px;
+  position: relative;
+  width: 600px;
+  height: 200px;
 }
 
-    .waveform {
-        background-color: var(--shade-100);
-        position: relative;
-        width: 100%;
-        height: 100%;
+.waveform {
+  background-color: var(--shade-100);
+  position: relative;
+  width: 100%;
+  height: 100%;
 
-        & label {
-            position: absolute;
-            top: 0;
-            right: 0;
-            pointer-events: none;
-        }
-    }
+  & label {
+    position: absolute;
+    top: 0;
+    right: 0;
+    pointer-events: none;
+  }
+}
 
-        .waveform-graphic {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            background-size: 100% 100%;
-            pointer-events: none;
+.waveform-graphic {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-size: 100% 100%;
+  pointer-events: none;
 
-            &.reverse {
-                transform: scaleX(-1);
-            }
-        }
+  &.reverse {
+    transform: scaleX(-1);
+  }
+}
 
-        .waveform-renderer {
-            position: absolute;
-            width: 1000px;
-            height: 300px;
-            opacity: 0;
-            pointer-events: none;
-        }
+.waveform-renderer {
+  position: absolute;
+  width: 1000px;
+  height: 300px;
+  opacity: 0;
+  pointer-events: none;
+}
 
-        .note-positions {
-            @apply --cover;
-            pointer-events: none;
-            overflow: hidden;
+.note-positions {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
 
-            & .note-position {
-                position: absolute;
-                top: 0;
-                left: 0;
-                height: 100%;
-                width: 1px;
-                background-color: red;
-            }
-        }
+  & .note-position {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 1px;
+    background-color: red;
+  }
+}

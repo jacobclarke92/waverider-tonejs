@@ -1,5 +1,4 @@
 @import './_variables.css';
-@import './_functions.css';
 @import './_utility.css';
 
 @import './app.css';
@@ -22,4 +21,4 @@
 @import './components/waveform.css';
 @import './components/wire.css';
 
-@import './views/desk.css'
+@import './views/desk.css';

@@ -1,39 +1,48 @@
 .dropzone {
-    @apply --cover;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
 
-    &:before,
-    &:after {
-        opacity: 0;
-        position: absolute;
-        pointer-events: none;
-    }
+  &:before,
+  &:after {
+    opacity: 0;
+    position: absolute;
+    pointer-events: none;
+  }
 
-    &:before {
-        content: '';
-        @apply --cover;
-        z-index: 98;
-        background-color: rgba(0,0,0,0.5);
-        border: 4px dashed white;
-        transition: opacity 0.2s linear, background-color 0.2s linear;
-    }
+  &:before {
+    content: '';
 
-    &:after{
-        content: attr(data-drop-message);
-        z-index: 99;
-        top: 50%;
-        left: 50%;
-        max-width: 70%;
-        transform: translate(-50%, -50%);
-        color: white;
-        font-size: var(--font-size-l);
-    }
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 98;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 4px dashed white;
+    transition: opacity 0.2s linear, background-color 0.2s linear;
+  }
 
-    &.can-drop:before,
-    &.can-drop:after {
-        opacity: 1;
-    }
+  &:after {
+    content: attr(data-drop-message);
+    z-index: 99;
+    top: 50%;
+    left: 50%;
+    max-width: 70%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: var(--font-size-l);
+  }
 
-    &.is-over:before {
-        background-color: rgba(0,0,50,0.65);
-    }
+  &.can-drop:before,
+  &.can-drop:after {
+    opacity: 1;
+  }
+
+  &.is-over:before {
+    background-color: rgba(0, 0, 50, 0.65);
+  }
 }

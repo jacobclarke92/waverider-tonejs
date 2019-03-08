@@ -1,67 +1,65 @@
 button,
 .button,
-input[type="button"],
-input[type="submit"] {
+input[type='button'],
+input[type='submit'] {
+  margin: 0;
+  padding: var(--padding-s) var(--padding-m);
+  height: var(--button-m);
+  color: var(--white);
+  background-color: var(--shade-300);
+  outline: none;
+  appearance: none;
+  border: none;
+  cursor: pointer;
 
-	margin: 0;
-	padding: var(--padding-s) var(--padding-m);
-	height: var(--button-m);
-	color: var(--white);
-	background-color: var(--shade-300);
-	outline: none;
-	appearance: none;
-	border: none;
-	cursor: pointer;
+  transition: all 0.2s linear;
 
-	transition: all 0.2s linear;
+  &:hover {
+    background-color: var(--shade-350);
+  }
 
-	&:hover {
-		background-color: var(--shade-350);
-	}
+  &.icon-button {
+    width: 3.6rem;
+    height: 3.6rem;
+    padding: 0;
+    & svg {
+      width: 100%;
+      height: 100%;
+    }
+  }
 
-	&.icon-button {
-		width: 3.6rem;
-		height: 3.6rem;
-		padding: 0;
-		& svg {
-			width: 100%;
-			height: 100%;
-		}
-	}
+  &.button-xs {
+    height: var(--button-xs);
+    padding: var(--padding-xs) var(--padding-s);
+  }
 
-	&.button-xs {
-		height: var(--button-xs);
-		padding: var(--padding-xs) var(--padding-s);
-	}
+  &.button-s {
+    height: var(--button-s);
+    padding: var(--padding-xs) var(--padding-s);
+  }
 
-	&.button-s {
-		height: var(--button-s);
-		padding: var(--padding-xs) var(--padding-s);
-	}
+  &.button-l {
+    height: var(--button-l);
+    padding: var(--padding-s) var(--padding-m);
+  }
 
-	&.button-l {
-		height: var(--button-l);
-		padding: var(--padding-s) var(--padding-m);
-	}
+  &.button-xl {
+    height: var(--button-xl);
+    padding: var(--padding-m) var(--padding-l);
+  }
 
-	&.button-xl {
-		height: var(--button-xl);
-		padding: var(--padding-m) var(--padding-l);
-	}
+  &.active,
+  &.button-primary {
+    background-color: var(--primary);
+    &:hover {
+      background-color: color(var(--primary) blackness(-30%));
+    }
+  }
 
-	&.active,
-	&.button-primary {
-		background-color: var(--primary);
-		&:hover {
-			background-color: color(var(--primary) blackness(-30%));
-		}
-	}
-
-	& + button,
-	& + .button,
-	& + input[type="button"],
-	& + input[type="submit"] {
-		margin-left: var(--margin-xs);
-	}
-
+  & + button,
+  & + .button,
+  & + input[type='button'],
+  & + input[type='submit'] {
+    margin-left: var(--margin-xs);
+  }
 }

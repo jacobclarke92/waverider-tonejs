@@ -1,25 +1,25 @@
 .wire {
-	position: absolute;
-	fill: none;
-	overflow: visible;
-	color: var(--white);
-	/* border: 1px solid red; */
+  position: absolute;
+  fill: none;
+  overflow: visible;
+  color: var(--white);
+  /* border: 1px solid red; */
 
-	&.active {
-		pointer-events: none;
-	}
+  &.active {
+    pointer-events: none;
+  }
 
-	&.valid {
-		color: var(--success);
-	}
+  &.valid {
+    color: var(--success);
+  }
 
-	&.selected {
-		color: var(--primary);
-	}
+  &.selected {
+    color: var(--primary);
+  }
 
-	&:not(.active) {
-		& path {
-			cursor: pointer;
-		}
-	}
+  &:not(.active) {
+    & path {
+      cursor: pointer;
+    }
+  }
 }
