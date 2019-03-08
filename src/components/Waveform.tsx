@@ -9,6 +9,8 @@ import { getInstrumentInstance } from '../instrumentsController'
 import DropzoneWrapper from './DropzoneWrapper'
 import AudioTrim, { TrimType } from './AudioTrim'
 import { SimplerInstrument } from '../instruments/simpler'
+import { GenericProps } from '../types'
+import { DropTargetMonitor } from 'react-dnd'
 
 interface Props {
 	instrumentId: number // TODO
@@ -20,7 +22,7 @@ interface Props {
 	disableFileDrop?: boolean
 	onTrimChange?: (newTrim: TrimType, oldTrim: TrimType) => void
 	onPreviewAudio?: () => void // TODO
-	onReceivedFiles?: () => void // TODO
+	onReceivedFiles?: (props: GenericProps, monitor: DropTargetMonitor) => void // TODO
 }
 
 interface State {

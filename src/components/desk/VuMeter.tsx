@@ -3,6 +3,7 @@ import { MASTER, INSTRUMENT, EFFECT } from '../../constants/deskItemTypes'
 import { getEffectInstance } from '../../effectsController'
 import { getInstrumentInstance } from '../../instrumentsController'
 import BaseEffect from '../../effects/BaseEffect'
+import BaseInstrument from '../../instruments/BaseInstrument'
 
 interface Props {
 	id: number
@@ -15,7 +16,7 @@ interface State {
 
 export default class VuMeter extends Component<Props, State> {
 	raf: number
-	instance: BaseEffect
+	instance: BaseEffect | BaseInstrument
 
 	constructor(props) {
 		super(props)
@@ -36,8 +37,14 @@ export default class VuMeter extends Component<Props, State> {
 
 	getInstance(props = this.props) {
 		const { id, type } = this.props
-		if (type == EFFECT) this.instance = getEffectInstance(id)
-		if (type == INSTRUMENT) this.instance = getInstrumentInstance(id)
+		if (type == EFFECT) {
+			const instance = getEffectInstance(id)
+			if (instance) this.instance = instance
+		}
+		if (type == INSTRUMENT) {
+			const instance = getInstrumentInstance(id)
+			if (instance) this.instance = instance
+		}
 		if (!this.raf) this.raf = requestAnimationFrame(this.monitorLevel)
 	}
 

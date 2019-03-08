@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { ThunkDispatchProp, Instrument } from '../../types'
+import { DropTargetMonitor } from 'react-dnd'
+import { ThunkDispatchProp, Instrument, GenericProps } from '../../types'
 import { updateInstrument } from '../../reducers/instruments'
 import { addFile } from '../../api/db'
 import { parseNoteToNumber, noteNumberToName } from '../../utils/noteUtils'
@@ -19,8 +20,7 @@ class Simpler extends Component<ThunkDispatchProp & Instrument> {
 		this.handleFilesDrop = this.handleFilesDrop.bind(this)
 	}
 
-	// TODO
-	handleFilesDrop(item, monitor) {
+	handleFilesDrop(item: GenericProps, monitor: DropTargetMonitor) {
 		const { dispatch, id, instrument } = this.props
 		if (monitor) {
 			const droppedFiles = monitor.getItem().files
