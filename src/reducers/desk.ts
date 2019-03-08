@@ -7,6 +7,7 @@ import { ADD_INSTRUMENT, REMOVE_INSTRUMENT } from './instruments'
 import { add, getAll, updateById } from '../api/db'
 import { DeskItemType } from '../types'
 import { PointObj } from '../utils/Point'
+import { defer } from '../utils/lifecycleUtils'
 
 export const LOAD_DESK: string = 'LOAD_DESK'
 export const DESK_ITEM_MOVE: string = 'DESK_ITEM_MOVE'
@@ -63,7 +64,7 @@ export const loadDesk = () => dispatch =>
 			if (desk.length > 0) return desk
 			return add('desk', initialState[0])
 		})
-		.then(desk => dispatch({ type: LOAD_DESK, desk: isArray(desk) ? desk : [desk] } as ActionObj))
+		.then(desk => defer(() => dispatch({ type: LOAD_DESK, desk: isArray(desk) ? desk : [desk] } as ActionObj)))
 		.catch(e => console.warn('Unable to load desk state', e))
 
 export const moveDeskItem = (deskItem: DeskItemType, position: PointObj) =>
@@ -88,7 +89,7 @@ export const connectWire = (wireFrom: Wire, wireTo: Wire, { wireType }: { wireTy
 	}
 	return dispatch =>
 		updateById('desk', wireFrom.deskItem.id, newDeskItem)
-			.then(deskItem => dispatch({ type: DESK_CONNECT_WIRE, deskItem } as ActionObj))
+			.then(deskItem => defer(() => dispatch({ type: DESK_CONNECT_WIRE, deskItem } as ActionObj)))
 			.catch(e => console.warn('Unable to update desk item for wire connection', wireFrom))
 }
 
@@ -98,7 +99,7 @@ export const disconnectWire = ({ type, wireFrom, wireTo }: { type: WireType; wir
 	const newDeskItem = { [type + 'Outputs']: outputs }
 	return dispatch =>
 		updateById('desk', wireFrom.deskItem.id, newDeskItem)
-			.then(deskItem => dispatch({ type: DESK_DISCONNECT_WIRE, deskItem } as ActionObj))
+			.then(deskItem => defer(() => dispatch({ type: DESK_DISCONNECT_WIRE, deskItem } as ActionObj)))
 			.catch(e => {
 				console.warn('Unable to update desk item for wire disconnection', wireFrom)
 				return false

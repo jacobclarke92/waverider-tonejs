@@ -8,6 +8,7 @@ import { deskItemTypeDefaults, INSTRUMENT, MASTER } from '../constants/deskItemT
 import { Instrument } from '../types'
 import { Action } from 'redux'
 import { PointObj } from '../utils/Point'
+import { defer } from '../utils/lifecycleUtils'
 
 export const LOAD_INSTRUMENTS: string = 'LOAD_INSTRUMENTS'
 export const ADD_INSTRUMENT: string = 'ADD_INSTRUMENT'
@@ -57,10 +58,12 @@ export const loadInstruments = () => dispatch =>
 			else return add('instruments', initialState[0])
 		})
 		.then(instruments =>
-			dispatch({
-				type: LOAD_INSTRUMENTS,
-				instruments: isArray(instruments) ? instruments : [instruments],
-			} as ActionObj)
+			defer(() =>
+				dispatch({
+					type: LOAD_INSTRUMENTS,
+					instruments: isArray(instruments) ? instruments : [instruments],
+				} as ActionObj)
+			)
 		)
 		.catch(e => console.warn('Unable to load instruments', e))
 
@@ -79,7 +82,7 @@ export const addInstrument = (type: string, position: PointObj = { x: 0, y: 0 })
 		add('instruments', newInstrument)
 			.then(instrument =>
 				add('desk', { ...newDeskItem, ownerId: instrument.id })
-					.then(deskItem => dispatch({ type: ADD_INSTRUMENT, instrument, deskItem } as ActionObj))
+					.then(deskItem => defer(() => dispatch({ type: ADD_INSTRUMENT, instrument, deskItem } as ActionObj)))
 					.catch(e => console.warn('Unable to add desk item for instrument', newDeskItem, newInstrument))
 			)
 			.catch(e => console.warn('Unable to add instrument', newInstrument))
@@ -93,7 +96,7 @@ export const removeInstrument = id => dispatch =>
 			getFirstWhere('desk', { type: INSTRUMENT, ownerId: id })
 				.then(deskItem =>
 					removeById('desk', deskItem.id)
-						.then(() => dispatch({ type: REMOVE_INSTRUMENT, id } as ActionObj))
+						.then(() => defer(() => dispatch({ type: REMOVE_INSTRUMENT, id } as ActionObj)))
 						.catch(e => console.warn('Unable to remove desk item for instrument', id, e))
 				)
 				.catch(e => console.warn('Unable to find desk item for instrument', id, e))

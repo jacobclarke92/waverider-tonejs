@@ -7,6 +7,7 @@ import { getDeskItemsConnectedTo } from '../deskController'
 import { deskItemTypeDefaults, EFFECT } from '../constants/deskItemTypes'
 import { add, getAll, getFirstWhere, updateById, removeById } from '../api/db'
 import { PointObj } from '../utils/Point'
+import { defer } from '../utils/lifecycleUtils'
 
 export type State = Effect[]
 
@@ -45,7 +46,7 @@ export const loadEffects = () => dispatch =>
 			if (effects.length > 0) return effects
 			else return []
 		})
-		.then(effects => dispatch({ type: LOAD_EFFECTS, effects } as ActionObj))
+		.then(effects => defer(() => dispatch({ type: LOAD_EFFECTS, effects } as ActionObj)))
 		.catch(e => console.warn('Unable to load effects', e))
 
 export const addEffect = (type, position: PointObj = { x: 0, y: 0 }) => {
@@ -57,7 +58,7 @@ export const addEffect = (type, position: PointObj = { x: 0, y: 0 }) => {
 		add('effects', newEffect)
 			.then(effect =>
 				add('desk', { ...newDeskItem, ownerId: effect.id })
-					.then(deskItem => dispatch({ type: ADD_EFFECT, effect, deskItem } as ActionObj))
+					.then(deskItem => defer(() => dispatch({ type: ADD_EFFECT, effect, deskItem } as ActionObj)))
 					.catch(e => console.warn('Unable to add desk item for effect', newDeskItem, newEffect))
 			)
 			.catch(e => console.warn('Unable to add effect', newEffect))
@@ -74,7 +75,7 @@ export const removeEffect = id => dispatch =>
 						.then(() => {
 							const connections = getDeskItemsConnectedTo(deskItem)
 							console.log('STRAY CONNECTIONS', connections)
-							dispatch({ type: REMOVE_EFFECT, id } as ActionObj)
+							defer(() => dispatch({ type: REMOVE_EFFECT, id } as ActionObj))
 						})
 						.catch(e => console.warn('Unable to remove desk item for effect', id, e))
 				)

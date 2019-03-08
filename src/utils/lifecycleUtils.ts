@@ -29,3 +29,7 @@ export function checkDifferenceAny(
 	}
 	return false
 }
+
+export function defer(func: Function): void {
+	setTimeout(func)
+}
