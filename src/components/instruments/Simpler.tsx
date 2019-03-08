@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { ThunkDispatchProp, Instrument } from '../../types'
 import { updateInstrument } from '../../reducers/instruments'
 import { addFile } from '../../api/db'
 import { parseNoteToNumber, noteNumberToName } from '../../utils/noteUtils'
@@ -12,12 +13,13 @@ import DeviceSelect from '../DeviceSelect'
 import ChannelSelect from '../ChannelSelect'
 import Waveform from '../Waveform'
 
-class Simpler extends Component {
+class Simpler extends Component<ThunkDispatchProp & Instrument> {
 	constructor(props) {
 		super(props)
 		this.handleFilesDrop = this.handleFilesDrop.bind(this)
 	}
 
+	// TODO
 	handleFilesDrop(item, monitor) {
 		const { dispatch, id, instrument } = this.props
 		if (monitor) {
@@ -29,7 +31,7 @@ class Simpler extends Component {
 		}
 	}
 
-	handleReverse(reverse) {
+	handleReverse(reverse: boolean) {
 		const { dispatch, id, instrument } = this.props
 		const { trim } = instrument
 		dispatch(
@@ -93,7 +95,7 @@ class Simpler extends Component {
 							min={-100}
 							max={100}
 							step={1}
-							valueDisplay={value => (value === 0 ? 0 : value + 'c')}
+							valueDisplay={value => (value === 0 ? '0' : value + 'c')}
 							onChange={cents => dispatch(updateInstrument(id, { instrument: { ...instrument, cents } }))}
 						/>
 					</div>

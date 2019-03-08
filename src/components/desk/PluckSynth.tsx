@@ -1,12 +1,15 @@
+import { ThunkDispatchProp } from '../../types'
 import React, { Component } from 'react'
 
-import Icon from '../Icon'
 import VuMeter from './VuMeter'
 import DeskItemWrapper from './DeskItemWrapper'
 
-export default class MembraneSynthDeskItem extends Component {
+import { DeskItemProps } from '../view/DeskWorkspace'
+import { PinMouseEventProps } from './Pin'
+
+export default class PluckSynthDeskItem extends Component<ThunkDispatchProp & PinMouseEventProps & DeskItemProps> {
 	render() {
-		const { ownerId, type, dataInput, dataOutput } = this.props.deskItem || {}
+		const { ownerId, type } = this.props.deskItem
 		return (
 			<DeskItemWrapper {...this.props}>
 				<div className="desk-item pluck-synth">

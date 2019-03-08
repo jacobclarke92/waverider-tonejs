@@ -1,7 +1,7 @@
 import { noteStrings } from '../constants/noteStrings'
 import { NoteString } from '../types'
 
-export const parseNoteToNumber = (input: number | string): number | boolean => {
+export const parseNoteToNumber = (input: number | string): number | false => {
 	if (typeof input == 'number') input = input.toString()
 	input = input.toUpperCase().replace(' ', '')
 

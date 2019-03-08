@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { ThunkDispatchProp, Instrument } from '../../types'
 import { updateInstrument } from '../../reducers/instruments'
 import { defaultValue } from '../../instruments/pluckSynth'
 
@@ -7,7 +8,7 @@ import KnobInput from '../input/KnobInput'
 import DeviceSelect from '../DeviceSelect'
 import ChannelSelect from '../ChannelSelect'
 
-class PluckSynth extends Component {
+class PluckSynth extends Component<ThunkDispatchProp & Instrument> {
 	render() {
 		const { dispatch, id, instrument, midiDeviceId, midiChannel } = this.props
 		const { voices, attackNoise, dampening, resonance } = instrument

@@ -12,8 +12,8 @@ import { SimplerInstrument } from '../instruments/simpler'
 
 interface Props {
 	instrumentId: number // TODO
-	width?: number
-	height?: number
+	width?: number | string
+	height?: number | string
 	fileHash?: string
 	reverse?: boolean
 	trim?: TrimType

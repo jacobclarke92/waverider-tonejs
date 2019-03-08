@@ -10,13 +10,22 @@ import Views from './Views'
 import PropertiesPanel from './components/ui/PropertiesPanel'
 import effectLibrary from './effectLibrary'
 import instrumentLibrary from './instrumentLibrary'
-// import InstrumentList from './components/InstrumentList'
-// import DeskInterface from './components/DeskInterface'
+import { ReduxStoreType, ThunkDispatchProp } from './types'
 
-class Main extends Component {
+import { State as GuiStore } from './reducers/gui'
+import { State as EffectsStore } from './reducers/effects'
+import { State as InstrumentsStore } from './reducers/instruments'
+
+interface StateProps {
+	gui: GuiStore
+	effects: EffectsStore
+	instruments: InstrumentsStore
+}
+
+class Main extends Component<ThunkDispatchProp & StateProps> {
 	render() {
 		const { gui, instruments = [], effects = [] } = this.props
-		const { view, activeElement } = this.props.gui
+		const { view, activeElement } = gui
 		const View = Views[view]
 		let effect = {}
 		let instrument = {}
@@ -56,4 +65,6 @@ class Main extends Component {
 	}
 }
 
-export default connect(({ gui, effects, instruments }) => ({ gui, effects, instruments }))(Main)
+export default connect(({ gui, effects, instruments }: ReduxStoreType): StateProps => ({ gui, effects, instruments }))(
+	Main
+)

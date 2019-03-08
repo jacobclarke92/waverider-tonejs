@@ -1,9 +1,9 @@
-import React, { Component, Children, cloneElement, ReactType, ReactNode, ReactElement } from 'react'
+import React, { Component, Children, cloneElement, ElementType, ReactNode, ReactElement } from 'react'
 import { requestPointerLock, exitPointerLock } from '../utils/screenUtils'
 import { PointObj } from '../utils/Point'
 
 interface Props {
-	children: ReactType
+	children: ReactNode
 	onMovement: (position: PointObj) => void
 }
 

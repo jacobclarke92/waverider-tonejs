@@ -2,7 +2,7 @@ import { STAGE, DESK, MATRIX } from '../constants/uiViews'
 import _merge from 'lodash/merge'
 import _cloneDeep from 'lodash/cloneDeep'
 import { Action } from 'redux'
-import { UiView, DeskItemType } from '../types'
+import { UiView, DeskItem, DeskItemType, GenericProps } from '../types'
 
 export const UPDATE_VIEW = 'UPDATE_VIEW'
 export const UPDATE_VIEW_UI_STATE = 'UPDATE_VIEW_UI_STATE'
@@ -21,15 +21,15 @@ export type State = {
 }
 
 export type ActiveElement = {
-	type: DeskItemType
-	element: null | HTMLElement
+	type: DeskItem
+	element: DeskItemType
 }
 
 interface ReducerAction extends Action {
 	view?: UiView
 	updates?: any // TODO
-	element?: HTMLElement
-	deskItemType: DeskItemType
+	element?: DeskItemType
+	deskItemType: DeskItem
 }
 
 const initialState: State = {
@@ -62,9 +62,9 @@ export default function(state: State = initialState, action: ReducerAction) {
 	return state
 }
 
-export const updateView = view => ({ type: UPDATE_VIEW, view } as ReducerAction)
-export const updateViewUiState = (view, updates = {}) =>
+export const updateView = (view: UiView) => ({ type: UPDATE_VIEW, view } as ReducerAction)
+export const updateViewUiState = (view: UiView, updates: GenericProps = {}) =>
 	({ type: UPDATE_VIEW_UI_STATE, view, updates } as ReducerAction)
 
-export const updateActiveElement = (deskItemType, element) =>
+export const updateActiveElement = (deskItemType: DeskItem, element: DeskItemType) =>
 	({ type: UPDATE_ACTIVE_ELEMENT, deskItemType, element } as ReducerAction)

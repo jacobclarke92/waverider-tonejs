@@ -6,7 +6,7 @@ const commonConfig = require('./webpack.config.common')
 module.exports = merge(commonConfig, {
 	mode: 'development',
 	entry: {
-		scripts: resolve(__dirname, 'src/index.js'),
+		scripts: resolve(__dirname, 'src/index.tsx'),
 	},
 	output: {
 		path: resolve(__dirname, 'app/dist'),

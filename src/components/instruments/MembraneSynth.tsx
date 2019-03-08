@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { ThunkDispatchProp, Instrument } from '../../types'
 import { updateInstrument } from '../../reducers/instruments'
 import { defaultValue } from '../../instruments/membraneSynth'
 
@@ -8,7 +9,7 @@ import SelectInput from '../input/SelectInput'
 import DeviceSelect from '../DeviceSelect'
 import ChannelSelect from '../ChannelSelect'
 
-class MembraneSynth extends Component {
+class MembraneSynth extends Component<ThunkDispatchProp & Instrument> {
 	render() {
 		const { dispatch, id, instrument, midiDeviceId, midiChannel } = this.props
 		const { voices, pitchDecay, octaves, envelope, oscillator } = instrument

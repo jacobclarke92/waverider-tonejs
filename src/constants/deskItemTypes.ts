@@ -1,10 +1,10 @@
 import { DeskItem, DeskItemIOType } from '../types'
 
-export const EFFECT = 'EFFECT'
-export const BUS = 'BUS'
-export const INSTRUMENT = 'INSTRUMENT'
-export const MASTER = 'MASTER'
-export const LFO = 'LFO'
+export const EFFECT: DeskItem = 'EFFECT'
+export const BUS: DeskItem = 'BUS'
+export const INSTRUMENT: DeskItem = 'INSTRUMENT'
+export const MASTER: DeskItem = 'MASTER'
+export const LFO: DeskItem = 'LFO'
 
 export const deskItemTypeDefaults: { [key in DeskItem]: DeskItemIOType } = {
 	[MASTER]: {

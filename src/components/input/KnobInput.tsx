@@ -30,7 +30,7 @@ interface Props {
 	inputValueIsDisplayValue?: boolean
 	loading?: boolean
 	onChange: (val: number) => void
-	valueDisplay?: (val: string | number) => string
+	valueDisplay?: (val: number) => string
 }
 
 interface State {
@@ -62,7 +62,7 @@ export default class KnobInput extends Component<Props, State> {
 		inputValueIsDisplayValue: false,
 		loading: false,
 		onChange: () => {},
-		valueDisplay: value => value,
+		// valueDisplay: value => value,
 	}
 
 	constructor(props: Props) {
@@ -178,8 +178,12 @@ export default class KnobInput extends Component<Props, State> {
 									onChange={inputValue => this.setState({ inputValue })}
 									onBlur={e => this.setInputValue()}
 								/>
+							) : valueDisplay ? (
+								valueDisplay(value)
+							) : step % 1 === 0 ? (
+								value
 							) : (
-								valueDisplay(step % 1 === 0 ? value : value.toFixed(2))
+								value.toFixed(2)
 							)}
 						</div>
 					</div>

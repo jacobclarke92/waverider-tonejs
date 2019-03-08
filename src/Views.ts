@@ -1,9 +1,16 @@
+import { ComponentType } from 'react'
 import { STAGE, DESK, MATRIX } from './constants/uiViews'
 import DeskWorkspace from './components/view/DeskWorkspace'
 import DeskSidebar from './components/view/DeskSidebar'
 import DeskNavbar from './components/view/DeskNavbar'
 
-export default {
+export interface UiViewType {
+	Workspace: ComponentType
+	Navbar: ComponentType
+	Sidebar: ComponentType
+}
+
+const views: { [k: string]: UiViewType } = {
 	[STAGE]: {
 		Workspace: null,
 		Navbar: null,
@@ -20,3 +27,5 @@ export default {
 		Sidebar: null,
 	},
 }
+
+export default views

@@ -1,10 +1,16 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { ReduxStoreType, ThunkDispatchProp } from '../../types'
+import { State as GuiStore } from '../../reducers/gui'
 
 import instrumentLibrary from '../../instrumentLibrary'
 import { addInstrument } from '../../reducers/instruments'
 
-class DeskNavbar extends Component {
+interface StateProps {
+	gui: GuiStore
+}
+
+class DeskNavbar extends Component<ThunkDispatchProp & StateProps> {
 	render() {
 		const { dispatch } = this.props
 		return (
@@ -26,4 +32,4 @@ class DeskNavbar extends Component {
 	}
 }
 
-export default connect(({ gui }) => ({ gui }))(DeskNavbar)
+export default connect(({ gui }: ReduxStoreType): StateProps => ({ gui }))(DeskNavbar)

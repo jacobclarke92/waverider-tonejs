@@ -1,4 +1,4 @@
-import { ReactType } from 'react'
+import { ElementType } from 'react'
 import { ThunkDispatch } from 'redux-thunk'
 import { AnyAction } from 'redux'
 import { BaseEffectConstructor } from './effects/BaseEffect'
@@ -167,7 +167,7 @@ export interface EffectType {
 	name: string
 	slug: string
 	Effect: BaseEffectConstructor
-	Editor: ReactType
+	Editor: ElementType
 	defaultValue: EffectDefaultValueType
 	params: ParamsType
 }
@@ -177,8 +177,8 @@ export interface InstrumentType {
 	name: string
 	slug: string
 	Instrument: BaseInstrumentConstructor
-	Editor: ReactType
-	DeskItem: ReactType
+	Editor: ElementType
+	DeskItem: ElementType
 	defaultValue: InstrumentDefaultValueType
 	params: ParamsType
 }

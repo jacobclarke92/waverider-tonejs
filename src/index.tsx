@@ -17,8 +17,11 @@ import { loadEffects } from './reducers/effects'
 import { loadDesk } from './reducers/desk'
 
 import App from './App'
+import { ThunkDispatchType } from './types'
 
 const store = createStore(reducers, {}, compose(applyMiddleware(thunk, dbMiddleware)))
+
+// @ts-ignore
 window.logStore = () => console.log(store.getState())
 
 initMidi(store)
@@ -26,11 +29,10 @@ initDesk(store)
 initEffects(store)
 initInstruments(store)
 initKeyListeners()
-
-store.dispatch(loadInstruments())
-store.dispatch(loadEffects())
-store.dispatch(loadDevices())
-store.dispatch(loadDesk())
+;(store.dispatch as ThunkDispatchType)(loadInstruments())
+;(store.dispatch as ThunkDispatchType)(loadEffects())
+;(store.dispatch as ThunkDispatchType)(loadDevices())
+;(store.dispatch as ThunkDispatchType)(loadDesk())
 
 ReactDOM.render(
 	<Provider store={store}>

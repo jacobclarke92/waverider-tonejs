@@ -10,7 +10,6 @@ import {
 	getRelativeMousePosition,
 	getMousePosition,
 	getPositionWithinElem,
-	getRect,
 	MousePosition,
 } from '../../utils/screenUtils'
 import { getDeskWires, getOwnerByDeskItem, validateConnection } from '../../deskController'

@@ -1,12 +1,15 @@
 import React, { Component } from 'react'
 
-import Icon from '../Icon'
 import VuMeter from './VuMeter'
 import DeskItemWrapper from './DeskItemWrapper'
 
-export default class BasicSynthDeskItem extends Component {
+import { ThunkDispatchProp } from '../../types'
+import { DeskItemProps } from '../view/DeskWorkspace'
+import { PinMouseEventProps } from './Pin'
+
+export default class BasicSynthDeskItem extends Component<ThunkDispatchProp & PinMouseEventProps & DeskItemProps> {
 	render() {
-		const { ownerId, type, dataInput, dataOutput } = this.props.deskItem || {}
+		const { ownerId, type } = this.props.deskItem
 		return (
 			<DeskItemWrapper {...this.props}>
 				<div className="desk-item basic-synth">
