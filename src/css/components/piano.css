@@ -1,0 +1,45 @@
+.piano-wrapper {
+}
+
+.octave-wrapper {
+  position: absolute;
+  top: 0;
+  height: 100%;
+}
+
+.black-key,
+.white-key {
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  border: 1px solid #ccc;
+
+  &.highlighted {
+    box-shadow: inset 0 0 5px var(--primary);
+  }
+}
+
+.white-keys {
+}
+
+.white-key {
+  height: 100%;
+  background-color: white;
+
+  &.active {
+    background-color: #ccc;
+  }
+}
+
+.black-keys {
+}
+
+.black-key {
+  height: 65%;
+  background-color: black;
+  transform: translateX(-50%);
+
+  &.active {
+    background-color: #888;
+  }
+}
