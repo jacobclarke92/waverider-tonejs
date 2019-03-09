@@ -13,7 +13,21 @@ interface ReducerAction extends Action {
 	devices: Device[]
 }
 
-const initialState: State = []
+export const internalPiano: Device = {
+	id: '_interal_piano',
+	type: 'input',
+	disconnected: false,
+	state: 'connected',
+	connection: 'open',
+	// open: () => new Promise(resolve => resolve()),
+	// close: () => new Promise(resolve => resolve()),
+	// onstatechange: (e: WebMidi.MIDIConnectionEvent) => true,
+	// addEventListener: () => {},
+	// removeEventListener: () => {},
+	// dispatchEvent: (e: Event) => true,
+} as Device
+
+const initialState: State = [internalPiano]
 
 export default function(state: State = initialState, action: ReducerAction) {
 	switch (action.type) {

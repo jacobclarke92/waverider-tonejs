@@ -1,7 +1,8 @@
-import React, { Component, FunctionComponent, CSSProperties } from 'react'
+import React, { Component, FunctionComponent } from 'react'
 import cn from 'classnames'
 import { generateArray } from '../../utils/arrayUtils'
 import { addKeyDownListener, removeKeyDownListener } from '../../utils/keyUtils'
+import PianoKey from './PianoKey'
 
 interface Props {
 	octaves?: number
@@ -145,45 +146,4 @@ const Octave: FunctionComponent<OctaveProps> = ({ octave, startNote, active, key
 			</div>
 		</div>
 	)
-}
-
-interface PianoKeyProps {
-	className: string
-	note: number
-	style: CSSProperties
-	octaveActive: boolean
-}
-interface PianoKeyState {
-	active: boolean
-}
-
-class PianoKey extends Component<PianoKeyProps, PianoKeyState> {
-	static defaultProps = {
-		className: '',
-		note: 0,
-	}
-	state = { active: false }
-	keyDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-		e.preventDefault()
-		e.stopPropagation()
-		this.setState({ active: true })
-	}
-	keyUp = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-		e.preventDefault()
-		e.stopPropagation()
-		this.setState({ active: false })
-	}
-	render() {
-		const { active } = this.state
-		const { note, className, style, octaveActive } = this.props
-		return (
-			<div
-				className={cn(className, { active, highlighted: octaveActive })}
-				style={style}
-				onMouseDown={this.keyDown}
-				onMouseUp={this.keyUp}
-				onMouseOut={this.keyUp}
-			/>
-		)
-	}
 }
