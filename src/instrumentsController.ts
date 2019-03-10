@@ -55,7 +55,7 @@ function handleUpdate() {
 			initInstrument((lastAction as InstrumentsActionObj).instrument)
 			break
 		case REMOVE_INSTRUMENT:
-			removeInstrument((lastAction as InstrumentsActionObj).id)
+			removeInstrumentInstance((lastAction as InstrumentsActionObj).id)
 			break
 		case NOTE_ON:
 		case NOTE_OFF:
@@ -94,7 +94,7 @@ function updateInstrument(id: number, instruments: Instrument[]) {
 }
 
 // TODO
-function removeInstrument(id: number) {
+function removeInstrumentInstance(id: number) {
 	if (!id) return
 	if (id in instances) {
 		const source = instances[id].getToneSource()

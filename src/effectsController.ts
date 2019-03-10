@@ -41,7 +41,7 @@ function handleUpdate() {
 			initEffect((lastAction as EffectsActionObj).effect)
 			break
 		case REMOVE_EFFECT:
-			removeEffect((lastAction as EffectsActionObj).id)
+			removeEffectInstance((lastAction as EffectsActionObj).id)
 			break
 	}
 	oldEffects = _cloneDeep(effects)
@@ -65,7 +65,7 @@ function updateEffect(id: number, effects: EffectsStore) {
 	else instances[id].update(effect, oldEffect)
 }
 
-function removeEffect(id: number) {
+function removeEffectInstance(id: number) {
 	if (!id) return
 	if (id in instances) {
 		const source = instances[id].getToneSource()

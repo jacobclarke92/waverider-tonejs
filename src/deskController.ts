@@ -154,7 +154,7 @@ export function getDeskWires(): WireJoin[] {
 	return connections
 }
 
-export function getDeskItemsConnectedTo(targetDeskItem): DeskItemType[] {
+export function getDeskItemsConnectedTo(targetDeskItem: DeskItemType): DeskItemType[] {
 	const { desk = [] } = store.getState() as ReduxStoreType
 	return desk.filter(deskItem => {
 		if (deskItem.audioOutput && Object.keys(deskItem.audioOutputs).length > 0) {
@@ -165,6 +165,20 @@ export function getDeskItemsConnectedTo(targetDeskItem): DeskItemType[] {
 		}
 		return false
 	})
+}
+
+export function getWiresRoutedTo(targetDeskItem: DeskItemType): WireJoin[] {
+	const wireJoins: WireJoin[] = []
+	const { desk = [] } = store.getState() as ReduxStoreType
+	desk
+		.filter(({ audioOutput, audioOutputs }) => audioOutput && Object.keys(audioOutputs).length > 0)
+		.forEach(deskItem => {
+			for (let key in deskItem.audioOutputs) {
+				const connection = deskItem.audioOutputs[key]
+				if (connection.wireTo.deskItemId == targetDeskItem.id) wireJoins.push(connection)
+			}
+		})
+	return wireJoins
 }
 
 export function validateConnection(wireType: WireType, wireFrom: Wire, wireTo: Wire): boolean {

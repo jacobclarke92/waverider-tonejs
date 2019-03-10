@@ -1,4 +1,4 @@
-import { Wire, WireType, ThunkDispatchType, DeskItemType, WireJoin } from '../types'
+import { Wire, WireType, ThunkDispatchType, DeskItemType, WireJoin, DeskItem } from '../types'
 import { Action } from 'redux'
 import { isArray } from '../utils/typeUtils'
 import { deskItemTypeDefaults, MASTER, BUS, INSTRUMENT, EFFECT, LFO } from '../constants/deskItemTypes'
@@ -57,9 +57,10 @@ export default function(state: State = initialState, action: ActionObj) {
 			return [...state, action.deskItem]
 		case REMOVE_EFFECT:
 		case REMOVE_INSTRUMENT:
-			const outputKey = `${action.type == REMOVE_EFFECT ? EFFECT : INSTRUMENT}${action.id}`
+			const deskItemType: DeskItem = action.type == REMOVE_EFFECT ? EFFECT : INSTRUMENT
+			const outputKey = `${deskItemType}${action.id}`
 			return state
-				.filter(deskItem => deskItem.ownerId !== action.id)
+				.filter(deskItem => !(deskItem.ownerId == action.id && deskItem.type === deskItemType))
 				.map(deskItem => {
 					if (deskItem.audioOutput && outputKey in deskItem.audioOutputs) {
 						console.log('severing output to deleted effect from', deskItem)

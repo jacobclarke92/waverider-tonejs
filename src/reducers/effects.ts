@@ -3,11 +3,12 @@ import { Action } from 'redux'
 import _merge from 'lodash/merge'
 import _cloneDeep from 'lodash/cloneDeep'
 import effectLibrary from '../effectLibrary'
-import { getDeskItemsConnectedTo } from '../deskController'
+import { getWiresRoutedTo } from '../deskController'
 import { deskItemTypeDefaults, EFFECT } from '../constants/deskItemTypes'
 import { add, getAll, getFirstWhere, updateById, removeById } from '../api/db'
 import { PointObj } from '../utils/Point'
 import { defer } from '../utils/lifecycleUtils'
+import { disconnectWire, State as DeskStore } from './desk'
 
 export type State = Effect[]
 
@@ -82,19 +83,19 @@ export const addEffect = (type, position: PointObj = { x: 0, y: 0 }) => {
 
 export const updateEffect = (id, updates) => ({ type: UPDATE_EFFECT, id, updates } as ActionObj)
 
-export const removeEffect = id => dispatch =>
-	removeById('effects', id)
+export const removeEffect = (desk: DeskStore, deskItem: DeskItemType) => dispatch =>
+	removeById('effects', deskItem.ownerId)
 		.then(() =>
-			getFirstWhere('desk', { type: EFFECT, ownerId: id })
-				.then(deskItem =>
-					removeById('desk', deskItem.id)
-						.then(() => {
-							const deadConnections = getDeskItemsConnectedTo(deskItem)
-							console.log('STRAY CONNECTIONS', deadConnections)
-							defer(() => dispatch({ type: REMOVE_EFFECT, id, deadConnections } as ActionObj))
-						})
-						.catch(e => console.warn('Unable to remove desk item for effect', id, e))
-				)
-				.catch(e => console.warn('Unable to find desk item for effect', id, e))
+			removeById('desk', deskItem.id)
+				.then(() => {
+					const deadConnections = getWiresRoutedTo(deskItem)
+					console.log('STRAY CONNECTIONS', deadConnections)
+					defer(() => {
+						if (deadConnections.length > 0)
+							deadConnections.forEach(deadConnection => dispatch(disconnectWire(desk, deadConnection)))
+						dispatch({ type: REMOVE_EFFECT, id: deskItem.ownerId } as ActionObj)
+					})
+				})
+				.catch(e => console.warn('Unable to remove desk item for effect', deskItem, e))
 		)
-		.catch(e => console.warn('Unable to remove effect', id, e))
+		.catch(e => console.warn('Unable to remove effect', deskItem, e))

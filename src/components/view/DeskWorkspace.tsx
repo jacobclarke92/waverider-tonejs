@@ -303,8 +303,8 @@ class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, St
 	clearActiveItem() {}
 
 	handleRemoveDeskItem(deskItem: DeskItemType) {
-		if (deskItem.type == EFFECT) this.props.dispatch(removeEffect(deskItem.ownerId))
-		if (deskItem.type == INSTRUMENT) this.props.dispatch(removeInstrument(deskItem.ownerId))
+		if (deskItem.type == EFFECT) this.props.dispatch(removeEffect(this.props.desk, deskItem))
+		if (deskItem.type == INSTRUMENT) this.props.dispatch(removeInstrument(deskItem))
 	}
 
 	removeActiveItem() {

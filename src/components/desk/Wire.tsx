@@ -40,8 +40,18 @@ class WireComponent extends Component<ThunkDispatchProp & StateProps & Props> {
 		const fromDeskItem = _find(desk, { id: wireFrom.deskItemId })
 		const toDeskItem = wireTo ? _find(desk, { id: wireTo.deskItemId }) : null
 
+		if (!wireFrom) {
+			console.warn('No wireFrom set')
+			return null
+		}
+
 		if (!fromDeskItem) {
-			console.log('cannot find deskItem from wireFrom', wireFrom)
+			console.warn('cannot find deskItem for wireFrom', wireFrom)
+			return null
+		}
+
+		if (wireTo && !toDeskItem) {
+			console.warn('cannot find deskItem for wireTo', wireTo)
 			return null
 		}
 

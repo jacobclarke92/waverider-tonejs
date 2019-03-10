@@ -99,15 +99,11 @@ export const addInstrument = (type: string, position: PointObj = { x: 0, y: 0 })
 
 export const updateInstrument = (id, updates) => ({ type: UPDATE_INSTRUMENT, id, updates } as ActionObj)
 
-export const removeInstrument = id => dispatch =>
-	removeById('instruments', id)
+export const removeInstrument = (deskItem: DeskItemType) => dispatch =>
+	removeById('instruments', deskItem.ownerId)
 		.then(() =>
-			getFirstWhere('desk', { type: INSTRUMENT, ownerId: id })
-				.then(deskItem =>
-					removeById('desk', deskItem.id)
-						.then(() => defer(() => dispatch({ type: REMOVE_INSTRUMENT, id } as ActionObj)))
-						.catch(e => console.warn('Unable to remove desk item for instrument', id, e))
-				)
-				.catch(e => console.warn('Unable to find desk item for instrument', id, e))
+			removeById('desk', deskItem.id)
+				.then(() => defer(() => dispatch({ type: REMOVE_INSTRUMENT, id: deskItem.ownerId } as ActionObj)))
+				.catch(e => console.warn('Unable to remove desk item for instrument', deskItem, e))
 		)
-		.catch(e => console.warn('Unable to remove instrument', id, e))
+		.catch(e => console.warn('Unable to remove instrument', deskItem, e))
