@@ -1,6 +1,6 @@
 import _find from 'lodash/find'
 import _difference from 'lodash/difference'
-import { updateDevices } from '../reducers/devices'
+import { updateDevices, internalPiano } from '../reducers/devices'
 import { isDeviceUsedByInstrument } from '../instrumentsController'
 import { Device } from '../types'
 
@@ -57,7 +57,7 @@ const handleMidiFailure = e => console.warn("No access to MIDI devices or your b
 const handleDeviceUpdates = () => {
 	if (!midi) return init()
 
-	const devices: Device[] = []
+	const devices: Device[] = [internalPiano]
 	const inputs: IterableIterator<WebMidi.MIDIInput> = midi.inputs.values()
 	for (let input = inputs.next(); input && !input.done; input = inputs.next()) {
 		const device: WebMidi.MIDIInput = input.value
@@ -71,7 +71,9 @@ const handleDeviceUpdates = () => {
 	}
 
 	const oldDevices: Device[] = store.getState().devices
-	const unpluggedDeviceIds: string[] = _difference(oldDevices.map(({ id }) => id), devices.map(({ id }) => id))
+	const unpluggedDeviceIds: string[] = _difference(oldDevices.map(({ id }) => id), devices.map(({ id }) => id)).filter(
+		id => id != internalPiano.id
+	)
 	for (let deviceId of unpluggedDeviceIds) {
 		const usedByInstrument = isDeviceUsedByInstrument(deviceId)
 		console.log(`Device unplugged: ${deviceId} (${usedByInstrument ? 'was' : 'was not'} used by instrument)`)

@@ -15,6 +15,7 @@ interface ReducerAction extends Action {
 
 export const internalPiano: Device = {
 	id: '_interal_piano',
+	name: 'Keyboard Piano',
 	type: 'input',
 	disconnected: false,
 	state: 'connected',
