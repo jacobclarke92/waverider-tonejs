@@ -1,124 +1,121 @@
 :root {
-	--header-height: 80px;
-	--sidebar-width: 80px;
-	--navbar-height: 40px;
-	--properties-panel-height: 150px;
-	--tab-width: 230px;
-	--tab-height: 30px;
-	--ui-border-color: var(--shade-600);
-	--ui-z-index: 500;
+  --header-height: 80px;
+  --sidebar-width: 80px;
+  --navbar-height: 40px;
+  --properties-panel-height: 150px;
+  --tab-width: 230px;
+  --tab-height: 30px;
+  --ui-border-color: var(--shade-600);
+  --ui-z-index: 500;
 }
 
 .app {
-	position: absolute;
-	left: 0;
-	top: 0;
-	width: 100vw;
-	height: 100vh;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
 }
 
-	.header {
-		position: absolute;
-		z-index: var(--ui-z-index);
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: var(--header-height);
-		padding: 0 var(--padding-l);
-		background: linear-gradient(to bottom, var(--shade-850) 0%, var(--shade-750) 100%);
-		border-bottom: 1px solid var(--ui-border-color);
-		box-sizing: border-box;
-	}
+.header {
+  position: absolute;
+  z-index: var(--ui-z-index);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--header-height);
+  padding: 0 var(--padding-l);
+  background: linear-gradient(to bottom, var(--shade-850) 0%, var(--shade-750) 100%);
+  border-bottom: 1px solid var(--ui-border-color);
+  box-sizing: border-box;
+}
 
-		.header-inner {
-			height: 100%;
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-		}
+.header-inner {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 
-			.header-left {
-				display: flex;
-				align-items: center;
-			}
+.header-left {
+  display: flex;
+  align-items: center;
+}
 
-			.header-right {
-				display: flex;
-				align-items: center;
-			}
+.header-right {
+  display: flex;
+  align-items: center;
+}
 
+.main {
+  position: absolute;
+  top: var(--header-height);
+  left: 0;
+  width: 100%;
+  height: calc(100% - var(--header-height));
+}
 
-	.main {
-		position: absolute;
-		top: var(--header-height);
-		left: 0;
-		width: 100%;
-		height: calc(100% - var(--header-height));
-	}
+.sidebar {
+  position: absolute;
+  z-index: var(--ui-z-index);
+  top: 0;
+  left: 0;
+  width: var(--sidebar-width);
+  height: 100%;
+  background-color: var(--shade-850);
+  border-right: 1px solid var(--ui-border-color);
+  box-sizing: border-box;
+}
 
-		.sidebar {
-			position: absolute;
-			z-index: var(--ui-z-index);
-			top: 0;
-			left: 0;
-			width: var(--sidebar-width);
-			height: 100%;
-			background-color: var(--shade-850);
-			border-right: 1px solid var(--ui-border-color);
-			box-sizing: border-box;
-		}
+.workspace-container {
+  position: absolute;
+  top: 0;
+  left: var(--sidebar-width);
+  width: calc(100% - var(--sidebar-width));
+  height: 100%;
+}
 
-		.workspace-container {
-			position: absolute;
-			top: 0;
-			left: var(--sidebar-width);
-			width: calc(100% - var(--sidebar-width));
-			height: 100%;
-		}
+.navbar {
+  position: absolute;
+  z-index: var(--ui-z-index);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--navbar-height);
+  background-color: var(--shade-700);
+  border-bottom: 1px solid var(--ui-border-color);
+  box-sizing: border-box;
+}
 
-			.navbar {
-				position: absolute;
-				z-index: var(--ui-z-index);
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: var(--navbar-height);
-				background-color: var(--shade-700);
-				border-bottom: 1px solid var(--ui-border-color);
-				box-sizing: border-box;
-			}
+.navbar-inner {
+  margin: var(--padding-xs);
+  display: flex;
+  justify-content: space-between;
+}
 
-				.navbar-inner {
-					margin: var(--padding-xs);
-					display: flex;
-					justify-content: space-between;
-				}
+.navbar-left {
+}
 
-					.navbar-left {
+.navbar-right {
+}
 
-					}
+.workspace {
+  position: absolute;
+  top: var(--navbar-height);
+  left: 0;
+  width: 100%;
+  height: calc(100% - var(--navbar-height));
+  background-color: var(--black);
+  color: var(--white);
+  overflow: auto;
+}
 
-					.navbar-right {
-
-					}
-
-			.workspace {
-				position: absolute;
-				top: var(--navbar-height);
-				left: 0;
-				width: 100%;
-				height: calc(100% - var(--navbar-height));
-				background-color: var(--black);
-				color: var(--white);
-				overflow: auto;
-			}
-
-			.piano-panel {
-				position: absolute;
-				bottom: 0;
-				left: 0;
-				height: auto;
-				width: 100%;
-				background-color: red;
-				overflow: auto;
-			}
+.piano-panel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: auto;
+  width: 100%;
+  background-color: var(--shade-300);
+  overflow: auto;
+}

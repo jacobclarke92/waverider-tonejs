@@ -8,6 +8,7 @@ export const UPDATE_VIEW = 'UPDATE_VIEW'
 export const UPDATE_VIEW_UI_STATE = 'UPDATE_VIEW_UI_STATE'
 export const UPDATE_ACTIVE_ELEMENT = 'UPDATE_ACTIVE_ELEMENT'
 export const CLEAR_ACTIVE_ELEMENT = 'CLEAR_ACTIVE_ELEMENT'
+export const TOGGLE_KEYBOARD_PIANO = 'TOGGLE_KEYBOARD_PIANO'
 
 export interface ViewState {
 	snapping?: boolean
@@ -16,6 +17,7 @@ export interface ViewState {
 
 export type State = {
 	view: UiView
+	keyboardPianoEnabled: boolean
 	viewStates: { [key: string]: ViewState }
 	activeElement: null | ActiveElement
 }
@@ -35,6 +37,7 @@ interface ReducerAction extends Action {
 const initialState: State = {
 	view: DESK,
 	activeElement: null,
+	keyboardPianoEnabled: true,
 	viewStates: {
 		[STAGE]: {
 			snapping: false,
@@ -58,6 +61,8 @@ export default function(state: State = initialState, action: ReducerAction) {
 			return { ...state, activeElement: null }
 		case UPDATE_ACTIVE_ELEMENT:
 			return { ...state, activeElement: { type: action.deskItemType, element: action.element } }
+		case TOGGLE_KEYBOARD_PIANO:
+			return { ...state, keyboardPianoEnabled: !state.keyboardPianoEnabled }
 	}
 	return state
 }
@@ -68,3 +73,5 @@ export const updateViewUiState = (view: UiView, updates: GenericProps = {}) =>
 
 export const updateActiveElement = (deskItemType: DeskItem, element: DeskItemType) =>
 	({ type: UPDATE_ACTIVE_ELEMENT, deskItemType, element } as ReducerAction)
+
+export const toggleKeyboardPiano = () => ({ type: TOGGLE_KEYBOARD_PIANO })

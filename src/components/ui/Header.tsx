@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import cn from 'classnames'
 import { connect } from 'react-redux'
 import { ReduxStoreType, ThunkDispatchProp } from '../../types'
-import { State as GuiStore } from '../../reducers/gui'
+import { State as GuiStore, toggleKeyboardPiano } from '../../reducers/gui'
 
 import Icon from '../Icon'
 import { updateView } from '../../reducers/gui'
@@ -41,7 +41,14 @@ class Header extends Component<ThunkDispatchProp & StateProps> {
 							Matrix
 						</button>
 					</div>
-					<div className="header-right" />
+					<div className="header-right">
+						<button
+							type="button"
+							className={cn('icon-button', { active: gui.keyboardPianoEnabled })}
+							onClick={() => dispatch(toggleKeyboardPiano())}>
+							<Icon name="keyboard" />
+						</button>
+					</div>
 				</div>
 			</header>
 		)

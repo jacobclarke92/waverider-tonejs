@@ -20,7 +20,7 @@ interface Props {
 
 export default class Icon extends Component<Props> {
 	static defaultProps = {
-		size: 'medium',
+		size: 'm',
 		style: {},
 	}
 

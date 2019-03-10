@@ -26,7 +26,7 @@ interface StateProps {
 class Main extends Component<ThunkDispatchProp & StateProps> {
 	render() {
 		const { gui, instruments = [], effects = [] } = this.props
-		const { view, activeElement } = gui
+		const { view, activeElement, keyboardPianoEnabled } = gui
 		const View = Views[view]
 		let effect = {}
 		let instrument = {}
@@ -59,9 +59,11 @@ class Main extends Component<ThunkDispatchProp & StateProps> {
 								<PropertiesComponent {...instrument} />
 							</PropertiesPanel>
 						)}
-						<div className="piano-panel">
-							<PianoRoll octaveStart={1} octaves={8} />
-						</div>
+						{keyboardPianoEnabled && (
+							<div className="piano-panel">
+								<PianoRoll octaveStart={1} octaves={8} />
+							</div>
+						)}
 					</div>
 				</main>
 			</div>
