@@ -14,7 +14,7 @@ class PluckSynth extends Component<ThunkDispatchProp & Instrument> {
 		return (
 			<div className="pluck-synth">
 				<DeviceAndChannel instrumentId={id} deviceId={midiDeviceId} midiChannel={midiChannel} />
-				<KnobInput
+				{/* <KnobInput
 					label="Voices"
 					min={1}
 					max={12}
@@ -22,7 +22,7 @@ class PluckSynth extends Component<ThunkDispatchProp & Instrument> {
 					value={voices}
 					defaultValue={defaultValue.instrument.voices}
 					onChange={voices => dispatch(updateInstrument(id, { instrument: { ...instrument, voices } }))}
-				/>
+				/> */}
 				<KnobInput
 					label="Attack Noise"
 					min={0.1}

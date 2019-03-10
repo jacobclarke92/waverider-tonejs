@@ -14,6 +14,7 @@ export const LOAD_DESK: string = 'LOAD_DESK'
 export const DESK_ITEM_MOVE: string = 'DESK_ITEM_MOVE'
 export const DESK_CONNECT_WIRE: string = 'DESK_CONNECT_WIRE'
 export const DESK_DISCONNECT_WIRE: string = 'DESK_DISCONNECT_WIRE'
+export const REINIT_INSTRUMENT_INSTANCE: string = 'REINIT_INSTRUMENT_INSTANCE'
 
 export const deskSchema = '++id,name,ownerId,ownerType,type,position,[type+ownerId]'
 

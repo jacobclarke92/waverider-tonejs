@@ -12,6 +12,7 @@ import {
 	LOAD_DESK,
 	DESK_CONNECT_WIRE,
 	DESK_DISCONNECT_WIRE,
+	REINIT_INSTRUMENT_INSTANCE,
 	ActionObj as DeskActionObj,
 	State as DeskStore,
 } from './reducers/desk'
@@ -40,8 +41,17 @@ function handleUpdate() {
 		case DESK_DISCONNECT_WIRE:
 			handleRemoveConnection(lastAction as DeskActionObj)
 			break
+		case REINIT_INSTRUMENT_INSTANCE:
+			handleReinitDeskInstance(lastAction.id)
+			break
 	}
 	oldDesk = _cloneDeep(desk)
+}
+
+function initConnections(desk: DeskStore) {
+	for (let deskItem of desk) {
+		connectAudioWires(deskItem)
+	}
 }
 
 function handleNewConnection(action: DeskActionObj) {
@@ -52,10 +62,15 @@ function handleRemoveConnection(action: DeskActionObj) {
 	connectAudioWires(action.deskItem, true)
 }
 
-function initConnections(desk: DeskStore) {
-	for (let deskItem of desk) {
-		connectAudioWires(deskItem)
+function handleReinitDeskInstance(deskItemId: number) {
+	const { desk } = store.getState() as ReduxStoreType
+	const deskItem = _find(desk, { id: deskItemId })
+	if (!deskItem) {
+		console.warn('Unable to find desk item in order to reinit tone instance', deskItemId)
+		return
 	}
+	console.log('Reiniting tone instance for desk item', deskItem)
+	connectAudioWires(deskItem, true)
 }
 
 function getSource(deskItem: DeskItemType): false | BaseEffect | BaseInstrument {

@@ -8,6 +8,7 @@ import { noteNumberToName } from '../utils/noteUtils'
 import BasicSynthDeskItem from '../components/desk/BasicSynth'
 import BasicSynthEditor from '../components/instruments/BasicSynth'
 import BaseInstrument from './BaseInstrument'
+import { REINIT_INSTRUMENT_INSTANCE } from '../reducers/desk'
 
 export class BasicSynthInstrument extends BaseInstrument {
 	synth: PolySynth
@@ -31,6 +32,7 @@ export class BasicSynthInstrument extends BaseInstrument {
 		Object.keys(value).forEach(key => (this[key] = value[key]))
 		if (checkDifferenceAny(value.instrument, oldValue.instrument, ['voices'])) {
 			this.reinitSynth()
+			this.dispatch({ type: REINIT_INSTRUMENT_INSTANCE, id: this.id })
 			return
 		}
 		if (
@@ -49,7 +51,10 @@ export class BasicSynthInstrument extends BaseInstrument {
 
 	initSynth(callback = () => {}) {
 		const { voices } = this.instrument
-		if (this.synth) this.synth.dispose()
+		if (this.synth) {
+			this.synth.dispose()
+			delete this.synth
+		}
 		this.synth = new PolySynth(voices, Synth)
 		this.synth.set('volume', -39)
 		this.synth.connect(this.meter)

@@ -13,6 +13,7 @@ import { allInstrumentDefaults, defaultEnvelope, envelopeParams, voicesParam } f
 import BaseInstrument from './BaseInstrument'
 import { ParamsType, InstrumentType } from '../types'
 import SimplerSynthDeskItem from '../components/desk/SimplerSynth'
+import { REINIT_INSTRUMENT_INSTANCE } from '../reducers/desk'
 
 export class SimplerInstrument extends BaseInstrument {
 	sampler: Sampler
@@ -39,6 +40,7 @@ export class SimplerInstrument extends BaseInstrument {
 		Object.keys(value).forEach(key => (this[key] = value[key]))
 		if (checkDifferenceAny(value.instrument, oldValue.instrument, ['voices', 'reverse'])) {
 			this.reinitSampler()
+			this.dispatch({ type: REINIT_INSTRUMENT_INSTANCE, id: this.id })
 			return
 		}
 		if (checkDifferenceAny(value.instrument, oldValue.instrument, ['trim'])) {
@@ -70,7 +72,10 @@ export class SimplerInstrument extends BaseInstrument {
 	initSampler(callback = () => {}) {
 		const { voices, fileHash, reverse, loop, trim } = this.instrument
 
-		if (this.sampler) this.sampler.dispose()
+		if (this.sampler) {
+			this.sampler.dispose()
+			delete this.sampler
+		}
 		this.sampler = new Sampler({}) //PolySynth(voices, Sampler)
 		// @ts-ignore
 		this.sampler.set('volume', -39)

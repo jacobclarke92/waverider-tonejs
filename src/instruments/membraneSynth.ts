@@ -29,10 +29,6 @@ export class MembraneSynthInstrument extends BaseInstrument {
 
 	update(value, oldValue) {
 		Object.keys(value).forEach(key => (this[key] = value[key]))
-		if (checkDifferenceAny(value.instrument, oldValue.instrument, ['voices'])) {
-			this.reinitSynth()
-			return
-		}
 		if (
 			checkDifferenceAny(value.instrument, oldValue.instrument, [
 				'pitchDecay',
@@ -50,9 +46,14 @@ export class MembraneSynthInstrument extends BaseInstrument {
 
 	initSynth(callback = () => {}) {
 		const { voices } = this.instrument
-		if (this.synth) this.synth.dispose()
-		this.synth = new PolySynth(voices, MembraneSynth)
-		this.synth.set('volume', -39)
+		if (this.synth) {
+			this.synth.dispose()
+			delete this.synth
+		}
+		// this.synth = new PolySynth(voices, MembraneSynth)
+		this.synth = new MembraneSynth()
+		this.synth.volume.value = -39
+		// this.synth.set('volume', -39)
 		this.synth.connect(this.meter)
 		this.updateVoiceParams()
 		callback()
@@ -61,7 +62,11 @@ export class MembraneSynthInstrument extends BaseInstrument {
 	updateVoiceParams() {
 		if (!this.synth) return
 		const { pitchDecay, octaves, envelope, oscillator } = this.instrument
-		this.synth.set({ pitchDecay, octaves, envelope, oscillator })
+		this.synth.pitchDecay = pitchDecay
+		this.synth.octaves = octaves
+		this.synth.oscillator.type = oscillator.type
+		Object.keys(envelope).forEach(key => (this.synth.envelope[key] = envelope[key]))
+		// this.synth.set({ pitchDecay, octaves, envelope, oscillator })
 	}
 
 	noteDown(note, velocity) {
@@ -82,7 +87,7 @@ export class MembraneSynthInstrument extends BaseInstrument {
 export const defaultValue: InstrumentDefaultValueType = {
 	...allInstrumentDefaults,
 	instrument: {
-		voices: 1,
+		// voices: 1,
 		pitchDecay: 0.05,
 		octaves: 6,
 		oscillator: { type: 'sine' },
@@ -97,7 +102,7 @@ export const defaultValue: InstrumentDefaultValueType = {
 }
 
 export const params: ParamsType = [
-	voicesParam,
+	// voicesParam,
 	oscTypeParam,
 	{
 		label: 'Pitch Decay',

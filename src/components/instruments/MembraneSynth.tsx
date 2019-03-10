@@ -16,7 +16,7 @@ class MembraneSynth extends Component<ThunkDispatchProp & Instrument> {
 		return (
 			<div className="membrane-synth">
 				<DeviceAndChannel instrumentId={id} deviceId={midiDeviceId} midiChannel={midiChannel} />
-				<KnobInput
+				{/* <KnobInput
 					label="Voices"
 					min={1}
 					max={12}
@@ -24,7 +24,7 @@ class MembraneSynth extends Component<ThunkDispatchProp & Instrument> {
 					value={voices}
 					defaultValue={defaultValue.instrument.voices}
 					onChange={voices => dispatch(updateInstrument(id, { instrument: { ...instrument, voices } }))}
-				/>
+				/> */}
 				<KnobInput
 					label="Pitch Decay"
 					min={0}
