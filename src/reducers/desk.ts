@@ -1,11 +1,11 @@
-import { Wire, WireType } from '../types'
-import { Action, Dispatch } from 'redux'
+import { Wire, WireType, ThunkDispatchType, DeskItemType } from '../types'
+import { Action } from 'redux'
 import { isArray } from '../utils/typeUtils'
 import { deskItemTypeDefaults, MASTER, BUS, INSTRUMENT, EFFECT, LFO } from '../constants/deskItemTypes'
 import { ADD_INSTRUMENT, REMOVE_INSTRUMENT } from './instruments'
+import { ADD_EFFECT, REMOVE_EFFECT } from './effects'
 
 import { add, getAll, updateById } from '../api/db'
-import { DeskItemType } from '../types'
 import { PointObj } from '../utils/Point'
 import { defer } from '../utils/lifecycleUtils'
 
@@ -51,14 +51,16 @@ export default function(state: State = initialState, action: ActionObj) {
 		case DESK_DISCONNECT_WIRE:
 			return state.map(item => (item.id == action.deskItem.id ? action.deskItem : item))
 		case ADD_INSTRUMENT:
+		case ADD_EFFECT:
 			return [...state, action.deskItem]
 		case REMOVE_INSTRUMENT:
+		case REMOVE_EFFECT:
 			return state.filter(deskItem => deskItem.ownerId !== action.id)
 	}
 	return state
 }
 
-export const loadDesk = () => dispatch =>
+export const loadDesk = () => (dispatch: ThunkDispatchType) =>
 	getAll('desk')
 		.then(desk => {
 			if (desk.length > 0) return desk
@@ -87,7 +89,7 @@ export const connectWire = (wireFrom: Wire, wireTo: Wire, { wireType }: { wireTy
 			},
 		},
 	}
-	return dispatch =>
+	return (dispatch: ThunkDispatchType) =>
 		updateById('desk', wireFrom.deskItem.id, newDeskItem)
 			.then(deskItem => defer(() => dispatch({ type: DESK_CONNECT_WIRE, deskItem } as ActionObj)))
 			.catch(e => console.warn('Unable to update desk item for wire connection', wireFrom))
@@ -97,7 +99,7 @@ export const disconnectWire = ({ type, wireFrom, wireTo }: { type: WireType; wir
 	const outputs = wireFrom.deskItem[type + 'Outputs'] || {}
 	if (wireTo.deskItem.ownerId in outputs) delete outputs[wireTo.deskItem.ownerId]
 	const newDeskItem = { [type + 'Outputs']: outputs }
-	return dispatch =>
+	return (dispatch: ThunkDispatchType) =>
 		updateById('desk', wireFrom.deskItem.id, newDeskItem)
 			.then(deskItem => defer(() => dispatch({ type: DESK_DISCONNECT_WIRE, deskItem } as ActionObj)))
 			.catch(e => {
