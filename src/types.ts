@@ -172,6 +172,7 @@ export interface EffectType {
 	slug: string
 	Effect: BaseEffectConstructor
 	Editor: ElementType
+	DeskItem?: ElementType
 	defaultValue: EffectDefaultValueType
 	params: ParamsType
 }
