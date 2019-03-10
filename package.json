@@ -65,7 +65,7 @@
 		"keycode": "^2.1.9",
 		"lodash": "^4.17.11",
 		"pixi.js": "^4.5.5",
-		"prettysize": "^0.1.0",
+		"prettysize": "^2.0.0",
 		"react": "^16.8.4",
 		"react-dnd": "^7.2.1",
 		"react-dnd-html5-backend": "^7.2.0",
