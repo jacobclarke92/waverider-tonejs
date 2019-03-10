@@ -163,7 +163,6 @@ class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, St
 	}
 
 	handlePointerDown(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
-		console.log('pointer down for stage')
 		this.setState({
 			mouseDown: true,
 			mouseMoved: false,
@@ -174,7 +173,6 @@ class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, St
 	}
 
 	handlePointerUp(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
-		console.log('pointer up for stage')
 		this.setState({
 			mouseDown: false,
 			dragTarget: null,
@@ -189,7 +187,6 @@ class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, St
 	}
 
 	handleItemPointerDown(event: DeskItemMouseEventType, element: HTMLElement, deskItem: DeskItemType) {
-		console.log('pointer down for ', deskItem)
 		event.stopPropagation()
 		event.nativeEvent.stopImmediatePropagation()
 		this.setState({
@@ -202,7 +199,6 @@ class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, St
 	}
 
 	handleItemPointerUp(event: DeskItemMouseEventType, element: HTMLElement, deskItem: DeskItemType) {
-		console.log('pointer up for desk item')
 		event.stopPropagation()
 		event.nativeEvent.stopImmediatePropagation()
 		if (!this.state.mouseMoved) {
