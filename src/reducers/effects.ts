@@ -17,6 +17,7 @@ export interface ActionObj extends Action {
 	effects?: Effect[]
 	effect?: Effect
 	deskItem?: DeskItemType
+	deadConnections?: DeskItemType[]
 }
 
 const initialState: State = []
@@ -72,7 +73,7 @@ export const addEffect = (type, position: PointObj = { x: 0, y: 0 }) => {
 					position,
 					...deskItemTypeDefaults[EFFECT],
 				}
-				add('desk', newDeskItem)
+				return add('desk', newDeskItem)
 					.then(deskItem => defer(() => dispatch({ type: ADD_EFFECT, effect, deskItem } as ActionObj)))
 					.catch(e => console.warn('Unable to add desk item for effect', newDeskItem, newEffect))
 			})
@@ -88,9 +89,9 @@ export const removeEffect = id => dispatch =>
 				.then(deskItem =>
 					removeById('desk', deskItem.id)
 						.then(() => {
-							const connections = getDeskItemsConnectedTo(deskItem)
-							console.log('STRAY CONNECTIONS', connections)
-							defer(() => dispatch({ type: REMOVE_EFFECT, id } as ActionObj))
+							const deadConnections = getDeskItemsConnectedTo(deskItem)
+							console.log('STRAY CONNECTIONS', deadConnections)
+							defer(() => dispatch({ type: REMOVE_EFFECT, id, deadConnections } as ActionObj))
 						})
 						.catch(e => console.warn('Unable to remove desk item for effect', id, e))
 				)

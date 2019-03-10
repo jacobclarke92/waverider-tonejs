@@ -5,7 +5,7 @@ import { isArray } from '../utils/typeUtils'
 import { add, getAll, getFirstWhere, updateById, removeById } from '../api/db'
 import instrumentLibrary from '../instrumentLibrary'
 import { deskItemTypeDefaults, INSTRUMENT, MASTER } from '../constants/deskItemTypes'
-import { Instrument } from '../types'
+import { Instrument, DeskItemType } from '../types'
 import { Action } from 'redux'
 import { PointObj } from '../utils/Point'
 import { defer } from '../utils/lifecycleUtils'
@@ -70,21 +70,30 @@ export const loadInstruments = () => dispatch =>
 export const addInstrument = (type: string, position: PointObj = { x: 0, y: 0 }) => {
 	const instrumentDef = instrumentLibrary[type]
 	if (!instrumentDef) return null
-	const newInstrument = { enabled: true, type, ..._cloneDeep(instrumentDef.defaultValue) }
-	const newDeskItem = {
-		name: instrumentDef.name,
-		ownerType: type,
-		type: INSTRUMENT,
-		position,
-		...deskItemTypeDefaults[INSTRUMENT],
+
+	const newInstrument: Instrument = {
+		type,
+		enabled: true,
+		midiDeviceId: null,
+		midiChannel: null,
+		..._cloneDeep(instrumentDef.defaultValue),
 	}
 	return dispatch =>
 		add('instruments', newInstrument)
-			.then(instrument =>
-				add('desk', { ...newDeskItem, ownerId: instrument.id })
+			.then(instrument => {
+				const newDeskItem: DeskItemType = {
+					name: instrumentDef.name,
+					slug: instrumentDef.slug,
+					ownerType: type,
+					ownerId: instrument.id,
+					type: INSTRUMENT,
+					position,
+					...deskItemTypeDefaults[INSTRUMENT],
+				}
+				return add('desk', newDeskItem)
 					.then(deskItem => defer(() => dispatch({ type: ADD_INSTRUMENT, instrument, deskItem } as ActionObj)))
 					.catch(e => console.warn('Unable to add desk item for instrument', newDeskItem, newInstrument))
-			)
+			})
 			.catch(e => console.warn('Unable to add instrument', newInstrument))
 }
 

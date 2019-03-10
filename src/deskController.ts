@@ -7,7 +7,7 @@ import { getInstrumentInstance } from './instrumentsController'
 import { MASTER, BUS, INSTRUMENT, EFFECT, LFO } from './constants/deskItemTypes'
 
 import { Store } from 'redux'
-import { ReduxStoreType, DeskItemType, WireJoins, WireJoin, WireType, Wire } from './types'
+import { ReduxStoreType, DeskItemType, WireJoins, WireJoin, WireType, Wire, Effect, Instrument } from './types'
 import {
 	LOAD_DESK,
 	DESK_CONNECT_WIRE,
@@ -133,39 +133,39 @@ export function connectAudioWires(fromDeskItem: DeskItemType, disconnectFirst: b
 	attemptConnectingOutputs()
 }
 
-export function getDeskWires() {
-	const { desk = [] } = store.getState()
+export function getDeskWires(): WireJoin[] {
+	const { desk = [] } = store.getState() as ReduxStoreType
 	if (!desk.length) return []
-	const connections = []
+	const connections: WireJoin[] = []
 	for (let fromItem of desk) {
 		if (fromItem.audioOutput)
 			Object.keys(fromItem.audioOutputs).forEach(outputId => {
-				const wire = fromItem.audioOutputs[outputId]
+				const wire: WireJoin = fromItem.audioOutputs[outputId]
 				connections.push(wire)
 			})
 		if (fromItem.dataOutput)
 			Object.keys(fromItem.dataOutputs).forEach(outputId => {
-				const wire = fromItem.dataOutputs[outputId]
+				const wire: WireJoin = fromItem.dataOutputs[outputId]
 				connections.push(wire)
 			})
 	}
 	return connections
 }
 
-export function getDeskItemsConnectedTo(deskItem) {
-	const { desk = [] } = store.getState()
+export function getDeskItemsConnectedTo(targetDeskItem): DeskItemType[] {
+	const { desk = [] } = store.getState() as ReduxStoreType
 	return desk.filter(deskItem => {
 		if (deskItem.audioOutput && Object.keys(deskItem.audioOutputs).length > 0) {
 			for (let key in deskItem.audioOutputs) {
 				const connection = deskItem.audioOutputs[key]
-				if (connection.wireTo.deskItem.id == deskItem.id) return true
+				if (connection.wireTo.deskItem.id == targetDeskItem.id) return true
 			}
 		}
 		return false
 	})
 }
 
-export function validateConnection(wireType: WireType, wireFrom: Wire, wireTo: Wire) {
+export function validateConnection(wireType: WireType, wireFrom: Wire, wireTo: Wire): boolean {
 	const { desk } = store.getState() as ReduxStoreType
 	const fromDeskItem: DeskItemType = _find(desk, { id: wireFrom.deskItem.id })
 	const toDeskItem: DeskItemType = _find(desk, { id: wireTo.deskItem.id })
@@ -188,7 +188,7 @@ export function validateConnection(wireType: WireType, wireFrom: Wire, wireTo: W
 	return true
 }
 
-export function getOwnerByDeskItem(deskItem: DeskItemType) {
+export function getOwnerByDeskItem(deskItem: DeskItemType): Effect | Instrument | null {
 	const { instruments, effects } = store.getState() as ReduxStoreType
 	if (deskItem.type == EFFECT) return _find(effects, { id: deskItem.ownerId })
 	if (deskItem.type == INSTRUMENT) return _find(instruments, { id: deskItem.ownerId })

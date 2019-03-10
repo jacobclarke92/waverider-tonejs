@@ -23,6 +23,7 @@ export interface ActionObj extends Action {
 	position?: PointObj
 	deskItem?: DeskItemType
 	desk?: any // TODO
+	deadConnections?: DeskItemType[]
 }
 
 const initialState: State = [
@@ -53,8 +54,18 @@ export default function(state: State = initialState, action: ActionObj) {
 		case ADD_INSTRUMENT:
 		case ADD_EFFECT:
 			return [...state, action.deskItem]
-		case REMOVE_INSTRUMENT:
 		case REMOVE_EFFECT:
+			if (action.deadConnections) {
+				console.log('removing dead connections')
+				state = state.map(deskItem => {
+					if (deskItem.audioOutput && action.id in deskItem.audioOutputs) {
+						console.log('severing output to deleted effect from', deskItem)
+						delete deskItem.audioOutput[action.id]
+					}
+					return deskItem
+				})
+			}
+		case REMOVE_INSTRUMENT:
 			return state.filter(deskItem => deskItem.ownerId !== action.id)
 	}
 	return state

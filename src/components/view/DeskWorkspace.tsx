@@ -25,7 +25,16 @@ import Wire from '../desk/Wire'
 import MasterDeskItem from '../desk/Master'
 import DefaultDeskItem from '../desk/DefaultDeskItem'
 
-import { NumericObject, ThunkDispatchProp, ReduxStoreType, IOType, WireType, DeskItemType } from '../../types'
+import {
+	NumericObject,
+	ThunkDispatchProp,
+	ReduxStoreType,
+	IOType,
+	WireType,
+	DeskItemType,
+	Effect,
+	Instrument,
+} from '../../types'
 import { PinMouseEventProps, PinParams, PinMouseEventType } from '../desk/Pin'
 import { DeskItemMouseEventType } from '../desk/DeskItemWrapper'
 import { State as GuiStore } from '../../reducers/gui'
@@ -385,7 +394,7 @@ export interface DeskItemProps {
 	dragging?: boolean
 	editable?: boolean
 	removeable?: boolean
-	owner?: any // TODO
+	owner: Effect | Instrument | null
 	onEdit?: () => void
 	onRemove: () => void
 	onPointerDown: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, elem: HTMLElement) => void

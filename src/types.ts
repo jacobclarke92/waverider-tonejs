@@ -97,7 +97,7 @@ export interface FileType {
 
 export interface Instrument {
 	enabled: boolean
-	id: number
+	id?: number
 	type: string // TODO
 	instrument: any // TODO
 	midiChannel: null | number
