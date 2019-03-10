@@ -5,6 +5,7 @@ import cn from 'classnames'
 import { NOTE_ON, NOTE_OFF, MidiMessageAction } from '../../api/midi'
 import { internalPiano } from '../../reducers/devices'
 import { addKeyDownListener, addKeyUpListener, removeKeyDownListener, removeKeyUpListener } from '../../utils/keyUtils'
+import { checkDifferenceAny } from '../../utils/lifecycleUtils'
 
 const getNoteLetter = (note: number): string => {
 	switch (note) {
@@ -83,7 +84,6 @@ class PianoKey extends Component<ThunkDispatchProp & Props, State> {
 	autoBindListeners(prevProps: ThunkDispatchProp & Props, prevState: State, init: boolean = false) {
 		const isNowActive = this.props.active && !prevProps.active
 		const isNowInactive = !this.props.active && prevProps.active
-		const isStillActive = this.props.active && prevProps.active
 		const noteIndexChanged = this.props.noteIndex != prevProps.noteIndex
 
 		let { noteLetter } = this.state
@@ -114,14 +114,14 @@ class PianoKey extends Component<ThunkDispatchProp & Props, State> {
 		if (!this.state.notePlaying) this.triggerNoteDown()
 	}
 	triggerNoteDown = (props = this.props) => {
-		const { note } = props
+		const { note, velocity } = props
 		this.setState({ notePlaying: true })
 		this.props.dispatch({
 			type: NOTE_ON,
 			deviceId: internalPiano.id,
 			channel: 1,
 			note,
-			velocity: 127,
+			velocity,
 		} as MidiMessageAction)
 	}
 	handleKeyUp = (e: React.KeyboardEvent) => this.triggerNoteUp()
@@ -138,8 +138,14 @@ class PianoKey extends Component<ThunkDispatchProp & Props, State> {
 			deviceId: internalPiano.id,
 			channel: 1,
 			note,
-			velocity: 127,
+			velocity: 0,
 		} as MidiMessageAction)
+	}
+	shouldComponentUpdate(nextProps, nextState) {
+		return (
+			checkDifferenceAny(this.props, nextProps, ['className', 'style', 'active']) ||
+			checkDifferenceAny(this.state, nextState, ['notePlaying'])
+		)
 	}
 	render() {
 		const { notePlaying, noteLetter } = this.state

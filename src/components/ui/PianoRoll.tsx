@@ -13,6 +13,7 @@ interface Props {
 
 interface State {
 	activeOctave: number
+	velocity: number
 }
 
 export default class PianoRoll extends Component<Props, State> {
@@ -24,35 +25,38 @@ export default class PianoRoll extends Component<Props, State> {
 	}
 	constructor(props) {
 		super(props)
-		this.deincrementActiveOctave = this.deincrementActiveOctave.bind(this)
-		this.incrementActiveOctave = this.incrementActiveOctave.bind(this)
 		this.state = {
+			velocity: 96,
 			activeOctave: Math.min(props.octaves, 4),
 		}
 	}
 	componentDidMount() {
-		addKeyDownListener('x', this.incrementActiveOctave)
 		addKeyDownListener('z', this.deincrementActiveOctave)
+		addKeyDownListener('x', this.incrementActiveOctave)
+		addKeyDownListener('c', this.decreaseVelocity)
+		addKeyDownListener('v', this.increaseVelocity)
 	}
 	componentWillUnmount() {
 		removeKeyDownListener('x', this.incrementActiveOctave)
 		removeKeyDownListener('z', this.deincrementActiveOctave)
+		removeKeyDownListener('c', this.decreaseVelocity)
+		removeKeyDownListener('v', this.increaseVelocity)
 	}
-	incrementActiveOctave() {
+	deincrementActiveOctave = () => this.setState({ activeOctave: Math.max(0, this.state.activeOctave - 1) })
+	incrementActiveOctave = () =>
 		this.setState({ activeOctave: Math.min(this.props.octaves - 1, this.state.activeOctave + 1) })
-	}
-	deincrementActiveOctave() {
-		this.setState({ activeOctave: Math.max(0, this.state.activeOctave - 1) })
-	}
+	decreaseVelocity = () => this.setState({ velocity: Math.max(0, this.state.velocity - 8) })
+	increaseVelocity = () => this.setState({ velocity: Math.min(127, this.state.velocity + 8) })
 	render() {
 		const { octaves, startNote, keyWidth, height } = this.props
-		const { activeOctave } = this.state
+		const { activeOctave, velocity } = this.state
 		return (
 			<div className={cn('piano-wrapper')} style={{ height }}>
 				{generateArray(octaves).map(i => (
 					<Octave
 						key={i}
 						octave={i}
+						velocity={velocity}
 						active={activeOctave === i}
 						activeOctave={activeOctave}
 						keyWidth={keyWidth}
@@ -122,12 +126,13 @@ const getBlackKeyLeft = (i: number, width: number): number => {
 
 interface OctaveProps {
 	octave: number
+	velocity: number
 	activeOctave: number
 	active: boolean
 	keyWidth: number
 	startNote: number
 }
-const Octave: FunctionComponent<OctaveProps> = ({ octave, activeOctave, startNote, active, keyWidth }) => {
+const Octave: FunctionComponent<OctaveProps> = ({ octave, velocity, activeOctave, startNote, active, keyWidth }) => {
 	const isNextOctave = activeOctave + 1 === octave
 	return (
 		<div className="octave-wrapper" style={{ left: octave * keyWidth * 7 }}>
@@ -138,6 +143,7 @@ const Octave: FunctionComponent<OctaveProps> = ({ octave, activeOctave, startNot
 					return (
 						<PianoKey
 							key={i}
+							velocity={velocity}
 							active={keyActive}
 							note={startNote + keyIndex}
 							noteIndex={isNextOctave ? 12 + keyIndex : keyIndex}
@@ -154,6 +160,7 @@ const Octave: FunctionComponent<OctaveProps> = ({ octave, activeOctave, startNot
 					return (
 						<PianoKey
 							key={i}
+							velocity={velocity}
 							active={keyActive}
 							note={startNote + keyIndex}
 							noteIndex={isNextOctave ? 12 + keyIndex : keyIndex}
