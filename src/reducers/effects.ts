@@ -1,4 +1,4 @@
-import { Effect, DeskItemType } from '../types'
+import { Effect, DeskItemType, EffectType } from '../types'
 import { Action } from 'redux'
 import _merge from 'lodash/merge'
 import _cloneDeep from 'lodash/cloneDeep'
@@ -50,17 +50,32 @@ export const loadEffects = () => dispatch =>
 		.catch(e => console.warn('Unable to load effects', e))
 
 export const addEffect = (type, position: PointObj = { x: 0, y: 0 }) => {
-	const effectDef = effectLibrary[type]
+	const effectDef: EffectType = effectLibrary[type]
 	if (!effectDef) return null
-	const newEffect = { enabled: true, type, ..._cloneDeep(effectDef.defaultValue) }
-	const newDeskItem = { name: effectDef.name, ownerType: type, type: EFFECT, position, ...deskItemTypeDefaults[EFFECT] }
+
+	const newEffect: Effect = {
+		type,
+		enabled: true,
+		midiChannel: null,
+		midiDeviceId: null,
+		..._cloneDeep(effectDef.defaultValue),
+	}
 	return dispatch =>
 		add('effects', newEffect)
-			.then(effect =>
-				add('desk', { ...newDeskItem, ownerId: effect.id })
+			.then(effect => {
+				const newDeskItem: DeskItemType = {
+					name: effectDef.name,
+					slug: effectDef.slug,
+					ownerType: type,
+					ownerId: effect.id,
+					type: EFFECT,
+					position,
+					...deskItemTypeDefaults[EFFECT],
+				}
+				add('desk', newDeskItem)
 					.then(deskItem => defer(() => dispatch({ type: ADD_EFFECT, effect, deskItem } as ActionObj)))
 					.catch(e => console.warn('Unable to add desk item for effect', newDeskItem, newEffect))
-			)
+			})
 			.catch(e => console.warn('Unable to add effect', newEffect))
 }
 

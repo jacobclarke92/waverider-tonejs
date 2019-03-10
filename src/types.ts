@@ -106,7 +106,7 @@ export interface Instrument {
 
 export interface Effect {
 	enabled: boolean
-	id: number
+	id?: number
 	type: string // TODO
 	midiChannel: null | number
 	midiDeviceId: null | string
