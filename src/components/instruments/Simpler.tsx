@@ -5,6 +5,7 @@ import { ThunkDispatchProp, Instrument, GenericProps } from '../../types'
 import { updateInstrument } from '../../reducers/instruments'
 import { addFile } from '../../api/db'
 import { parseNoteToNumber, noteNumberToName } from '../../utils/noteUtils'
+import { defer } from '../../utils/lifecycleUtils'
 
 import { defaultValue } from '../../instruments/simpler'
 
@@ -24,10 +25,14 @@ class Simpler extends Component<ThunkDispatchProp & Instrument> {
 		const { dispatch, id, instrument } = this.props
 		if (monitor) {
 			const droppedFiles = monitor.getItem().files
-			if (droppedFiles.length > 0)
+			if (droppedFiles.length > 0) {
+				console.log(droppedFiles)
 				addFile(droppedFiles[0])
-					.then(file => dispatch(updateInstrument(id, { instrument: { ...instrument, fileHash: file.hash } })))
+					.then(file =>
+						defer(() => dispatch(updateInstrument(id, { instrument: { ...instrument, fileHash: file.hash } })))
+					)
 					.catch(e => console.warn('Unable to store dropped file', e))
+			}
 		}
 	}
 

@@ -237,26 +237,31 @@ export const removeById = (table: string, id: number): Promise<void> =>
 	)
 
 export const addFile = (blob: Blob) =>
-	getHashFromBlob(blob).then(hash =>
-		getFileByHash(hash)
-			.then(existingFile => {
-				if (existingFile) return existingFile
-				const file: FileType = {
-					id: ++fileId,
-					filename: (blob as any).name,
-					size: blob.size,
-					type: blob.type,
-					date: (blob as any).lastModified,
-					hash,
-					blob,
-				}
-				return db
-					.table('files')
-					.add(file)
-					.then(id => db.table('files').get(id))
-			})
-			.catch(error => {})
-	)
+	getHashFromBlob(blob)
+		.then(hash => {
+			console.log('FILE HASH', hash)
+			return getFileByHash(hash)
+				.then(existingFile => {
+					console.log('EXISTING FILE', existingFile)
+					return existingFile
+				})
+				.catch(message => {
+					const file: FileType = {
+						id: ++fileId,
+						filename: (blob as any).name,
+						size: blob.size,
+						type: blob.type,
+						date: (blob as any).lastModified,
+						hash,
+						blob,
+					}
+					return db
+						.table('files')
+						.add(file)
+						.then(id => db.table('files').get(id))
+				})
+		})
+		.catch(e => console.warn('Unable to get file hash', e))
 
 export const getFileBy = (field: string | string[], value: any): Promise<FileEntity> => getBy('files', field, value)
 export const getFileById = (id: number): Promise<FileEntity> => getFileBy('id', id)

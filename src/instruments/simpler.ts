@@ -1,4 +1,4 @@
-import { Sampler, PolySynth, Meter, now } from 'tone'
+import { State as ToneState, Sampler, PolySynth, Meter, now, BufferSource } from 'tone'
 import _debounce from 'lodash/throttle'
 import { paramUpdateDebounce, voicesUpdateDebounce } from '../constants/timings'
 
@@ -12,9 +12,10 @@ import SimplerEditor from '../components/instruments/Simpler'
 import { allInstrumentDefaults, defaultEnvelope, envelopeParams, voicesParam } from '../constants/params'
 import BaseInstrument from './BaseInstrument'
 import { ParamsType, InstrumentType } from '../types'
+import SimplerSynthDeskItem from '../components/desk/SimplerSynth'
 
 export class SimplerInstrument extends BaseInstrument {
-	sampler: PolySynth
+	sampler: Sampler
 	reinitSampler: () => void
 	file: null | FileEntity
 
@@ -70,8 +71,8 @@ export class SimplerInstrument extends BaseInstrument {
 		const { voices, fileHash, reverse, loop, trim } = this.instrument
 
 		if (this.sampler) this.sampler.dispose()
+		this.sampler = new Sampler({}) //PolySynth(voices, Sampler)
 		// @ts-ignore
-		this.sampler = new PolySynth(voices, Sampler)
 		this.sampler.set('volume', -39)
 		this.sampler.connect(this.meter)
 
@@ -123,6 +124,9 @@ export class SimplerInstrument extends BaseInstrument {
 
 		let voicesLoaded = 0
 		const { voices, trim, reverse } = this.instrument
+
+		this.sampler.add('C3', url, callback)
+		/*
 		this.sampler.voices.forEach(voice => {
 			// @ts-ignore
 			voice.player.load(url, () => {
@@ -138,17 +142,21 @@ export class SimplerInstrument extends BaseInstrument {
 				if (++voicesLoaded >= voices) callback()
 			})
 		})
+		*/
 	}
 
 	updateVoiceParams() {
 		if (!this.sampler) return this.initSampler()
 
 		const { reverse, loop, envelope } = this.instrument
+		this.getAllBufferSources().forEach(bufferSource => (bufferSource.reverse = reverse))
+		// TODO
+		/*
 		this.sampler.set({
 			reverse,
 			loop,
 			envelope,
-		})
+		})*/
 	}
 
 	noteDown(note: number, velocity: number) {
@@ -165,12 +173,19 @@ export class SimplerInstrument extends BaseInstrument {
 		}
 	}
 
+	getAllBufferSources(): BufferSource[] {
+		const activeSources: { [k: number]: BufferSource } = (this.sampler as any)._activeSources
+		return Object.keys(activeSources).reduce((arr, key) => [...arr, ...activeSources[key]], [])
+	}
+
 	getPlaybackPositions(): number[] {
-		if (!this.mounted || !this.sampler || !this.sampler.voices) return []
+		if (!this.mounted || !this.sampler /* || !this.sampler.voices*/) return []
 		const positions: number[] = []
-		this.sampler.voices.forEach(voice => {
-			// @ts-ignore
-			if (voice.player.state == 'started') {
+		this.getAllBufferSources().forEach(bufferSource => {
+			// or ToneState.Started
+			if (bufferSource.state == 'started') {
+				console.log('sample is being played!', bufferSource)
+				/*
 				// @ts-ignore
 				const startedEvents = voice.player._state._timeline.filter(event => event.state == 'started')
 				if (startedEvents.length) {
@@ -184,6 +199,7 @@ export class SimplerInstrument extends BaseInstrument {
 					if (this.instrument.loop) durationPercent = durationPercent % 1
 					positions.push(durationPercent)
 				}
+				*/
 			}
 		})
 		return positions
@@ -267,7 +283,7 @@ const instrument: InstrumentType = {
 	slug: 'simpler',
 	Editor: SimplerEditor,
 	Instrument: SimplerInstrument,
-	DeskItem: () => null,
+	DeskItem: SimplerSynthDeskItem,
 	defaultValue,
 	params,
 }
