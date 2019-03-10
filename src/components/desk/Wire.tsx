@@ -1,7 +1,10 @@
 import React, { Component, CSSProperties } from 'react'
+import { connect } from 'react-redux'
 import cn from 'classname'
+import _find from 'lodash/find'
 import Point, { PointObj } from '../../utils/Point'
-import { Wire } from '../../types'
+import { Wire, ReduxStoreType, ThunkDispatchProp } from '../../types'
+import { State as DeskStore } from '../../reducers/desk'
 
 interface Props {
 	active?: boolean
@@ -13,7 +16,11 @@ interface Props {
 	stagePointer: Point
 }
 
-export default class WireComponent extends Component<Props> {
+interface StateProps {
+	desk: DeskStore
+}
+
+class WireComponent extends Component<ThunkDispatchProp & StateProps & Props> {
 	static defaultProps = {
 		active: false,
 		valid: false,
@@ -28,11 +35,19 @@ export default class WireComponent extends Component<Props> {
 	}
 
 	render() {
-		const { wireFrom, wireTo, valid, active, selected, stagePointer } = this.props
+		const { desk, wireFrom, wireTo, valid, active, selected, stagePointer } = this.props
+
+		const fromDeskItem = _find(desk, { id: wireFrom.deskItemId })
+		const toDeskItem = wireTo ? _find(desk, { id: wireTo.deskItemId }) : null
+
+		if (!fromDeskItem) {
+			console.log('cannot find deskItem from wireFrom', wireFrom)
+			return null
+		}
 
 		// Absolute positions in stage
-		const fromPos = new Point(wireFrom.deskItem.position).add(new Point(wireFrom.relativePosition))
-		const toPos = wireTo ? new Point(wireTo.deskItem.position).add(new Point(wireTo.relativePosition)) : stagePointer
+		const fromPos = new Point(fromDeskItem.position).add(new Point(wireFrom.relativePosition))
+		const toPos = wireTo ? new Point(toDeskItem.position).add(new Point(wireTo.relativePosition)) : stagePointer
 
 		// Get SVG width and height from point position difference
 		const diffX = toPos.x - fromPos.x
@@ -92,3 +107,5 @@ export default class WireComponent extends Component<Props> {
 		)
 	}
 }
+
+export default connect(({ desk }: ReduxStoreType): StateProps => ({ desk }))(WireComponent)

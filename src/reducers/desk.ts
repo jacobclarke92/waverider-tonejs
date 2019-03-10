@@ -1,9 +1,10 @@
-import { Wire, WireType, ThunkDispatchType, DeskItemType } from '../types'
+import { Wire, WireType, ThunkDispatchType, DeskItemType, WireJoin } from '../types'
 import { Action } from 'redux'
 import { isArray } from '../utils/typeUtils'
 import { deskItemTypeDefaults, MASTER, BUS, INSTRUMENT, EFFECT, LFO } from '../constants/deskItemTypes'
 import { ADD_INSTRUMENT, REMOVE_INSTRUMENT } from './instruments'
 import { ADD_EFFECT, REMOVE_EFFECT } from './effects'
+import _find from 'lodash/find'
 
 import { add, getAll, updateById } from '../api/db'
 import { PointObj } from '../utils/Point'
@@ -55,18 +56,17 @@ export default function(state: State = initialState, action: ActionObj) {
 		case ADD_EFFECT:
 			return [...state, action.deskItem]
 		case REMOVE_EFFECT:
-			if (action.deadConnections) {
-				console.log('removing dead connections')
-				state = state.map(deskItem => {
-					if (deskItem.audioOutput && action.id in deskItem.audioOutputs) {
+		case REMOVE_INSTRUMENT:
+			const outputKey = `${action.type == REMOVE_EFFECT ? EFFECT : INSTRUMENT}${action.id}`
+			return state
+				.filter(deskItem => deskItem.ownerId !== action.id)
+				.map(deskItem => {
+					if (deskItem.audioOutput && outputKey in deskItem.audioOutputs) {
 						console.log('severing output to deleted effect from', deskItem)
-						delete deskItem.audioOutput[action.id]
+						delete deskItem.audioOutput[outputKey]
 					}
 					return deskItem
 				})
-			}
-		case REMOVE_INSTRUMENT:
-			return state.filter(deskItem => deskItem.ownerId !== action.id)
 	}
 	return state
 }
@@ -87,31 +87,41 @@ export const moveDeskItem = (deskItem: DeskItemType, position: PointObj) =>
 		position,
 	} as ActionObj)
 
-export const connectWire = (wireFrom: Wire, wireTo: Wire, { wireType }: { wireType: WireType }) => {
-	const outputs = wireFrom.deskItem[wireType + 'Outputs'] || {}
+export const connectWire = (desk: State, wireFrom: Wire, wireTo: Wire, { wireType }: { wireType: WireType }) => {
+	const fromDeskItem = _find(desk, { id: wireFrom.deskItemId })
+	const toDeskItem = _find(desk, { id: wireTo.deskItemId })
+	const outputs = fromDeskItem[wireType + 'Outputs'] || {}
 	const newDeskItem = {
 		[wireType + 'Outputs']: {
 			...outputs,
-			[wireTo.deskItem.ownerId]: {
+			[`${toDeskItem.type}${toDeskItem.ownerId}`]: {
 				type: wireType,
-				id: `${wireFrom.deskItem.type + wireFrom.deskItem.ownerId}___${wireTo.deskItem.type + wireTo.deskItem.ownerId}`,
+				id: `${fromDeskItem.type + fromDeskItem.ownerId}___${toDeskItem.type + toDeskItem.ownerId}`,
 				wireFrom,
 				wireTo,
 			},
 		},
 	}
 	return (dispatch: ThunkDispatchType) =>
-		updateById('desk', wireFrom.deskItem.id, newDeskItem)
+		updateById('desk', wireFrom.deskItemId, newDeskItem)
 			.then(deskItem => defer(() => dispatch({ type: DESK_CONNECT_WIRE, deskItem } as ActionObj)))
 			.catch(e => console.warn('Unable to update desk item for wire connection', wireFrom))
 }
 
-export const disconnectWire = ({ type, wireFrom, wireTo }: { type: WireType; wireFrom: Wire; wireTo: Wire }) => {
-	const outputs = wireFrom.deskItem[type + 'Outputs'] || {}
-	if (wireTo.deskItem.ownerId in outputs) delete outputs[wireTo.deskItem.ownerId]
-	const newDeskItem = { [type + 'Outputs']: outputs }
+export const disconnectWire = (desk: State, wireJoin: WireJoin) => {
+	const { type, wireFrom, wireTo } = wireJoin
+	const fromDeskItem = _find(desk, { id: wireFrom.deskItemId })
+	const toDeskItem = _find(desk, { id: wireTo.deskItemId })
+
+	const outputGroupKey = `${type}Outputs`
+	const outputKey = `${toDeskItem.type}${toDeskItem.ownerId}`
+
+	const outputs = fromDeskItem[outputGroupKey] || {}
+	if (outputKey in outputs) delete outputs[outputKey]
+	const newDeskItem = { [outputGroupKey]: outputs }
+
 	return (dispatch: ThunkDispatchType) =>
-		updateById('desk', wireFrom.deskItem.id, newDeskItem)
+		updateById('desk', wireFrom.deskItemId, newDeskItem)
 			.then(deskItem => defer(() => dispatch({ type: DESK_DISCONNECT_WIRE, deskItem } as ActionObj)))
 			.catch(e => {
 				console.warn('Unable to update desk item for wire disconnection', wireFrom)

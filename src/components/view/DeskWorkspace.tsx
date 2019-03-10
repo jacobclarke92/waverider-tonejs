@@ -21,7 +21,7 @@ import { removeInstrument } from '../../reducers/instruments'
 import { moveDeskItem, connectWire, disconnectWire } from '../../reducers/desk'
 import instrumentLibrary from '../../instrumentLibrary'
 import effectLibrary from '../../effectLibrary'
-import Wire from '../desk/Wire'
+import WireComponent from '../desk/Wire'
 import MasterDeskItem from '../desk/Master'
 import DefaultDeskItem from '../desk/DefaultDeskItem'
 
@@ -34,6 +34,8 @@ import {
 	DeskItemType,
 	Effect,
 	Instrument,
+	Wire,
+	WireJoin,
 } from '../../types'
 import { PinMouseEventProps, PinParams, PinMouseEventType } from '../desk/Pin'
 import { DeskItemMouseEventType } from '../desk/DeskItemWrapper'
@@ -66,9 +68,9 @@ interface State {
 	ioType: null | IOType
 	wireType: null | WireType
 	wireToValid: boolean
-	wireFrom: DeskWireReference // TODO
-	wireTo: DeskWireReference // TODO
-	selectedWire: any // TODO
+	wireFrom: Wire // TODO
+	wireTo: Wire // TODO
+	selectedWire: WireJoin // TODO
 	selectedDeskItem: DeskItemType // TODO
 	dragTarget: any //TOOD
 	mouseDownTargetOffset?: MousePosition
@@ -237,15 +239,14 @@ class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, St
 		if (this.state.wireFrom) {
 			const pinStagePosition = getPositionWithinElem(event.target as HTMLElement, this.interface, 0.5)
 			const pinDeskItemPosition = new Point(pinStagePosition).subtract(new Point(deskItem.position))
-			this.setState({
-				wireToValid: this.state.wireType == wireType && this.state.ioType != ioType,
-				wireTo: {
-					param,
-					deskItem,
-					position: pinStagePosition,
-					relativePosition: pinDeskItemPosition,
-				},
-			})
+			const wireToValid = this.state.wireType == wireType && this.state.ioType != ioType
+			const wireTo: Wire = {
+				param,
+				deskItemId: deskItem.id,
+				position: pinStagePosition,
+				relativePosition: pinDeskItemPosition,
+			}
+			this.setState({ wireTo, wireToValid })
 		}
 	}
 
@@ -264,16 +265,13 @@ class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, St
 		console.log('WIRE DOWN', deskItem, wireType, ioType)
 		const pinStagePosition = getPositionWithinElem(event.target as HTMLElement, this.interface, { x: 0.5, y: 0.5 })
 		const pinDeskItemPosition = new Point(pinStagePosition).subtract(new Point(deskItem.position))
-		this.setState({
-			wireType,
-			ioType,
-			wireFrom: {
-				param,
-				deskItem,
-				position: pinStagePosition,
-				relativePosition: pinDeskItemPosition,
-			},
-		})
+		const wireFrom: Wire = {
+			param,
+			deskItemId: deskItem.id,
+			position: pinStagePosition,
+			relativePosition: pinDeskItemPosition,
+		}
+		this.setState({ wireType, ioType, wireFrom })
 	}
 
 	handlePinPointerUp(event: PinMouseEventType, deskItem: DeskItemType, { wireType, ioType }: PinParams) {
@@ -281,6 +279,7 @@ class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, St
 		event.preventDefault()
 		event.nativeEvent.stopImmediatePropagation()
 		if (this.state.wireToValid) {
+			const { desk } = this.props
 			const wireFrom = ioType == 'input' ? this.state.wireFrom : this.state.wireTo
 			const wireTo = ioType == 'input' ? this.state.wireTo : this.state.wireFrom
 			console.log('PLS CREATE WIRE')
@@ -288,7 +287,7 @@ class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, St
 			console.log('wireFrom', wireFrom)
 			console.log('wireTo', wireTo)
 			if (validateConnection(wireType, wireFrom, wireTo)) {
-				this.props.dispatch(connectWire(wireFrom, wireTo, { wireType }))
+				this.props.dispatch(connectWire(desk, wireFrom, wireTo, { wireType }))
 			}
 		}
 		this.setState({
@@ -311,7 +310,7 @@ class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, St
 	removeActiveItem() {
 		const { selectedWire, selectedDeskItem } = this.state
 		if (selectedWire) {
-			this.props.dispatch(disconnectWire(selectedWire))
+			this.props.dispatch(disconnectWire(this.props.desk, selectedWire))
 		} else if (selectedDeskItem) {
 			this.handleRemoveDeskItem(selectedDeskItem)
 		}
@@ -346,10 +345,10 @@ class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, St
 					className="desk-interface"
 					style={{ transform: `translate(${pan.x}px, ${pan.y}px)` }}>
 					{connections.map(wire => (
-						<Wire
+						<WireComponent
 							key={wire.id}
-							wireFrom={{ ...wire.wireFrom, deskItem: _find(desk, { id: wire.wireFrom.deskItem.id }) }}
-							wireTo={{ ...wire.wireTo, deskItem: _find(desk, { id: wire.wireTo.deskItem.id }) }}
+							wireFrom={{ ...wire.wireFrom, deskItem: _find(desk, { id: wire.wireFrom.deskItemId }) }}
+							wireTo={{ ...wire.wireTo, deskItem: _find(desk, { id: wire.wireTo.deskItemId }) }}
 							stagePointer={stagePointer}
 							selected={selectedWire && selectedWire.id === wire.id}
 							onSelect={() => this.setState({ selectedWire: wire })}
@@ -380,7 +379,7 @@ class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, St
 					))}
 
 					{wireFrom && (
-						<Wire active valid={wireToValid} wireFrom={wireFrom} wireTo={wireTo} stagePointer={stagePointer} />
+						<WireComponent active valid={wireToValid} wireFrom={wireFrom} wireTo={wireTo} stagePointer={stagePointer} />
 					)}
 				</div>
 			</div>

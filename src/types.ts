@@ -43,7 +43,7 @@ export type GenericProps = { [k: string]: any }
 
 export interface Wire {
 	param?: any // TODO
-	deskItem: DeskItemType
+	deskItemId: number
 	position: PointObj
 	relativePosition: PointObj
 }

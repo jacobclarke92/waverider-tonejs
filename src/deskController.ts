@@ -86,10 +86,12 @@ export function connectAudioWires(fromDeskItem: DeskItemType, disconnectFirst: b
 		return
 	}
 
+	const { desk = [] } = store.getState() as ReduxStoreType
+
 	const outputs: WireJoins = fromDeskItem.audioOutputs || {}
 	const connections = []
 	for (let ownerId in outputs) {
-		const toDeskItem = outputs[ownerId].wireTo.deskItem
+		const toDeskItem = _find(desk, { id: outputs[ownerId].wireTo.deskItemId })
 		// console.log('TO DESK ITEM', toDeskItem)
 		if (!toDeskItem) {
 			console.warn('Could not find input desk item for ownerId', ownerId)
@@ -158,7 +160,7 @@ export function getDeskItemsConnectedTo(targetDeskItem): DeskItemType[] {
 		if (deskItem.audioOutput && Object.keys(deskItem.audioOutputs).length > 0) {
 			for (let key in deskItem.audioOutputs) {
 				const connection = deskItem.audioOutputs[key]
-				if (connection.wireTo.deskItem.id == targetDeskItem.id) return true
+				if (connection.wireTo.deskItemId == targetDeskItem.id) return true
 			}
 		}
 		return false
@@ -167,13 +169,13 @@ export function getDeskItemsConnectedTo(targetDeskItem): DeskItemType[] {
 
 export function validateConnection(wireType: WireType, wireFrom: Wire, wireTo: Wire): boolean {
 	const { desk } = store.getState() as ReduxStoreType
-	const fromDeskItem: DeskItemType = _find(desk, { id: wireFrom.deskItem.id })
-	const toDeskItem: DeskItemType = _find(desk, { id: wireTo.deskItem.id })
+	const fromDeskItem: DeskItemType = _find(desk, { id: wireFrom.deskItemId })
+	const toDeskItem: DeskItemType = _find(desk, { id: wireTo.deskItemId })
 
 	if (!fromDeskItem[wireType + 'Output'] || !toDeskItem[wireType + 'Input']) {
 		console.warn(
-			`Invalid connection -- either ${wireFrom.deskItem.name} does not allow ${wireType} output or  ${
-				wireTo.deskItem.name
+			`Invalid connection -- either ${fromDeskItem.name} does not allow ${wireType} output or  ${
+				toDeskItem.name
 			} does not allow ${wireType} input`
 		)
 		return false
@@ -181,7 +183,7 @@ export function validateConnection(wireType: WireType, wireFrom: Wire, wireTo: W
 
 	const outputs = fromDeskItem[wireType + 'Outputs'] || {}
 	if (toDeskItem.ownerId in outputs) {
-		console.warn(`Connection already exists between ${wireFrom.deskItem.name} and ${wireTo.deskItem.name}`)
+		console.warn(`Connection already exists between ${fromDeskItem.name} and ${toDeskItem.name}`)
 		return false
 	}
 
