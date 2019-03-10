@@ -3,31 +3,37 @@ import cn from 'classnames'
 import { generateArray } from '../../utils/arrayUtils'
 import { addKeyDownListener, removeKeyDownListener } from '../../utils/keyUtils'
 import PianoKey from './PianoKey'
+import MessageOverlay from './MessageOverlay'
 
 interface Props {
 	octaves?: number
+	octaveStart?: number
 	height?: number
 	keyWidth?: number
-	startNote?: number
 }
 
 interface State {
 	activeOctave: number
 	velocity: number
+	overlayMessage: string
+	overlayHidden: boolean
 }
 
 export default class PianoRoll extends Component<Props, State> {
+	hideOverlayTimeout: number
 	static defaultProps = {
-		octaves: 8,
+		octaves: 6,
+		octaveStart: 0,
 		height: 100,
 		keyWidth: 18,
-		startNote: 0,
 	}
 	constructor(props) {
 		super(props)
 		this.state = {
 			velocity: 96,
 			activeOctave: Math.min(props.octaves, 4),
+			overlayMessage: '',
+			overlayHidden: true,
 		}
 	}
 	componentDidMount() {
@@ -42,17 +48,34 @@ export default class PianoRoll extends Component<Props, State> {
 		removeKeyDownListener('c', this.decreaseVelocity)
 		removeKeyDownListener('v', this.increaseVelocity)
 	}
-	deincrementActiveOctave = () => this.setState({ activeOctave: Math.max(0, this.state.activeOctave - 1) })
+	deincrementActiveOctave = () =>
+		this.setState({ activeOctave: Math.max(0, this.state.activeOctave - 1) }, () =>
+			this.displayMessage(`Starts at C${this.state.activeOctave + this.props.octaveStart}`)
+		)
 	incrementActiveOctave = () =>
-		this.setState({ activeOctave: Math.min(this.props.octaves - 1, this.state.activeOctave + 1) })
-	decreaseVelocity = () => this.setState({ velocity: Math.max(0, this.state.velocity - 8) })
-	increaseVelocity = () => this.setState({ velocity: Math.min(127, this.state.velocity + 8) })
+		this.setState(
+			{ activeOctave: Math.min(this.props.octaves - this.props.octaveStart - 1, this.state.activeOctave + 1) },
+			() => this.displayMessage(`Starts at C${this.state.activeOctave + this.props.octaveStart}`)
+		)
+	decreaseVelocity = () =>
+		this.setState({ velocity: Math.max(0, this.state.velocity - 8) }, () =>
+			this.displayMessage(`Velocity = ${this.state.velocity}`)
+		)
+	increaseVelocity = () =>
+		this.setState({ velocity: Math.min(127, this.state.velocity + 8) }, () =>
+			this.displayMessage(`Velocity = ${this.state.velocity}`)
+		)
+	displayMessage(overlayMessage: string) {
+		this.setState({ overlayMessage, overlayHidden: false })
+		if (this.hideOverlayTimeout) clearTimeout(this.hideOverlayTimeout)
+		this.hideOverlayTimeout = setTimeout(() => this.setState({ overlayHidden: true }), 1000)
+	}
 	render() {
-		const { octaves, startNote, keyWidth, height } = this.props
-		const { activeOctave, velocity } = this.state
+		const { octaves, octaveStart, keyWidth, height } = this.props
+		const { activeOctave, velocity, overlayMessage, overlayHidden } = this.state
 		return (
 			<div className={cn('piano-wrapper')} style={{ height }}>
-				{generateArray(octaves).map(i => (
+				{generateArray(octaves - octaveStart).map(i => (
 					<Octave
 						key={i}
 						octave={i}
@@ -60,9 +83,10 @@ export default class PianoRoll extends Component<Props, State> {
 						active={activeOctave === i}
 						activeOctave={activeOctave}
 						keyWidth={keyWidth}
-						startNote={startNote + i * 12}
+						startNote={octaveStart * 12 + i * 12}
 					/>
 				))}
+				<MessageOverlay message={overlayMessage} hide={overlayHidden} />
 			</div>
 		)
 	}

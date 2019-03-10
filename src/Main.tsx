@@ -15,7 +15,7 @@ import { ReduxStoreType, ThunkDispatchProp } from './types'
 import { State as GuiStore } from './reducers/gui'
 import { State as EffectsStore } from './reducers/effects'
 import { State as InstrumentsStore } from './reducers/instruments'
-import PianoRoll from './components/ui/PianoRoll';
+import PianoRoll from './components/ui/PianoRoll'
 
 interface StateProps {
 	gui: GuiStore
@@ -60,7 +60,7 @@ class Main extends Component<ThunkDispatchProp & StateProps> {
 							</PropertiesPanel>
 						)}
 						<div className="piano-panel">
-							<PianoRoll />
+							<PianoRoll octaveStart={1} octaves={8} />
 						</div>
 					</div>
 				</main>
