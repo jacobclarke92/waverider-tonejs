@@ -2,7 +2,16 @@ import React, { Component, CSSProperties } from 'react'
 import { ThunkDispatchProp, GenericProps } from '../../types'
 import { connect } from 'react-redux'
 import cn from 'classnames'
-import { NOTE_ON, NOTE_OFF, MidiMessageAction } from '../../api/midi'
+import {
+	NOTE_ON,
+	NOTE_OFF,
+	MidiMessageAction,
+	MidiListenerFunction,
+	addNoteDownListener,
+	addNoteUpListener,
+	removeNoteDownListener,
+	removeNoteUpListener,
+} from '../../api/midi'
 import { internalPiano } from '../../reducers/devices'
 import { addKeyDownListener, addKeyUpListener, removeKeyDownListener, removeKeyUpListener } from '../../utils/keyUtils'
 import { checkDifferenceAny } from '../../utils/lifecycleUtils'
@@ -76,12 +85,28 @@ class PianoKey extends Component<ThunkDispatchProp & Props, State> {
 		}
 	}
 	componentDidMount() {
-		this.autoBindListeners(this.props, this.state, true)
+		this.autoBindKeyListeners(this.props, this.state, true)
+		addNoteDownListener(this.handleMidiNoteDown)
+		addNoteUpListener(this.handleMidiNoteUp)
 	}
 	componentDidUpdate(prevProps, prevState) {
-		this.autoBindListeners(prevProps, prevState)
+		this.autoBindKeyListeners(prevProps, prevState)
 	}
-	autoBindListeners(prevProps: ThunkDispatchProp & Props, prevState: State, init: boolean = false) {
+	componentWillUnmount() {
+		removeNoteDownListener(this.handleMidiNoteDown)
+		removeNoteUpListener(this.handleMidiNoteUp)
+		if (this.props.active) {
+			removeKeyDownListener(this.state.noteLetter, this.handleKeyDown)
+			removeKeyUpListener(this.state.noteLetter, this.handleKeyUp)
+		}
+	}
+	handleMidiNoteDown: MidiListenerFunction = (deviceId, channel, note, velocity) => {
+		if (note === this.props.note && !this.state.notePlaying) this.setState({ notePlaying: true })
+	}
+	handleMidiNoteUp: MidiListenerFunction = (deviceId, channel, note, velocity) => {
+		if (note === this.props.note && this.state.notePlaying) this.setState({ notePlaying: false })
+	}
+	autoBindKeyListeners(prevProps: ThunkDispatchProp & Props, prevState: State, init: boolean = false) {
 		const isNowActive = this.props.active && !prevProps.active
 		const isNowInactive = !this.props.active && prevProps.active
 		const noteIndexChanged = this.props.noteIndex != prevProps.noteIndex
