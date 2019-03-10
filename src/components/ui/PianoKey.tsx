@@ -141,12 +141,13 @@ class PianoKey extends Component<ThunkDispatchProp & Props, State> {
 			velocity: 0,
 		} as MidiMessageAction)
 	}
-	shouldComponentUpdate(nextProps, nextState) {
-		return (
-			checkDifferenceAny(this.props, nextProps, ['className', 'style', 'active']) ||
-			checkDifferenceAny(this.state, nextState, ['notePlaying'])
-		)
-	}
+	// TODO
+	// shouldComponentUpdate(nextProps, nextState) {
+	// 	return (
+	// 		checkDifferenceAny(this.props, nextProps, ['className', 'style', 'active']) ||
+	// 		checkDifferenceAny(this.state, nextState, ['notePlaying', 'noteLetter'])
+	// 	)
+	// }
 	render() {
 		const { notePlaying, noteLetter } = this.state
 		const { className, style, active } = this.props
