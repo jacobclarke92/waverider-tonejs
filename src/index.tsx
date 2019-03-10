@@ -2,7 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import Tone from 'tone'
 import thunk from 'redux-thunk'
-import { createStore, compose, applyMiddleware } from 'redux'
+import { createStore, applyMiddleware, Store } from 'redux'
+import { composeWithDevTools } from 'redux-devtools-extension'
 import { Provider } from 'react-redux'
 
 import reducers from './reducers'
@@ -20,7 +21,7 @@ import { loadDesk } from './reducers/desk'
 import App from './App'
 import { ThunkDispatchType } from './types'
 
-const store = createStore(reducers, {}, compose(applyMiddleware(thunk, dbMiddleware)))
+const store: Store = createStore(reducers, {}, composeWithDevTools(applyMiddleware(thunk, dbMiddleware)))
 ;(window as any).logStore = () => console.log(store.getState())
 
 // Hack to enable Tone for chrome anti-autoplay measures

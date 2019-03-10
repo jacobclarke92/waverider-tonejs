@@ -32,6 +32,7 @@
 		"@types/react-dom": "^16.8.2",
 		"@types/react-redux": "^7.0.2",
 		"@types/redux": "^3.6.0",
+		"@types/redux-devtools-extension": "^2.13.2",
 		"@types/redux-thunk": "^2.1.0",
 		"@types/tone": "https://github.com/Tonejs/TypeScript.git",
 		"autoprefixer": "^6.4.0",
@@ -71,6 +72,7 @@
 		"react-dom": "^16.8.4",
 		"react-redux": "^6.0.1",
 		"redux": "^4.0.1",
+		"redux-devtools-extension": "^2.13.8",
 		"redux-thunk": "^2.3.0",
 		"tone": "^13.4.9",
 		"wavesurfer.js": "^2.0.0-beta01"
