@@ -11,8 +11,7 @@ import { defaultValue } from '../../instruments/simpler'
 
 import Checkbox from '../input/Checkbox'
 import KnobInput from '../input/KnobInput'
-import DeviceSelect from '../DeviceSelect'
-import ChannelSelect from '../ChannelSelect'
+import DeviceAndChannel from '../DeviceAndChannel'
 import Waveform from '../Waveform'
 
 class Simpler extends Component<ThunkDispatchProp & Instrument> {
@@ -61,14 +60,7 @@ class Simpler extends Component<ThunkDispatchProp & Instrument> {
 			<div className="simpler">
 				<div className="flex">
 					<div className="flex-column">
-						<DeviceSelect
-							value={midiDeviceId}
-							onChange={midiDeviceId => dispatch(updateInstrument(id, { midiDeviceId }))}
-						/>
-						<ChannelSelect
-							value={midiChannel}
-							onChange={midiChannel => dispatch(updateInstrument(id, { midiChannel }))}
-						/>
+						<DeviceAndChannel instrumentId={id} deviceId={midiDeviceId} midiChannel={midiChannel} />
 						<br />
 						<KnobInput
 							label="Voices"

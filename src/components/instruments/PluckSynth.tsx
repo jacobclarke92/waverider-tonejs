@@ -5,8 +5,7 @@ import { updateInstrument } from '../../reducers/instruments'
 import { defaultValue } from '../../instruments/pluckSynth'
 
 import KnobInput from '../input/KnobInput'
-import DeviceSelect from '../DeviceSelect'
-import ChannelSelect from '../ChannelSelect'
+import DeviceAndChannel from '../DeviceAndChannel'
 
 class PluckSynth extends Component<ThunkDispatchProp & Instrument> {
 	render() {
@@ -14,11 +13,7 @@ class PluckSynth extends Component<ThunkDispatchProp & Instrument> {
 		const { voices, attackNoise, dampening, resonance } = instrument
 		return (
 			<div className="pluck-synth">
-				<DeviceSelect
-					value={midiDeviceId}
-					onChange={midiDeviceId => dispatch(updateInstrument(id, { midiDeviceId }))}
-				/>
-				<ChannelSelect value={midiChannel} onChange={midiChannel => dispatch(updateInstrument(id, { midiChannel }))} />
+				<DeviceAndChannel instrumentId={id} deviceId={midiDeviceId} midiChannel={midiChannel} />
 				<KnobInput
 					label="Voices"
 					min={1}

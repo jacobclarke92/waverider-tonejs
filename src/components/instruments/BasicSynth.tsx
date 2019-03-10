@@ -6,8 +6,7 @@ import { defaultValue } from '../../instruments/basicSynth'
 
 import KnobInput from '../input/KnobInput'
 import SelectInput from '../input/SelectInput'
-import DeviceSelect from '../DeviceSelect'
-import ChannelSelect from '../ChannelSelect'
+import DeviceAndChannel from '../DeviceAndChannel'
 
 class BasicSynth extends Component<ThunkDispatchProp & Instrument> {
 	render() {
@@ -18,14 +17,7 @@ class BasicSynth extends Component<ThunkDispatchProp & Instrument> {
 			<div className="pluck-synth">
 				<div className="flex">
 					<div className="flex-column">
-						<DeviceSelect
-							value={midiDeviceId}
-							onChange={midiDeviceId => dispatch(updateInstrument(id, { midiDeviceId }))}
-						/>
-						<ChannelSelect
-							value={midiChannel}
-							onChange={midiChannel => dispatch(updateInstrument(id, { midiChannel }))}
-						/>
+						<DeviceAndChannel instrumentId={id} deviceId={midiDeviceId} midiChannel={midiChannel} />
 						<br />
 						<SelectInput
 							empty={false}

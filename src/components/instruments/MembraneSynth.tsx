@@ -6,8 +6,7 @@ import { defaultValue } from '../../instruments/membraneSynth'
 
 import KnobInput from '../input/KnobInput'
 import SelectInput from '../input/SelectInput'
-import DeviceSelect from '../DeviceSelect'
-import ChannelSelect from '../ChannelSelect'
+import DeviceAndChannel from '../DeviceAndChannel'
 
 class MembraneSynth extends Component<ThunkDispatchProp & Instrument> {
 	render() {
@@ -16,11 +15,7 @@ class MembraneSynth extends Component<ThunkDispatchProp & Instrument> {
 		const { attack, decay, sustain, release } = envelope
 		return (
 			<div className="membrane-synth">
-				<DeviceSelect
-					value={midiDeviceId}
-					onChange={midiDeviceId => dispatch(updateInstrument(id, { midiDeviceId }))}
-				/>
-				<ChannelSelect value={midiChannel} onChange={midiChannel => dispatch(updateInstrument(id, { midiChannel }))} />
+				<DeviceAndChannel instrumentId={id} deviceId={midiDeviceId} midiChannel={midiChannel} />
 				<KnobInput
 					label="Voices"
 					min={1}
