@@ -15,15 +15,7 @@
   border: 1px solid #ccc;
 
   &.highlighted {
-    &::before {
-      content: '';
-      position: absolute;
-      top: 1px;
-      right: 1px;
-      bottom: 1px;
-      left: 1px;
-      border: 1px solid var(--primary);
-    }
+    border: 1px solid var(--primary);
   }
 
   & span {
