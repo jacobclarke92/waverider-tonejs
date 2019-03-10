@@ -15,19 +15,16 @@
   top: 0;
   width: 100vw;
   height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .header {
-  position: absolute;
-  z-index: var(--ui-z-index);
-  top: 0;
-  left: 0;
-  width: 100%;
+  flex: none;
   height: var(--header-height);
   padding: 0 var(--padding-l);
   background: linear-gradient(to bottom, var(--shade-850) 0%, var(--shade-750) 100%);
   border-bottom: 1px solid var(--ui-border-color);
-  box-sizing: border-box;
 }
 
 .header-inner {
@@ -48,43 +45,28 @@
 }
 
 .main {
-  position: absolute;
-  top: var(--header-height);
-  left: 0;
-  width: 100%;
-  height: calc(100% - var(--header-height));
+  flex: 1 0 auto;
+  display: flex;
 }
 
 .sidebar {
-  position: absolute;
-  z-index: var(--ui-z-index);
-  top: 0;
-  left: 0;
+  flex: none;
   width: var(--sidebar-width);
-  height: 100%;
   background-color: var(--shade-850);
   border-right: 1px solid var(--ui-border-color);
-  box-sizing: border-box;
 }
 
 .workspace-container {
-  position: absolute;
-  top: 0;
-  left: var(--sidebar-width);
-  width: calc(100% - var(--sidebar-width));
-  height: 100%;
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .navbar {
-  position: absolute;
-  z-index: var(--ui-z-index);
-  top: 0;
-  left: 0;
-  width: 100%;
+  flex: none;
   height: var(--navbar-height);
   background-color: var(--shade-700);
   border-bottom: 1px solid var(--ui-border-color);
-  box-sizing: border-box;
 }
 
 .navbar-inner {
@@ -100,22 +82,24 @@
 }
 
 .workspace {
-  position: absolute;
-  top: var(--navbar-height);
-  left: 0;
-  width: 100%;
-  height: calc(100% - var(--navbar-height));
+  position: relative;
+  flex: 1 1 auto;
   background-color: var(--black);
   color: var(--white);
   overflow: auto;
 }
 
 .piano-panel {
-  position: absolute;
-  bottom: 0;
-  left: 0;
+  position: relative;
+  flex: none;
   height: auto;
-  width: 100%;
   background-color: var(--shade-300);
   overflow: auto;
+  overflow-x: auto;
+  overflow-y: hidden;
+  transition: height 0.2s ease-in-out;
+
+  &.collapsed {
+    height: 0 !important;
+  }
 }

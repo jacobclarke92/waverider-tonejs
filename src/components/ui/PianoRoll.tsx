@@ -10,6 +10,7 @@ interface Props {
 	octaveStart?: number
 	height?: number
 	keyWidth?: number
+	className?: string
 }
 
 interface State {
@@ -71,10 +72,10 @@ export default class PianoRoll extends Component<Props, State> {
 		this.hideOverlayTimeout = setTimeout(() => this.setState({ overlayHidden: true }), 1000)
 	}
 	render() {
-		const { octaves, octaveStart, keyWidth, height } = this.props
+		const { octaves, octaveStart, keyWidth, height, className } = this.props
 		const { activeOctave, velocity, overlayMessage, overlayHidden } = this.state
 		return (
-			<div className={cn('piano-wrapper')} style={{ height }}>
+			<div className={cn('piano-wrapper', className)} style={{ height }}>
 				{generateArray(octaves - octaveStart).map(i => (
 					<Octave
 						key={i}

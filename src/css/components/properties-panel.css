@@ -1,13 +1,8 @@
 .properties-panel {
-  position: absolute;
-  z-index: var(--ui-z-index);
-  left: 0;
-  bottom: 0;
-  width: 100%;
+  position: relative;
   height: var(--properties-panel-height);
   background-color: var(--shade-900);
   border-top: 1px solid var(--ui-border-color);
-  box-sizing: border-box;
   transition: height 0.2s ease-in-out;
 
   &.collapsed {
@@ -26,7 +21,6 @@
   border: 1px solid var(--ui-border-color);
   border-bottom: none;
   border-left: none;
-  box-sizing: border-box;
   cursor: s-resize;
 }
 

@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import cn from 'classnames'
 import _find from 'lodash/find'
 
 import { INSTRUMENT, EFFECT } from './constants/deskItemTypes'
@@ -59,11 +60,9 @@ class Main extends Component<ThunkDispatchProp & StateProps> {
 								<PropertiesComponent {...instrument} />
 							</PropertiesPanel>
 						)}
-						{keyboardPianoEnabled && (
-							<div className="piano-panel">
-								<PianoRoll octaveStart={1} octaves={8} />
-							</div>
-						)}
+						<div className={cn('piano-panel', { collapsed: !keyboardPianoEnabled })} style={{ height: 100 }}>
+							<PianoRoll octaveStart={1} octaves={8} height={100} />
+						</div>
 					</div>
 				</main>
 			</div>
