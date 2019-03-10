@@ -50,7 +50,14 @@ export default class PianoRoll extends Component<Props, State> {
 		return (
 			<div className={cn('piano-wrapper')} style={{ height }}>
 				{generateArray(octaves).map(i => (
-					<Octave key={i} octave={i} active={activeOctave === i} keyWidth={keyWidth} startNote={startNote + i * 12} />
+					<Octave
+						key={i}
+						octave={i}
+						active={activeOctave === i}
+						activeOctave={activeOctave}
+						keyWidth={keyWidth}
+						startNote={startNote + i * 12}
+					/>
 				))}
 			</div>
 		)
@@ -84,7 +91,7 @@ const getWhiteKeyIndex = (i: number): number => {
 		case 3:
 			return 5
 		case 4:
-			return 6
+			return 7
 		case 5:
 			return 9
 		case 6:
@@ -115,34 +122,46 @@ const getBlackKeyLeft = (i: number, width: number): number => {
 
 interface OctaveProps {
 	octave: number
+	activeOctave: number
 	active: boolean
 	keyWidth: number
 	startNote: number
 }
-const Octave: FunctionComponent<OctaveProps> = ({ octave, startNote, active, keyWidth }) => {
+const Octave: FunctionComponent<OctaveProps> = ({ octave, activeOctave, startNote, active, keyWidth }) => {
+	const isNextOctave = activeOctave + 1 === octave
 	return (
 		<div className="octave-wrapper" style={{ left: octave * keyWidth * 7 }}>
 			<div className="white-keys">
-				{generateArray(7).map(i => (
-					<PianoKey
-						key={i}
-						octaveActive={active}
-						note={startNote + getWhiteKeyIndex(i)}
-						className="white-key"
-						style={{ width: keyWidth, left: keyWidth * i }}
-					/>
-				))}
+				{generateArray(7).map(i => {
+					const keyIndex = getWhiteKeyIndex(i)
+					const keyActive = active || (isNextOctave && keyIndex <= 5)
+					return (
+						<PianoKey
+							key={i}
+							active={keyActive}
+							note={startNote + keyIndex}
+							noteIndex={isNextOctave ? 12 + keyIndex : keyIndex}
+							className="white-key"
+							style={{ width: keyWidth, left: keyWidth * i }}
+						/>
+					)
+				})}
 			</div>
 			<div className="black-keys">
-				{generateArray(5).map(i => (
-					<PianoKey
-						key={i}
-						octaveActive={active}
-						note={startNote + getBlackKeyIndex(i)}
-						className="black-key"
-						style={{ width: keyWidth * 0.6, left: getBlackKeyLeft(i, keyWidth) }}
-					/>
-				))}
+				{generateArray(5).map(i => {
+					const keyIndex = getBlackKeyIndex(i)
+					const keyActive = active || (isNextOctave && keyIndex <= 5)
+					return (
+						<PianoKey
+							key={i}
+							active={keyActive}
+							note={startNote + keyIndex}
+							noteIndex={isNextOctave ? 12 + keyIndex : keyIndex}
+							className="black-key"
+							style={{ width: keyWidth * 0.6, left: getBlackKeyLeft(i, keyWidth) }}
+						/>
+					)
+				})}
 			</div>
 		</div>
 	)

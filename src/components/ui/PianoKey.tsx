@@ -19,6 +19,12 @@ import { addKeyDownListener, addKeyUpListener, removeKeyDownListener, removeKeyU
 9: A	h
 10: Bb	u
 11: B	j
+12: C	k
+13: C#	o
+14: D	l
+15: Eb	p
+16: E	;
+17: F	'
 */
 
 const getNoteLetter = (note: number): string => {
@@ -48,84 +54,136 @@ const getNoteLetter = (note: number): string => {
 			return 'u'
 		case 11:
 			return 'j'
+		case 12:
+			return 'k'
+		case 13:
+			return 'o'
+		case 14:
+			return 'l'
+		case 15:
+			return 'p'
+		case 16:
+			return ';'
+		case 17:
+			return "'"
 	}
 }
 
 interface Props {
 	className: string
 	note: number
+	noteIndex: number
 	velocity: number
 	style: CSSProperties
-	octaveActive: boolean
+	active: boolean
 }
 interface State {
-	active: boolean
+	notePlaying: boolean
+	noteLetter: string
 }
 
 class PianoKey extends Component<ThunkDispatchProp & Props, State> {
 	listening: boolean
-	noteLetter: string
 	static defaultProps = {
 		className: '',
 		note: 0,
+		noteIndex: 0,
 		velocity: 127,
 	}
 	constructor(props) {
 		super(props)
-		this.listening = false
-		this.noteLetter = getNoteLetter(props.note % 12)
 		this.triggerNoteDown = this.triggerNoteDown.bind(this)
 		this.triggerNoteUp = this.triggerNoteUp.bind(this)
 		this.state = {
-			active: false,
+			notePlaying: false,
+			noteLetter: getNoteLetter(props.noteIndex),
 		}
 	}
 	componentDidMount() {
-		this.autoBindListeners()
+		this.autoBindListeners(this.props, this.state, true)
 	}
-	componentDidUpdate(prevProps) {
-		this.autoBindListeners(prevProps)
+	componentDidUpdate(prevProps, prevState) {
+		this.autoBindListeners(prevProps, prevState)
 	}
-	autoBindListeners(prevProps: GenericProps = {}) {
-		if (this.props.octaveActive && !prevProps.octaveActive) {
-			addKeyDownListener(this.noteLetter, this.triggerNoteDown)
-			addKeyUpListener(this.noteLetter, this.triggerNoteUp)
-		} else if (!this.props.octaveActive && prevProps.octaveActive) {
-			removeKeyDownListener(this.noteLetter, this.triggerNoteDown)
-			removeKeyUpListener(this.noteLetter, this.triggerNoteUp)
+	autoBindListeners(prevProps: ThunkDispatchProp & Props, prevState: State, init: boolean = false) {
+		const isNowActive = this.props.active && !prevProps.active
+		const isNowInactive = !this.props.active && prevProps.active
+		const isStillActive = this.props.active && prevProps.active
+		const noteIndexChanged = this.props.noteIndex != prevProps.noteIndex
+
+		if (isNowActive || isStillActive)
+			console.log(`[${this.props.note}]`, { isNowActive, isNowInactive, isStillActive, noteIndexChanged })
+
+		let { noteLetter } = this.state
+		if (noteIndexChanged) {
+			noteLetter = getNoteLetter(this.props.noteIndex)
+			this.setState({ noteLetter })
+			console.log(`[${this.props.note}]`, 'Got new note letter ', prevState.noteLetter, '->', noteLetter)
+		}
+
+		if (isNowInactive || noteIndexChanged) {
+			if (this.state.notePlaying) this.triggerNoteUp(prevProps)
+			if (prevState.noteLetter) {
+				this.listening = false
+				removeKeyDownListener(prevState.noteLetter, this.triggerNoteDown)
+				removeKeyUpListener(prevState.noteLetter, this.triggerNoteUp)
+				console.log(`[${this.props.note}]`, 'Removing key up and down listeners for ', prevState.noteLetter)
+			}
+		}
+
+		if ((init || noteIndexChanged) && this.props.active) {
+			if (noteLetter) {
+				this.listening = true
+				addKeyDownListener(noteLetter, this.triggerNoteDown)
+				addKeyUpListener(noteLetter, this.triggerNoteUp)
+				console.log(`[${this.props.note}]`, 'Adding key up and down listeners for ', noteLetter)
+			}
 		}
 	}
 	keyDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		e.preventDefault()
 		e.stopPropagation()
-		this.setState({ active: true })
 		this.triggerNoteDown()
 	}
-	triggerNoteDown() {
-		const { note, dispatch } = this.props
-		dispatch({ type: NOTE_ON, deviceId: internalPiano.id, channel: 1, note, velocity: 127 } as MidiMessageAction)
+	triggerNoteDown(props = this.props) {
+		const { note } = props
+		this.setState({ notePlaying: true })
+		this.props.dispatch({
+			type: NOTE_ON,
+			deviceId: internalPiano.id,
+			channel: 1,
+			note,
+			velocity: 127,
+		} as MidiMessageAction)
 	}
 	keyUp = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		e.preventDefault()
 		e.stopPropagation()
-		this.setState({ active: false })
 		this.triggerNoteUp()
 	}
-	triggerNoteUp() {
-		const { note, dispatch } = this.props
-		dispatch({ type: NOTE_OFF, deviceId: internalPiano.id, channel: 1, note, velocity: 127 } as MidiMessageAction)
+	triggerNoteUp(props = this.props) {
+		const { note } = props
+		this.setState({ notePlaying: false })
+		this.props.dispatch({
+			type: NOTE_OFF,
+			deviceId: internalPiano.id,
+			channel: 1,
+			note,
+			velocity: 127,
+		} as MidiMessageAction)
 	}
 	render() {
-		const { active } = this.state
-		const { note, className, style, octaveActive } = this.props
+		const { notePlaying, noteLetter } = this.state
+		const { className, style, active } = this.props
 		return (
 			<div
-				className={cn(className, { active, highlighted: octaveActive })}
+				className={cn(className, { active: notePlaying, highlighted: active })}
 				style={style}
 				onMouseDown={this.keyDown}
 				onMouseUp={this.keyUp}
-				onMouseOut={this.keyUp}
-			/>
+				onMouseOut={this.keyUp}>
+				{active && noteLetter && <span>{noteLetter.toUpperCase()}</span>}
+			</div>
 		)
 	}
 }

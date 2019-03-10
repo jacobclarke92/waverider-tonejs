@@ -25,6 +25,15 @@
       border: 1px solid var(--primary);
     }
   }
+
+  & span {
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--primary);
+    font-size: 0.8rem;
+  }
 }
 
 .white-keys {
