@@ -5439,9 +5439,10 @@ pretty-hrtime@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/pretty-hrtime/-/pretty-hrtime-1.0.3.tgz#b7e3ea42435a4c9b2759d99e0f201eb195802ee1"
 
-prettysize@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/prettysize/-/prettysize-0.1.0.tgz#38ee534e2d298bc945fb7243203dd873cefc9679"
+prettysize@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/prettysize/-/prettysize-2.0.0.tgz#902c02480d865d9cc0813011c9feb4fa02ce6996"
+  integrity sha512-VVtxR7sOh0VsG8o06Ttq5TrI1aiZKmC+ClSn4eBPaNf4SHr5lzbYW+kYGX3HocBL/MfpVrRfFZ9V3vCbLaiplg==
 
 private@^0.1.6:
   version "0.1.7"
