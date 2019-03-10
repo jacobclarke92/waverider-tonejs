@@ -17,7 +17,6 @@ export const setDebounce = (db: number) => (debounce = db)
 let screenWidth: number = getWindowWidth()
 let screenHeight: number = getWindowHeight()
 
-// @ts-ignore
 document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock || document.webkitExitPointerLock
 
 export const hasPointerLock = (): boolean =>
@@ -26,7 +25,6 @@ export const exitPointerLock = () => document.exitPointerLock()
 export const requestPointerLock = (element: HTMLElement) => {
 	if (!element) return
 	element.requestPointerLock =
-		// @ts-ignore
 		element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock
 	element.requestPointerLock()
 }

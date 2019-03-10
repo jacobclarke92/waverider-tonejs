@@ -18,9 +18,13 @@ declare global {
 	}
 	interface Document {
 		exitPointerLock: () => void
+		mozExitPointerLock: () => void
+		webkitExitPointerLock: () => void
 	}
 	interface HTMLElement {
 		requestPointerLock: () => void
+		mozRequestPointerLock: () => void
+		webkitRequestPointerLock: () => void
 	}
 }
 
