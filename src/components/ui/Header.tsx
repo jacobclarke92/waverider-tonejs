@@ -7,6 +7,7 @@ import { State as GuiStore, toggleKeyboardPiano } from '../../reducers/gui'
 import Icon from '../Icon'
 import { updateView } from '../../reducers/gui'
 import { STAGE, DESK, MATRIX } from '../../constants/uiViews'
+import { saveProjectFile } from '../../fileManager'
 
 interface StateProps {
 	gui: GuiStore
@@ -42,11 +43,17 @@ class Header extends Component<ThunkDispatchProp & StateProps> {
 						</button>
 					</div>
 					<div className="header-right">
+						<button type="button" className={cn('icon-button')} onClick={() => {}}>
+							<Icon name="load" size="s" />
+						</button>
+						<button type="button" className={cn('icon-button')} onClick={() => saveProjectFile()}>
+							<Icon name="save" size="s" />
+						</button>
 						<button
 							type="button"
 							className={cn('icon-button', { active: gui.keyboardPianoEnabled })}
 							onClick={() => dispatch(toggleKeyboardPiano())}>
-							<Icon name="keyboard" />
+							<Icon name="keyboard" size="m" />
 						</button>
 					</div>
 				</div>

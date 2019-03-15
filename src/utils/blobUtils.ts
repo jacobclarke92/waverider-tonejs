@@ -32,3 +32,15 @@ export function getHashFromBlob(blob: Blob): Promise<string> {
 export function getBlobUrl(blob: Blob): string {
 	return URL.createObjectURL(blob)
 }
+
+export function downloadData(data: BlobPart, fileType: string, fileName: string) {
+	const blob = new Blob([data], { type: fileType })
+	const url = URL.createObjectURL(blob)
+	const a = document.createElement('a')
+	document.body.appendChild(a)
+	a.style.display = 'none'
+	a.href = url
+	a.download = fileName
+	a.click()
+	URL.revokeObjectURL(url)
+}

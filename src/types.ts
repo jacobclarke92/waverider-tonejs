@@ -4,6 +4,7 @@ import { AnyAction } from 'redux'
 import { BaseEffectConstructor } from './effects/BaseEffect'
 import { BaseInstrumentConstructor } from './instruments/BaseInstrument'
 import { PointObj } from './utils/Point'
+import { State as ProjectState } from './reducers/project'
 import { State as DeskState } from './reducers/desk'
 import { State as DevicesState } from './reducers/devices'
 import { State as EffectsState } from './reducers/effects'
@@ -189,6 +190,7 @@ export interface InstrumentType {
 }
 
 export interface ReduxStoreType {
+	project: ProjectState
 	desk: DeskState
 	devices: DevicesState
 	effects: EffectsState

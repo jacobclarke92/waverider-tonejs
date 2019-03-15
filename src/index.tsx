@@ -13,6 +13,7 @@ import { init as initMidi } from './api/midi'
 import { init as initDesk } from './deskController'
 import { init as initEffects } from './effectsController'
 import { init as initInstruments } from './instrumentsController'
+import { init as initFileManager } from './fileManager'
 import { loadInstruments } from './reducers/instruments'
 import { loadDevices } from './reducers/devices'
 import { loadEffects } from './reducers/effects'
@@ -34,6 +35,7 @@ initMidi(store)
 initDesk(store)
 initEffects(store)
 initInstruments(store)
+initFileManager(store)
 initKeyListeners()
 ;(store.dispatch as ThunkDispatchType)(loadInstruments())
 ;(store.dispatch as ThunkDispatchType)(loadEffects())
