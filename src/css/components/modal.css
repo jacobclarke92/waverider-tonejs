@@ -1,0 +1,18 @@
+.ReactModal__Overlay {
+  z-index: 9999;
+}
+
+.ReactModal__Content {
+  overflow: auto;
+  animation-name: fadeIn;
+  animation-duration: 0.3s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
