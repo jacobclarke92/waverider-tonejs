@@ -1,9 +1,10 @@
-import React, { Component } from 'react'
+import React, { Component, memo } from 'react'
 import { MASTER, INSTRUMENT, EFFECT } from '../../constants/deskItemTypes'
 import { getEffectInstance } from '../../effectsController'
 import { getInstrumentInstance } from '../../instrumentsController'
 import BaseEffect from '../../effects/BaseEffect'
 import BaseInstrument from '../../instruments/BaseInstrument'
+import { clamp } from '../../utils/mathUtils'
 
 interface Props {
 	id: number
@@ -14,7 +15,7 @@ interface State {
 	level: number
 }
 
-export default class VuMeter extends Component<Props, State> {
+export default class VuMeterSmart extends Component<Props, State> {
 	raf: number
 	instance: BaseEffect | BaseInstrument
 
@@ -50,20 +51,24 @@ export default class VuMeter extends Component<Props, State> {
 
 	monitorLevel() {
 		if (!this.instance) this.getInstance()
-		if (this.instance) {
-			const level = this.instance.meter ? this.instance.meter.getValue() : 0
+		if (this.instance && this.instance.meter) {
+			// console.log(this.instance.meter.getLevel(), this.instance.meter.getValue())
+			const level = this.instance.meter.getLevel()
 			this.setState({ level })
 		}
 		this.raf = requestAnimationFrame(this.monitorLevel)
 	}
 
 	render() {
-		const { level } = this.state
-		const rms = Math.min(100, level * 80)
-		return (
-			<div className="vu-meter">
-				<div className="vu-meter-bar" style={{ clipPath: `polygon(0% 0%, ${rms}% 0%, ${rms}% 100%, 0% 100%)` }} />
-			</div>
-		)
+		return <VuMeter level={this.state.level} />
 	}
 }
+
+const VuMeter = memo<{ level: number }>(({ level }) => {
+	const rms = clamp(level + 100, 0, 100)
+	return (
+		<div className="vu-meter">
+			<div className="vu-meter-bar" style={{ clipPath: `polygon(0% 0%, ${rms}% 0%, ${rms}% 100%, 0% 100%)` }} />
+		</div>
+	)
+})

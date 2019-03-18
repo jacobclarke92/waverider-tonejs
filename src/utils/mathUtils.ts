@@ -21,4 +21,11 @@ export const getDistance = (pt1: Point | PointObj, pt2: Point | PointObj): numbe
 	Math.sqrt(Math.pow(pt2.x - pt1.x, 2) + Math.pow(pt2.y - pt1.y, 2))
 
 // returns angle between two points
-export const getAngle = (pt1: Point | PointObj, pt2: Point | PointObj): number => Math.atan2(pt2.y - pt1.y, pt2.x - pt1.x)
+export const getAngle = (pt1: Point | PointObj, pt2: Point | PointObj): number =>
+	Math.atan2(pt2.y - pt1.y, pt2.x - pt1.x)
+
+export const scale = (val: number, rangeStart: number, rangeEnd: number, mapStart: number, mapEnd: number) => {
+	return val === 1 / 0 || val === -1 / 0
+		? val
+		: ((val - rangeStart) * (mapEnd - mapStart)) / (rangeEnd - rangeStart) + mapStart
+}

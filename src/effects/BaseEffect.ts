@@ -1,4 +1,4 @@
-import { Meter } from 'tone'
+import { Meter, Waveform } from 'tone'
 import { GenericProps } from '../types'
 
 export interface BaseEffectConstructor {
@@ -12,13 +12,15 @@ export default class BaseEffect {
 	dispatch: Function
 	meter: Meter
 	instance: any
+	analyser?: Waveform
 
 	constructor(value: GenericProps = {}, dispatch: Function) {
 		Object.keys(value).forEach(key => (this[key] = value[key]))
 		console.log(`Mounting ${this.type}...`)
 		this.mounted = false
 		this.dispatch = dispatch
-		this.meter = new Meter(0.5)
+		this.meter = new Meter(1)
+		this.initEffect.bind(this)
 		this.initEffect(() => {
 			this.mounted = true
 			console.log(this.type + ' mounted', this)

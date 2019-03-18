@@ -21,7 +21,7 @@ export class BasicSynthInstrument extends BaseInstrument {
 		Object.keys(value).forEach(key => (this[key] = value[key]))
 		this.reinitSynth = _debounce(this.initSynth, voicesUpdateDebounce)
 		this.triggerUpdateVoiceParams = _debounce(this.updateVoiceParams, paramUpdateDebounce)
-		this.meter = new Meter(0.5)
+		this.meter = new Meter(1)
 		this.initSynth(() => {
 			this.mounted = true
 			console.log('basicSynth mounted', this)

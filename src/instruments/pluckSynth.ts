@@ -96,15 +96,15 @@ export const params: ParamsType = [
 		defaultValue: 100,
 		min: 100,
 		max: 8000,
-		step: 10,
+		step: 1,
 	},
 	{
 		label: 'Resonance',
 		path: 'resonance',
 		defaultValue: 1,
-		min: 0.1,
-		max: 20,
-		step: 0.1,
+		min: 0.01,
+		max: 1,
+		step: 0.01,
 	},
 ]
 
