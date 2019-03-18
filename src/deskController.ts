@@ -10,6 +10,7 @@ import { Store } from 'redux'
 import { ReduxStoreType, DeskItemType, WireJoins, WireJoin, WireType, Wire, Effect, Instrument } from './types'
 import {
 	LOAD_DESK,
+	RELOAD_DESK,
 	DESK_CONNECT_WIRE,
 	DESK_DISCONNECT_WIRE,
 	REINIT_INSTRUMENT_INSTANCE,
@@ -32,6 +33,7 @@ export function init(_store: Store) {
 function handleUpdate() {
 	const { lastAction, desk } = store.getState() as ReduxStoreType
 	switch (lastAction.type) {
+		case RELOAD_DESK:
 		case LOAD_DESK:
 			initConnections(desk)
 			break

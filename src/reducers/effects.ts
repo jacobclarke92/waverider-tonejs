@@ -24,12 +24,14 @@ export interface ActionObj extends Action {
 const initialState: State = []
 
 export const LOAD_EFFECTS = 'LOAD_EFFECTS'
+export const RELOAD_EFFECTS = 'RELOAD_EFFECTS'
 export const ADD_EFFECT = 'ADD_EFFECT'
 export const REMOVE_EFFECT = 'REMOVE_EFFECT'
 export const UPDATE_EFFECT = 'UPDATE_EFFECT'
 
 export default function(state: State = initialState, action: ActionObj) {
 	switch (action.type) {
+		case RELOAD_EFFECTS:
 		case LOAD_EFFECTS:
 			return action.effects || []
 		case ADD_EFFECT:
@@ -52,7 +54,7 @@ export const overwriteEffects = (effects: Effect[]) => (dispatch: ThunkDispatchT
 	truncate('effects')
 		.then(() => bulkPut<Effect>('effects', effects))
 		.then(() => getAll<Effect>('effects'))
-		.then(effects => defer(() => dispatch({ type: LOAD_EFFECTS, effects } as ActionObj)))
+		.then(effects => defer(() => dispatch({ type: RELOAD_EFFECTS, effects } as ActionObj)))
 
 export const addEffect = (type: string, position: PointObj = { x: 0, y: 0 }) => {
 	const effectDef: EffectType = effectLibrary[type]

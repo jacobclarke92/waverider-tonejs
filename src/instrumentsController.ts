@@ -15,6 +15,7 @@ import {
 } from './reducers/desk'
 import {
 	LOAD_INSTRUMENTS,
+	RELOAD_INSTRUMENTS,
 	ADD_INSTRUMENT,
 	REMOVE_INSTRUMENT,
 	UPDATE_INSTRUMENT,
@@ -45,6 +46,8 @@ export function isDeviceUsedByInstrument(deviceId: string): boolean {
 function handleUpdate() {
 	const { lastAction, instruments, desk } = store.getState() as ReduxStoreType
 	switch (lastAction.type) {
+		case RELOAD_INSTRUMENTS:
+			instruments.forEach(instrument => removeInstrumentInstance(instrument.id))
 		case LOAD_INSTRUMENTS:
 			initInstruments(instruments)
 			break

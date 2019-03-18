@@ -3,6 +3,7 @@ import _cloneDeep from 'lodash/cloneDeep'
 import effectLibrary from './effectLibrary'
 import {
 	LOAD_EFFECTS,
+	RELOAD_EFFECTS,
 	ADD_EFFECT,
 	REMOVE_EFFECT,
 	UPDATE_EFFECT,
@@ -31,6 +32,8 @@ export function getEffectInstance(id: number): BaseEffect | false {
 function handleUpdate() {
 	const { lastAction, effects } = store.getState() as ReduxStoreType
 	switch (lastAction.type) {
+		case RELOAD_EFFECTS:
+			effects.forEach(effect => removeEffectInstance(effect.id))
 		case LOAD_EFFECTS:
 			initEffects(effects)
 			break

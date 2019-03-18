@@ -11,6 +11,7 @@ import { PointObj } from '../utils/Point'
 import { defer } from '../utils/lifecycleUtils'
 
 export const LOAD_INSTRUMENTS: string = 'LOAD_INSTRUMENTS'
+export const RELOAD_INSTRUMENTS: string = 'RELOAD_INSTRUMENTS'
 export const ADD_INSTRUMENT: string = 'ADD_INSTRUMENT'
 export const REMOVE_INSTRUMENT: string = 'REMOVE_INSTRUMENT'
 export const UPDATE_INSTRUMENT: string = 'UPDATE_INSTRUMENT'
@@ -37,7 +38,9 @@ const initialState: State = [
 
 export default function(state: State = initialState, action: ActionObj) {
 	switch (action.type) {
+		case RELOAD_INSTRUMENTS:
 		case LOAD_INSTRUMENTS:
+			console.info('INITING INSTRUMENTS', action.instruments)
 			return action.instruments || []
 		case ADD_INSTRUMENT:
 			return [...state, action.instrument]
@@ -64,7 +67,7 @@ export const overwriteInstruments = (instruments: Instrument[]) => (dispatch: Th
 	truncate('instruments')
 		.then(() => bulkPut<Instrument>('instruments', instruments))
 		.then(() => getAll<Instrument>('instruments'))
-		.then(instruments => defer(() => dispatch({ type: LOAD_INSTRUMENTS, instruments } as ActionObj)))
+		.then(instruments => defer(() => dispatch({ type: RELOAD_INSTRUMENTS, instruments } as ActionObj)))
 
 export const addInstrument = (type: string, position: PointObj = { x: 0, y: 0 }) => {
 	const instrumentDef = instrumentLibrary[type]

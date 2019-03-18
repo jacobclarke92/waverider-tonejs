@@ -27,6 +27,7 @@ export function saveProjectFile() {
 }
 
 export function loadProjectFile(file: string) {
+	console.log('----- LOADING PROJECT FILE -----')
 	let data: ReduxStoreType = null
 	try {
 		data = JSON.parse(file) as ReduxStoreType
@@ -38,4 +39,5 @@ export function loadProjectFile(file: string) {
 	if (data.instruments) (store.dispatch as ThunkDispatchType)(overwriteInstruments(data.instruments))
 	if (data.effects) (store.dispatch as ThunkDispatchType)(overwriteEffects(data.effects))
 	if (data.desk) (store.dispatch as ThunkDispatchType)(overwriteDesk(data.desk))
+	console.log('----- PROJECT FILE LOADED -----')
 }

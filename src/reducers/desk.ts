@@ -11,6 +11,7 @@ import { PointObj } from '../utils/Point'
 import { defer } from '../utils/lifecycleUtils'
 
 export const LOAD_DESK: string = 'LOAD_DESK'
+export const RELOAD_DESK: string = 'RELOAD_DESK'
 export const DESK_ITEM_MOVE: string = 'DESK_ITEM_MOVE'
 export const DESK_CONNECT_WIRE: string = 'DESK_CONNECT_WIRE'
 export const DESK_DISCONNECT_WIRE: string = 'DESK_DISCONNECT_WIRE'
@@ -46,6 +47,7 @@ const initialState: State = [
 
 export default function(state: State = initialState, action: ActionObj) {
 	switch (action.type) {
+		case RELOAD_DESK:
 		case LOAD_DESK:
 			return action.desk || []
 		case DESK_ITEM_MOVE:
@@ -82,11 +84,11 @@ export const loadDesk = () => (dispatch: ThunkDispatchType) =>
 		.then((desk: DeskItemType[]) => defer(() => dispatch({ type: LOAD_DESK, desk } as ActionObj)))
 		.catch(e => console.warn('Unable to load desk state', e))
 
-export const overwriteDesk = action => dispatch =>
+export const overwriteDesk = (desk: DeskItemType[]) => (dispatch: ThunkDispatchType) =>
 	truncate('desk')
-		.then(() => bulkPut<DeskItemType>('desk', action.desk))
+		.then(() => bulkPut<DeskItemType>('desk', desk))
 		.then(() => getAll<DeskItemType>('desk'))
-		.then(desk => defer(() => dispatch({ type: LOAD_DESK, desk } as ActionObj)))
+		.then(desk => defer(() => dispatch({ type: RELOAD_DESK, desk } as ActionObj)))
 
 export const moveDeskItem = (deskItem: DeskItemType, position: PointObj) =>
 	({
