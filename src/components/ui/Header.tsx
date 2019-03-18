@@ -5,15 +5,20 @@ import { ReduxStoreType, ThunkDispatchProp } from '../../types'
 import { State as GuiStore, toggleKeyboardPiano } from '../../reducers/gui'
 
 import Icon from '../Icon'
+import UploadWrapper from '../UploadWrapper'
 import { updateView } from '../../reducers/gui'
 import { STAGE, DESK, MATRIX } from '../../constants/uiViews'
-import { saveProjectFile } from '../../fileManager'
+import { saveProjectFile, loadProjectFile } from '../../fileManager'
+import { readBlobAsText } from '../../utils/blobUtils'
 
 interface StateProps {
 	gui: GuiStore
 }
 
 class Header extends Component<ThunkDispatchProp & StateProps> {
+	processFile(files: FileList) {
+		if (files.length === 1) readBlobAsText(files[0]).then(loadProjectFile)
+	}
 	render() {
 		const { dispatch, gui } = this.props
 		return (
@@ -43,9 +48,9 @@ class Header extends Component<ThunkDispatchProp & StateProps> {
 						</button>
 					</div>
 					<div className="header-right">
-						<button type="button" className={cn('icon-button')} onClick={() => {}}>
+						<UploadWrapper className="button icon-button" accept="application/json" onChange={this.processFile}>
 							<Icon name="load" size="s" />
-						</button>
+						</UploadWrapper>
 						<button type="button" className={cn('icon-button')} onClick={() => saveProjectFile()}>
 							<Icon name="save" size="s" />
 						</button>
