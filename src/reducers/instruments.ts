@@ -2,10 +2,10 @@ import _merge from 'lodash/merge'
 import _cloneDeep from 'lodash/cloneDeep'
 
 import { isArray } from '../utils/typeUtils'
-import { add, getAll, getFirstWhere, updateById, removeById } from '../api/db'
+import { add, getAll, getFirstWhere, updateById, removeById, truncate, bulkPut } from '../api/db'
 import instrumentLibrary from '../instrumentLibrary'
 import { deskItemTypeDefaults, INSTRUMENT, MASTER } from '../constants/deskItemTypes'
-import { Instrument, DeskItemType } from '../types'
+import { Instrument, DeskItemType, ThunkDispatchType } from '../types'
 import { Action } from 'redux'
 import { PointObj } from '../utils/Point'
 import { defer } from '../utils/lifecycleUtils'
@@ -51,21 +51,20 @@ export default function(state: State = initialState, action: ActionObj) {
 	return state
 }
 
-export const loadInstruments = () => dispatch =>
-	getAll('instruments')
+export const loadInstruments = () => (dispatch: ThunkDispatchType) =>
+	getAll<Instrument>('instruments')
 		.then(instruments => {
 			if (instruments.length > 0) return instruments
-			else return add('instruments', initialState[0])
+			return add<Instrument>('instruments', initialState[0]).then(instrument => [instrument])
 		})
-		.then(instruments =>
-			defer(() =>
-				dispatch({
-					type: LOAD_INSTRUMENTS,
-					instruments: isArray(instruments) ? instruments : [instruments],
-				} as ActionObj)
-			)
-		)
+		.then(instruments => defer(() => dispatch({ type: LOAD_INSTRUMENTS, instruments } as ActionObj)))
 		.catch(e => console.warn('Unable to load instruments', e))
+
+export const overwriteInstruments = (instruments: Instrument[]) => (dispatch: ThunkDispatchType) =>
+	truncate('instruments')
+		.then(() => bulkPut<Instrument>('instruments', instruments))
+		.then(() => getAll<Instrument>('instruments'))
+		.then(instruments => defer(() => dispatch({ type: LOAD_INSTRUMENTS, instruments } as ActionObj)))
 
 export const addInstrument = (type: string, position: PointObj = { x: 0, y: 0 }) => {
 	const instrumentDef = instrumentLibrary[type]
@@ -79,7 +78,7 @@ export const addInstrument = (type: string, position: PointObj = { x: 0, y: 0 })
 		..._cloneDeep(instrumentDef.defaultValue),
 	}
 	return dispatch =>
-		add('instruments', newInstrument)
+		add<Instrument>('instruments', newInstrument)
 			.then(instrument => {
 				const newDeskItem: DeskItemType = {
 					name: instrumentDef.name,
@@ -90,7 +89,7 @@ export const addInstrument = (type: string, position: PointObj = { x: 0, y: 0 })
 					position,
 					...deskItemTypeDefaults[INSTRUMENT],
 				}
-				return add('desk', newDeskItem)
+				return add<DeskItemType>('desk', newDeskItem)
 					.then(deskItem => defer(() => dispatch({ type: ADD_INSTRUMENT, instrument, deskItem } as ActionObj)))
 					.catch(e => console.warn('Unable to add desk item for instrument', newDeskItem, newInstrument))
 			})

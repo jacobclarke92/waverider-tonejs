@@ -6,7 +6,7 @@ import { ADD_INSTRUMENT, REMOVE_INSTRUMENT } from './instruments'
 import { ADD_EFFECT, REMOVE_EFFECT } from './effects'
 import _find from 'lodash/find'
 
-import { add, getAll, updateById } from '../api/db'
+import { add, getAll, updateById, truncate, bulkPut } from '../api/db'
 import { PointObj } from '../utils/Point'
 import { defer } from '../utils/lifecycleUtils'
 
@@ -24,7 +24,7 @@ export interface ActionObj extends Action {
 	id?: number
 	position?: PointObj
 	deskItem?: DeskItemType
-	desk?: any // TODO
+	desk?: DeskItemType[] // TODO
 	deadConnections?: DeskItemType[]
 }
 
@@ -74,13 +74,19 @@ export default function(state: State = initialState, action: ActionObj) {
 }
 
 export const loadDesk = () => (dispatch: ThunkDispatchType) =>
-	getAll('desk')
+	getAll<DeskItemType>('desk')
 		.then(desk => {
 			if (desk.length > 0) return desk
-			return add('desk', initialState[0])
+			return add<DeskItemType>('desk', initialState[0]).then(deskItem => [deskItem])
 		})
-		.then(desk => defer(() => dispatch({ type: LOAD_DESK, desk: isArray(desk) ? desk : [desk] } as ActionObj)))
+		.then((desk: DeskItemType[]) => defer(() => dispatch({ type: LOAD_DESK, desk } as ActionObj)))
 		.catch(e => console.warn('Unable to load desk state', e))
+
+export const overwriteDesk = action => dispatch =>
+	truncate('desk')
+		.then(() => bulkPut<DeskItemType>('desk', action.desk))
+		.then(() => getAll<DeskItemType>('desk'))
+		.then(desk => defer(() => dispatch({ type: LOAD_DESK, desk } as ActionObj)))
 
 export const moveDeskItem = (deskItem: DeskItemType, position: PointObj) =>
 	({
@@ -105,7 +111,7 @@ export const connectWire = (desk: State, wireFrom: Wire, wireTo: Wire, { wireTyp
 		},
 	}
 	return (dispatch: ThunkDispatchType) =>
-		updateById('desk', wireFrom.deskItemId, newDeskItem)
+		updateById<DeskItemType>('desk', wireFrom.deskItemId, newDeskItem)
 			.then(deskItem => defer(() => dispatch({ type: DESK_CONNECT_WIRE, deskItem } as ActionObj)))
 			.catch(e => console.warn('Unable to update desk item for wire connection', wireFrom))
 }
@@ -123,7 +129,7 @@ export const disconnectWire = (desk: State, wireJoin: WireJoin) => {
 	const newDeskItem = { [outputGroupKey]: outputs }
 
 	return (dispatch: ThunkDispatchType) =>
-		updateById('desk', wireFrom.deskItemId, newDeskItem)
+		updateById<DeskItemType>('desk', wireFrom.deskItemId, newDeskItem)
 			.then(deskItem => defer(() => dispatch({ type: DESK_DISCONNECT_WIRE, deskItem } as ActionObj)))
 			.catch(e => {
 				console.warn('Unable to update desk item for wire disconnection', wireFrom)

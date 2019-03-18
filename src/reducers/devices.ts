@@ -1,4 +1,4 @@
-import { Device } from '../types'
+import { Device, ThunkDispatchType } from '../types'
 import { Action } from 'redux'
 import { getAll, bulkPut } from '../api/db'
 import { defer } from '../utils/lifecycleUtils'
@@ -38,15 +38,15 @@ export default function(state: State = initialState, action: ReducerAction) {
 	return state
 }
 
-export const loadDevices = () => dispatch =>
-	getAll('devices')
+export const loadDevices = () => (dispatch: ThunkDispatchType) =>
+	getAll<Device>('devices')
 		.then(devices => defer(() => dispatch({ type: DEVICES_UPDATED, devices })))
 		.catch(e => console.warn('Unable to load previous midi devices', e))
 
-export const updateDevices = (devicesToUpdate: Device[]) => dispatch =>
-	bulkPut('devices', devicesToUpdate)
+export const updateDevices = (devicesToUpdate: Device[]) => (dispatch: ThunkDispatchType) =>
+	bulkPut<Device>('devices', devicesToUpdate)
 		.then(updatedDevices =>
-			getAll('devices')
+			getAll<Device>('devices')
 				.then(devices => defer(() => dispatch({ type: DEVICES_UPDATED, devices })))
 				.catch(e => console.warn('Unable to load midi devices after updating them', e))
 		)

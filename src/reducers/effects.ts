@@ -1,11 +1,11 @@
-import { Effect, DeskItemType, EffectType } from '../types'
+import { Effect, DeskItemType, EffectType, ThunkDispatchType } from '../types'
 import { Action } from 'redux'
 import _merge from 'lodash/merge'
 import _cloneDeep from 'lodash/cloneDeep'
 import effectLibrary from '../effectLibrary'
 import { getWiresRoutedTo } from '../deskController'
 import { deskItemTypeDefaults, EFFECT } from '../constants/deskItemTypes'
-import { add, getAll, getFirstWhere, updateById, removeById } from '../api/db'
+import { add, getAll, getFirstWhere, updateById, removeById, truncate, bulkPut } from '../api/db'
 import { PointObj } from '../utils/Point'
 import { defer } from '../utils/lifecycleUtils'
 import { disconnectWire, State as DeskStore } from './desk'
@@ -42,16 +42,19 @@ export default function(state: State = initialState, action: ActionObj) {
 	return state
 }
 
-export const loadEffects = () => dispatch =>
-	getAll('effects')
-		.then(effects => {
-			if (effects.length > 0) return effects
-			else return []
-		})
+export const loadEffects = () => (dispatch: ThunkDispatchType) =>
+	getAll<Effect>('effects')
+		.then(effects => (effects.length > 0 ? effects : []))
 		.then(effects => defer(() => dispatch({ type: LOAD_EFFECTS, effects } as ActionObj)))
 		.catch(e => console.warn('Unable to load effects', e))
 
-export const addEffect = (type, position: PointObj = { x: 0, y: 0 }) => {
+export const overwriteEffects = (effects: Effect[]) => (dispatch: ThunkDispatchType) =>
+	truncate('effects')
+		.then(() => bulkPut<Effect>('effects', effects))
+		.then(() => getAll<Effect>('effects'))
+		.then(effects => defer(() => dispatch({ type: LOAD_EFFECTS, effects } as ActionObj)))
+
+export const addEffect = (type: string, position: PointObj = { x: 0, y: 0 }) => {
 	const effectDef: EffectType = effectLibrary[type]
 	if (!effectDef) return null
 
@@ -62,8 +65,8 @@ export const addEffect = (type, position: PointObj = { x: 0, y: 0 }) => {
 		midiDeviceId: null,
 		..._cloneDeep(effectDef.defaultValue),
 	}
-	return dispatch =>
-		add('effects', newEffect)
+	return (dispatch: ThunkDispatchType) =>
+		add<Effect>('effects', newEffect)
 			.then(effect => {
 				const newDeskItem: DeskItemType = {
 					name: effectDef.name,
@@ -74,7 +77,7 @@ export const addEffect = (type, position: PointObj = { x: 0, y: 0 }) => {
 					position,
 					...deskItemTypeDefaults[EFFECT],
 				}
-				return add('desk', newDeskItem)
+				return add<DeskItemType>('desk', newDeskItem)
 					.then(deskItem => defer(() => dispatch({ type: ADD_EFFECT, effect, deskItem } as ActionObj)))
 					.catch(e => console.warn('Unable to add desk item for effect', newDeskItem, newEffect))
 			})
@@ -83,7 +86,7 @@ export const addEffect = (type, position: PointObj = { x: 0, y: 0 }) => {
 
 export const updateEffect = (id, updates) => ({ type: UPDATE_EFFECT, id, updates } as ActionObj)
 
-export const removeEffect = (desk: DeskStore, deskItem: DeskItemType) => dispatch =>
+export const removeEffect = (desk: DeskStore, deskItem: DeskItemType) => (dispatch: ThunkDispatchType) =>
 	removeById('effects', deskItem.ownerId)
 		.then(() =>
 			removeById('desk', deskItem.id)
