@@ -10,7 +10,7 @@ import MembraneSynthDeskItem from '../components/desk/MembraneSynth'
 import BaseInstrument from './BaseInstrument'
 
 export class MembraneSynthInstrument extends BaseInstrument {
-	synth: PolySynth
+	synth: MembraneSynth
 
 	constructor(value = {}, dispatch) {
 		super()
