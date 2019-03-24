@@ -55,13 +55,6 @@ interface StateProps {
 	instruments: InstrumentsStore
 }
 
-interface DeskWireReference {
-	param: string
-	deskItem: DeskItemType
-	position: PointObj
-	relativePosition: PointObj
-}
-
 interface State {
 	mouseDown: boolean
 	mouseMoved: boolean
@@ -86,8 +79,6 @@ interface State {
 class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, State> {
 	container: HTMLDivElement
 	interface: HTMLDivElement
-	handleMouseMove: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
-	handleTouchMove: (e: TouchEvent) => void
 	deskItemRefs: NumericObject
 
 	constructor(props) {
@@ -96,15 +87,7 @@ class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, St
 		this.removeActiveItem = this.removeActiveItem.bind(this)
 		this.handlePointerDown = this.handlePointerDown.bind(this)
 		this.handlePointerUp = this.handlePointerUp.bind(this)
-		this.handleThrottledMouseMove = _throttle(this.handleThrottledMouseMove.bind(this), 1000 / 60)
-		this.handleThrottledTouchMove = _throttle(this.handleThrottledTouchMove.bind(this), 1000 / 60)
-		this.handleMouseMove = e => {
-			e.persist()
-			this.handleThrottledMouseMove<HTMLDivElement>(e)
-		}
-		this.handleTouchMove = e => {
-			this.handleThrottledTouchMove(e)
-		}
+		this.handleThrottledPointedMove = _throttle(this.handleThrottledPointedMove.bind(this), 1000 / 60)
 		this.deskItemRefs = {}
 		this.state = {
 			mouseDown: false,
@@ -127,31 +110,24 @@ class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, St
 		addKeyListener('backspace', this.removeActiveItem)
 		addKeyListener('delete', this.removeActiveItem)
 		addKeyListener('esc', this.clearActiveItem)
-		document.addEventListener('touchmove', this.handleTouchMove)
+		document.addEventListener('mousemove', this.handleThrottledPointedMove)
+		document.addEventListener('touchmove', this.handleThrottledPointedMove)
 	}
 
 	componentWillUnmount() {
 		removeKeyListener('backspace', this.removeActiveItem)
 		removeKeyListener('delete', this.removeActiveItem)
 		removeKeyListener('esc', this.clearActiveItem)
-		document.removeEventListener('touchmove', this.handleTouchMove)
+		document.removeEventListener('mousemove', this.handleThrottledPointedMove)
+		document.removeEventListener('touchmove', this.handleThrottledPointedMove)
 	}
 
-	handleThrottledTouchMove(event: TouchEvent) {
-		const pointer = new Point(getNativeMousePosition(event))
-		const stagePointer = new Point(getRelativeMousePositionNative(event, this.interface))
-		this.handlePointerMove(pointer, stagePointer)
-	}
-
-	handleThrottledMouseMove<EventElemType>(event: React.MouseEvent<EventElemType, MouseEvent>) {
-		const pointer = new Point(getMousePosition<EventElemType>(event))
-		const stagePointer = new Point(getRelativeMousePosition(event, this.interface))
-		this.handlePointerMove(pointer, stagePointer)
-	}
-
-	handlePointerMove(pointer: Point, stagePointer: Point) {
+	handleThrottledPointedMove(event: MouseEvent | TouchEvent) {
 		const { dispatch, gui } = this.props
 		const { snapping } = gui.viewStates[DESK]
+
+		const pointer = new Point(getNativeMousePosition(event))
+		const stagePointer = new Point(getRelativeMousePositionNative(event, this.interface))
 
 		this.setState({ pointer, stagePointer })
 
@@ -357,7 +333,6 @@ class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, St
 			<div
 				ref={(elem: HTMLDivElement) => (this.container = elem)}
 				className={classname('desk-interface-container', { panning })}
-				onMouseMove={this.handleMouseMove}
 				onMouseDown={this.handlePointerDown}
 				onTouchStart={this.handlePointerDown}
 				onMouseUp={this.handlePointerUp}
