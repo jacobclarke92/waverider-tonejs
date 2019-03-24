@@ -48,18 +48,20 @@ export default class Oscilloscope extends Component<Props> {
 		if (this.instance && this.instance.analyser) {
 			let values = this.instance.analyser.getValue()
 
-			// this snippet attempts to snap to zero-crossing point
-			// let found = false
-			// let prev = null
-			// values = values.filter(v => {
-			// 	if (found) return true
-			// 	if (Math.abs(v) < 0.05 && prev != null && prev > v) {
-			// 		found = true
-			// 		return true
-			// 	}
-			// 	prev = v
-			// 	return false
-			// })
+			if (this.instance.effect.zeroCrossing) {
+				// this snippet attempts to snap to zero-crossing point
+				let found = false
+				let prev = null
+				values = values.filter(v => {
+					if (found) return true
+					if (Math.abs(v) < 0.05 && prev != null && prev > v) {
+						found = true
+						return true
+					}
+					prev = v
+					return false
+				})
+			}
 
 			const cW = this.canvas.width
 			const cH = this.canvas.height

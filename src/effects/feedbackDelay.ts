@@ -6,15 +6,17 @@ export const params: ParamsType = [
 	{
 		label: 'Delay Time',
 		path: 'delayTime',
+		pathHasValue: true,
 		description: 'The delay applied to the incoming signal',
 		defaultValue: 0.25,
 		min: 0.01,
-		max: 9999,
-		step: 0.25,
+		max: 1,
+		step: 0.01,
 	},
 	{
 		label: 'Feedback',
 		path: 'feedback',
+		pathHasValue: true,
 		description: 'The amount of the effected signal which is fed back through the delay',
 		defaultValue: 0.5,
 		min: 0,
@@ -28,8 +30,8 @@ export const defaultValue: EffectDefaultValueType = {
 }
 
 export class FeedbackDelayEffect extends BaseEffect {
-	constructor(value = {}, dispatch) {
-		super(value, dispatch)
+	constructor(value = {}, dispatch, params) {
+		super(value, dispatch, params)
 	}
 
 	initEffect(callback = () => {}) {
@@ -44,7 +46,7 @@ const effect: EffectType = {
 	name: 'Feedback Delay',
 	slug: 'feedbackDelay',
 	Effect: FeedbackDelayEffect,
-	Editor: () => null,
+	Editor: null,
 	defaultValue,
 	params,
 }

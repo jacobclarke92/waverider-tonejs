@@ -19,8 +19,8 @@ export const defaultValue: EffectDefaultValueType = {
 }
 
 export class FeedbackEffectEffect extends BaseEffect {
-	constructor(value = {}, dispatch) {
-		super(value, dispatch)
+	constructor(value = {}, dispatch, params) {
+		super(value, dispatch, params)
 	}
 
 	initEffect(callback = () => {}) {
@@ -35,7 +35,7 @@ const effect: EffectType = {
 	name: 'Feedback Effect',
 	slug: 'feedbackEffect',
 	Effect: FeedbackEffectEffect,
-	Editor: () => null,
+	Editor: null,
 	defaultValue,
 	params,
 }

@@ -56,8 +56,9 @@ function initEffects(effects: EffectsStore) {
 }
 
 function initEffect(effect: Effect) {
-	const Effect = effectLibrary[effect.type].Effect
-	instances[effect.id] = new Effect(effect, store.dispatch)
+	const effectConstructor = effectLibrary[effect.type]
+	const Effect = effectConstructor.Effect
+	instances[effect.id] = new Effect(effect, store.dispatch, effectConstructor.params)
 }
 
 function updateEffect(id: number, effects: EffectsStore) {

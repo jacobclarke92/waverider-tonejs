@@ -109,6 +109,7 @@ export interface Effect {
 	enabled: boolean
 	id?: number
 	type: string // TODO
+	effect: any // TODO
 	midiChannel: null | number
 	midiDeviceId: null | string
 }
@@ -124,6 +125,7 @@ export interface BaseParamType {
 	label: string
 	path: string
 	description?: string
+	pathHasValue?: boolean
 }
 
 export interface NumberParamType extends BaseParamType {
@@ -187,6 +189,16 @@ export interface InstrumentType {
 	DeskItem: ElementType
 	defaultValue: InstrumentDefaultValueType
 	params: ParamsType
+}
+
+export interface EffectPropertiesPanelProps extends Effect {
+	params: ParamsType
+	defaultValue: EffectDefaultValueType
+}
+
+export interface InstrumentPropertiesPanelProps extends Instrument {
+	params: ParamsType
+	defaultValue: InstrumentDefaultValueType
 }
 
 export interface ReduxStoreType {

@@ -6,6 +6,7 @@ export const params: ParamsType = [
 	{
 		label: 'Frequency',
 		path: 'frequency',
+		pathHasValue: true,
 		description: 'The rate of the LFO',
 		defaultValue: 1,
 		min: 1,
@@ -37,8 +38,8 @@ export const defaultValue: EffectDefaultValueType = {
 }
 
 export class AutoFilterEffect extends BaseEffect {
-	constructor(value = {}, dispatch) {
-		super(value, dispatch)
+	constructor(value = {}, dispatch, params) {
+		super(value, dispatch, params)
 	}
 
 	initEffect(callback = () => {}) {
@@ -53,7 +54,7 @@ const effect: EffectType = {
 	name: 'Auto Filter',
 	slug: 'autoFilter',
 	Effect: AutoFilterEffect,
-	Editor: () => null,
+	Editor: null,
 	defaultValue,
 	params,
 }

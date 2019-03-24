@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { ThunkDispatchProp, Instrument } from '../../types'
+import { ThunkDispatchProp, InstrumentPropertiesPanelProps } from '../../types'
 import { updateInstrument } from '../../reducers/instruments'
 import { defaultValue } from '../../instruments/basicSynth'
 
@@ -8,7 +8,7 @@ import KnobInput from '../input/KnobInput'
 import SelectInput from '../input/SelectInput'
 import DeviceAndChannel from '../DeviceAndChannel'
 
-class BasicSynth extends Component<ThunkDispatchProp & Instrument> {
+class BasicSynth extends Component<ThunkDispatchProp & InstrumentPropertiesPanelProps> {
 	render() {
 		const { dispatch, id, instrument = {}, midiDeviceId, midiChannel } = this.props
 		const { voices, portamento, envelope = {}, oscillator = {} } = instrument

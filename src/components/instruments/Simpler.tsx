@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { DropTargetMonitor } from 'react-dnd'
-import { ThunkDispatchProp, Instrument, GenericProps } from '../../types'
+import { ThunkDispatchProp, GenericProps, InstrumentPropertiesPanelProps } from '../../types'
 import { updateInstrument } from '../../reducers/instruments'
 import { addFile } from '../../api/db'
 import { parseNoteToNumber, noteNumberToName } from '../../utils/noteUtils'
@@ -14,7 +14,7 @@ import KnobInput from '../input/KnobInput'
 import DeviceAndChannel from '../DeviceAndChannel'
 import Waveform from '../Waveform'
 
-class Simpler extends Component<ThunkDispatchProp & Instrument> {
+class Simpler extends Component<ThunkDispatchProp & InstrumentPropertiesPanelProps> {
 	constructor(props) {
 		super(props)
 		this.handleFilesDrop = this.handleFilesDrop.bind(this)
@@ -54,6 +54,7 @@ class Simpler extends Component<ThunkDispatchProp & Instrument> {
 
 	render() {
 		const { dispatch, id, instrument, midiDeviceId, midiChannel } = this.props
+		if (!instrument) return <div />
 		const { voices, loop, reverse, trim, envelope, fileHash, baseNote, calculatedBaseNote, cents } = instrument
 		const { attack, decay, sustain, release } = envelope
 		return (

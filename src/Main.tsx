@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, ElementType } from 'react'
 import { connect } from 'react-redux'
 import cn from 'classnames'
 import _find from 'lodash/find'
@@ -11,12 +11,13 @@ import Views from './Views'
 import PropertiesPanel from './components/ui/PropertiesPanel'
 import effectLibrary from './effectLibrary'
 import instrumentLibrary from './instrumentLibrary'
-import { ReduxStoreType, ThunkDispatchProp } from './types'
+import { ReduxStoreType, ThunkDispatchProp, GenericProps } from './types'
 
 import { State as GuiStore } from './reducers/gui'
 import { State as EffectsStore } from './reducers/effects'
 import { State as InstrumentsStore } from './reducers/instruments'
 import PianoRoll from './components/ui/PianoRoll'
+import EffectPropertiesPanelDefault from './components/effects/EffectPropertiesPanelDefault'
 
 interface StateProps {
 	gui: GuiStore
@@ -29,21 +30,25 @@ class Main extends Component<ThunkDispatchProp & StateProps> {
 		const { gui, instruments = [], effects = [] } = this.props
 		const { view, activeElement, keyboardPianoEnabled } = gui
 		const View = Views[view]
-		let effect = {}
-		let instrument = {}
-		let PropertiesComponent = null
+		let PropertiesComponent: ElementType = null
+		let propertiesProps: GenericProps = {}
 		if (activeElement) {
 			if (activeElement.type == INSTRUMENT) {
 				const instrumentConstructor = instrumentLibrary[activeElement.element.ownerType]
 				if (instrumentConstructor) {
 					PropertiesComponent = instrumentConstructor.Editor
-					instrument = _find(instruments, { id: activeElement.element.ownerId })
+					propertiesProps = _find(instruments, { id: activeElement.element.ownerId }) || {}
+					propertiesProps.params = instrumentConstructor.params
+					propertiesProps.defaultValue = instrumentConstructor.defaultValue
 				}
 			} else if (activeElement.type == EFFECT) {
 				const effectConstructor = effectLibrary[activeElement.element.ownerType]
 				if (effectConstructor) {
 					PropertiesComponent = effectConstructor.Editor
-					effect = _find(effects, { id: activeElement.element.ownerId })
+					if (!PropertiesComponent) PropertiesComponent = EffectPropertiesPanelDefault
+					propertiesProps = _find(effects, { id: activeElement.element.ownerId }) || {}
+					propertiesProps.params = effectConstructor.params
+					propertiesProps.defaultValue = effectConstructor.defaultValue
 				}
 			}
 		}
@@ -57,7 +62,7 @@ class Main extends Component<ThunkDispatchProp & StateProps> {
 						<div className="workspace">{View.Workspace && <View.Workspace />}</div>
 						{activeElement && (
 							<PropertiesPanel title={activeElement.element.name}>
-								<PropertiesComponent {...instrument} />
+								<PropertiesComponent {...propertiesProps} />
 							</PropertiesPanel>
 						)}
 						<div className={cn('piano-panel', { collapsed: !keyboardPianoEnabled })} style={{ height: 100 }}>

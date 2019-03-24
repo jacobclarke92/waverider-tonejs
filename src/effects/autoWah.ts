@@ -37,8 +37,8 @@ export const defaultValue: EffectDefaultValueType = {
 }
 
 export class AutoWahEffect extends BaseEffect {
-	constructor(value = {}, dispatch) {
-		super(value, dispatch)
+	constructor(value = {}, dispatch, params) {
+		super(value, dispatch, params)
 	}
 
 	initEffect(callback = () => {}) {
@@ -53,7 +53,7 @@ const effect: EffectType = {
 	name: 'Auto Wah',
 	slug: 'autoWah',
 	Effect: AutoWahEffect,
-	Editor: () => null,
+	Editor: null,
 	defaultValue,
 	params,
 }

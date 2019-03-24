@@ -33,8 +33,8 @@ export const defaultValue: EffectDefaultValueType = {
 }
 
 export class AutoPannerEffect extends BaseEffect {
-	constructor(value = {}, dispatch) {
-		super(value, dispatch)
+	constructor(value = {}, dispatch, params) {
+		super(value, dispatch, params)
 	}
 
 	initEffect(callback = () => {}) {
@@ -49,7 +49,7 @@ const effect: EffectType = {
 	name: 'Auto Panner',
 	slug: 'autoPanner',
 	Effect: AutoPannerEffect,
-	Editor: () => null,
+	Editor: null,
 	defaultValue,
 	params,
 }
