@@ -99,7 +99,7 @@ export interface FileType {
 export interface Instrument {
 	enabled: boolean
 	id?: number
-	type: string // TODO
+	type: string
 	instrument: any // TODO
 	midiChannel: null | number
 	midiDeviceId: null | string
@@ -161,7 +161,7 @@ export interface AllInstrumentDefaultValuesType {
 }
 
 export interface InstrumentDefaultValueType extends AllInstrumentDefaultValuesType {
-	instrument: { [k: string]: any }
+	instrument: KeyedObject
 }
 
 export type AnyParamType = NumberParamType | OptionsParamType | NoteParamType | BooleanParamType

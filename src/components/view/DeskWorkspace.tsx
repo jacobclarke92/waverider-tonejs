@@ -68,11 +68,11 @@ interface State {
 	ioType: null | IOType
 	wireType: null | WireType
 	wireToValid: boolean
-	wireFrom: Wire // TODO
-	wireTo: Wire // TODO
-	selectedWire: WireJoin // TODO
-	selectedDeskItem: DeskItemType // TODO
-	dragTarget: any //TOOD
+	wireFrom: Wire
+	wireTo: Wire
+	selectedWire: WireJoin
+	selectedDeskItem: DeskItemType
+	dragTarget: DeskItemType
 	mouseDownTargetOffset?: MousePosition
 	mouseDownPosition?: PointObj
 	mouseDownPan?: PointObj
@@ -96,7 +96,7 @@ class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, St
 		this.handleThrottledMouseMove = _throttle(this.handleThrottledMouseMove.bind(this), 1000 / 60)
 		this.handleMouseMove = e => {
 			e.persist()
-			this.handleThrottledMouseMove(e)
+			this.handleThrottledMouseMove<HTMLDivElement>(e)
 		}
 		this.deskItemRefs = {}
 		this.state = {
@@ -128,11 +128,11 @@ class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, St
 		removeKeyListener('esc', this.clearActiveItem)
 	}
 
-	handleThrottledMouseMove(event) {
+	handleThrottledMouseMove<EventElemType>(event: React.MouseEvent<EventElemType, MouseEvent>) {
 		const { dispatch, gui } = this.props
 		const { snapping } = gui.viewStates[DESK]
 
-		const pointer = new Point(getMousePosition(event))
+		const pointer = new Point(getMousePosition<EventElemType>(event))
 		const stagePointer = new Point(getRelativeMousePosition(event, this.interface))
 
 		this.setState({ pointer, stagePointer })
@@ -174,17 +174,19 @@ class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, St
 		}
 	}
 
-	handlePointerDown(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+	handlePointerDown<EventElemType>(
+		event: React.MouseEvent<EventElemType, MouseEvent> | React.TouchEvent<EventElemType>
+	) {
 		this.setState({
 			mouseDown: true,
 			mouseMoved: false,
 			dragTarget: null,
-			mouseDownPosition: getMousePosition(event),
+			mouseDownPosition: getMousePosition<EventElemType>(event),
 			mouseDownPan: { ...this.state.pan },
 		})
 	}
 
-	handlePointerUp(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+	handlePointerUp<EventElemType>(event: React.MouseEvent<EventElemType, MouseEvent> | React.TouchEvent<EventElemType>) {
 		this.setState({
 			mouseDown: false,
 			dragTarget: null,
@@ -339,7 +341,9 @@ class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, St
 				className={classname('desk-interface-container', { panning })}
 				onMouseMove={this.handleMouseMove}
 				onMouseDown={this.handlePointerDown}
-				onMouseUp={this.handlePointerUp}>
+				onTouchStart={this.handlePointerDown}
+				onMouseUp={this.handlePointerUp}
+				onTouchEnd={this.handlePointerUp}>
 				<div
 					ref={(elem: HTMLDivElement) => (this.interface = elem)}
 					className="desk-interface"

@@ -1,11 +1,10 @@
 import _merge from 'lodash/merge'
 import _cloneDeep from 'lodash/cloneDeep'
 
-import { isArray } from '../utils/typeUtils'
-import { add, getAll, getFirstWhere, updateById, removeById, truncate, bulkPut } from '../api/db'
+import { add, getAll, removeById, truncate, bulkPut } from '../api/db'
 import instrumentLibrary from '../instrumentLibrary'
 import { deskItemTypeDefaults, INSTRUMENT, MASTER } from '../constants/deskItemTypes'
-import { Instrument, DeskItemType, ThunkDispatchType } from '../types'
+import { Instrument, DeskItemType, ThunkDispatchType, KeyedObject } from '../types'
 import { Action } from 'redux'
 import { PointObj } from '../utils/Point'
 import { defer } from '../utils/lifecycleUtils'
@@ -22,7 +21,7 @@ export interface ActionObj extends Action {
 	id?: number
 	instrument?: Instrument
 	instruments?: Instrument[]
-	updates?: any // TODO
+	updates?: KeyedObject
 }
 
 const initialState: State = [
@@ -99,7 +98,8 @@ export const addInstrument = (type: string, position: PointObj = { x: 0, y: 0 })
 			.catch(e => console.warn('Unable to add instrument', newInstrument))
 }
 
-export const updateInstrument = (id, updates) => ({ type: UPDATE_INSTRUMENT, id, updates } as ActionObj)
+export const updateInstrument = (id: number, updates: KeyedObject) =>
+	({ type: UPDATE_INSTRUMENT, id, updates } as ActionObj)
 
 export const removeInstrument = (deskItem: DeskItemType) => dispatch =>
 	removeById('instruments', deskItem.ownerId)

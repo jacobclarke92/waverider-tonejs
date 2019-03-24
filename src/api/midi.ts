@@ -2,7 +2,8 @@ import _find from 'lodash/find'
 import _difference from 'lodash/difference'
 import { updateDevices, internalPiano } from '../reducers/devices'
 import { isDeviceUsedByInstrument } from '../instrumentsController'
-import { Device } from '../types'
+import { Device, ThunkDispatchType } from '../types'
+import { Store } from 'redux'
 
 export const NOTE_ON: number = 144
 export const NOTE_OFF: number = 128
@@ -24,7 +25,7 @@ let listeners: MidiListenerFunction[] = []
 let noteDownListeners: MidiListenerFunction[] = []
 let noteUpListeners: MidiListenerFunction[] = []
 
-let store = null
+let store: Store = null
 
 export const addListener = (func: MidiListenerFunction) => listeners.push(func)
 export const addNoteDownListener = (func: MidiListenerFunction) => noteDownListeners.push(func)
@@ -36,8 +37,7 @@ export const removeNoteDownListener = func =>
 export const removeNoteUpListener = (func: MidiListenerFunction) =>
 	(noteUpListeners = noteUpListeners.filter(listener => listener != func))
 
-export function init(_store?: any) {
-	// TODO
+export function init(_store?: Store) {
 	if (_store) store = _store
 	if (navigator.requestMIDIAccess) {
 		navigator.requestMIDIAccess({ sysex: false }).then(handleMidiSuccess, handleMidiFailure)
@@ -79,7 +79,7 @@ const handleDeviceUpdates = () => {
 		console.log(`Device unplugged: ${deviceId} (${usedByInstrument ? 'was' : 'was not'} used by instrument)`)
 		devices.push({ ..._find(oldDevices, { id: deviceId }), disconnected: true })
 	}
-	store.dispatch(updateDevices(devices))
+	;(store.dispatch as ThunkDispatchType)(updateDevices(devices))
 }
 
 const handleMidiMessage = (message: WebMidi.MIDIMessageEvent, device: WebMidi.MIDIInput) => {

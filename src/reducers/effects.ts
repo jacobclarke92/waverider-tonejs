@@ -1,4 +1,4 @@
-import { Effect, DeskItemType, EffectType, ThunkDispatchType } from '../types'
+import { Effect, DeskItemType, EffectType, ThunkDispatchType, KeyedObject } from '../types'
 import { Action } from 'redux'
 import _merge from 'lodash/merge'
 import _cloneDeep from 'lodash/cloneDeep'
@@ -14,7 +14,7 @@ export type State = Effect[]
 
 export interface ActionObj extends Action {
 	id?: number
-	updates?: any
+	updates?: KeyedObject
 	effects?: Effect[]
 	effect?: Effect
 	deskItem?: DeskItemType
@@ -86,7 +86,7 @@ export const addEffect = (type: string, position: PointObj = { x: 0, y: 0 }) => 
 			.catch(e => console.warn('Unable to add effect', newEffect))
 }
 
-export const updateEffect = (id, updates) => ({ type: UPDATE_EFFECT, id, updates } as ActionObj)
+export const updateEffect = (id: number, updates: KeyedObject) => ({ type: UPDATE_EFFECT, id, updates } as ActionObj)
 
 export const removeEffect = (desk: DeskStore, deskItem: DeskItemType) => (dispatch: ThunkDispatchType) =>
 	removeById('effects', deskItem.ownerId)

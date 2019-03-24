@@ -46,7 +46,9 @@ function _resizeCallback() {
 const resizeCallback = _debounce(_resizeCallback, 100)
 window.addEventListener('resize', resizeCallback)
 
-export const getRect = (elem: HTMLElement): ClientRect | DOMRect => elem.getBoundingClientRect()
+export const getRect = <ElemType>(elem: ElemType): ClientRect | DOMRect => {
+	if (elem instanceof HTMLElement) return elem.getBoundingClientRect()
+}
 
 export const getPositionWithinElem = (
 	child: HTMLElement,
@@ -70,20 +72,53 @@ export const getPositionWithinElem = (
 	}
 }
 
-// TODO e: any
-export const getMousePosition = (e: any): PointObj => ({
-	x: !!e.touches ? e.touches[0].pageX : e.pageX,
-	y: !!e.touches ? e.touches[0].pageY : e.pageY,
-})
+export const getMousePosition = <ElemType>(
+	e: React.MouseEvent<ElemType, MouseEvent> | React.TouchEvent<ElemType>
+): PointObj => {
+	if (e.nativeEvent instanceof TouchEvent)
+		return { x: e.nativeEvent.touches[0].pageX, y: e.nativeEvent.touches[0].pageY }
+	return { x: e.nativeEvent.pageX, y: e.nativeEvent.pageY }
+}
+
+export const getNativeMousePosition = (e: MouseEvent | TouchEvent) => {
+	if (e instanceof TouchEvent) return { x: e.touches[0].pageX, y: e.touches[0].pageY }
+	return { x: e.pageX, y: e.pageY }
+}
 
 export interface MousePosition extends PointObj {
 	percent: PointObj
 }
 
-// TODO e: any
-export const getRelativeMousePosition = (e: any, elem: HTMLElement, contain: boolean = true): MousePosition => {
-	const rect = getRect(elem)
-	const mouse = getMousePosition(e)
+export const getRelativeMousePosition = <EventElemType, ElemType>(
+	e: React.MouseEvent<EventElemType, MouseEvent> | React.TouchEvent<EventElemType>,
+	elem: ElemType,
+	contain: boolean = true
+): MousePosition => {
+	const rect = getRect<ElemType>(elem)
+	const mouse = getMousePosition<EventElemType>(e)
+	const position = {
+		x: mouse.x - rect.left,
+		y: mouse.y - rect.top,
+		percent: { x: 0, y: 0 },
+	}
+	position.percent = {
+		x: position.x / rect.width,
+		y: position.y / rect.height,
+	}
+	if (contain) {
+		position.percent.x = clamp(position.percent.x, 0, 1)
+		position.percent.y = clamp(position.percent.y, 0, 1)
+	}
+	return position
+}
+
+export const getRelativeMousePositionNative = <ElemType>(
+	e: MouseEvent | TouchEvent,
+	elem: ElemType,
+	contain: boolean = true
+): MousePosition => {
+	const rect = getRect<ElemType>(elem)
+	const mouse = getNativeMousePosition(e)
 	const position = {
 		x: mouse.x - rect.left,
 		y: mouse.y - rect.top,

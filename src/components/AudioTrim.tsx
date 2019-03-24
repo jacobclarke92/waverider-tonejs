@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
-import { getRelativeMousePosition, MousePosition } from '../utils/screenUtils'
-import { PointObj } from '../utils/Point'
+import { getRelativeMousePosition, getRelativeMousePositionNative, MousePosition } from '../utils/screenUtils'
 
 type DragType = false | 'move' | 'start' | 'end'
 
@@ -39,30 +38,37 @@ export default class AudioTrim extends Component<Props> {
 
 	componentDidMount() {
 		document.addEventListener('mouseup', this.handleMouseUp)
+		document.addEventListener('touchend', this.handleMouseUp)
 		document.addEventListener('mousemove', this.handleMouseMove)
+		document.addEventListener('touchmove', this.handleMouseMove)
 	}
 
 	componentWillUnmount() {
 		document.removeEventListener('mouseup', this.handleMouseUp)
+		document.removeEventListener('touchend', this.handleMouseUp)
 		document.removeEventListener('mousemove', this.handleMouseMove)
+		document.removeEventListener('touchmove', this.handleMouseMove)
 	}
 
-	handleStartDrag(type, event) {
+	handleStartDrag<EventElemType>(
+		type: DragType,
+		event: React.MouseEvent<EventElemType, MouseEvent> | React.TouchEvent<EventElemType>
+	) {
 		this.dragging = type
 		this.initDragMousePosition = getRelativeMousePosition(event, this.container)
 		this.previousPosition = { ...this.props.trim }
 		event.preventDefault()
 	}
 
-	handleMouseUp(event: MouseEvent) {
+	handleMouseUp(event: MouseEvent | TouchEvent) {
 		if (this.dragging) this.props.onAfterChange(this.props.trim, this.previousPosition)
 		this.dragging = false
 	}
 
-	handleMouseMove(event: MouseEvent) {
+	handleMouseMove(event: MouseEvent | TouchEvent) {
 		if (!this.dragging) return
 
-		const mousePosition = getRelativeMousePosition(event, this.container)
+		const mousePosition = getRelativeMousePositionNative(event, this.container)
 		const trim = { ...this.props.trim }
 
 		if (this.dragging == 'move') {
@@ -102,16 +108,19 @@ export default class AudioTrim extends Component<Props> {
 					className="trim-area"
 					style={{ left: start * 100 + '%', width: duration * 100 + '%' }}
 					onMouseDown={e => this.handleStartDrag('move', e)}
+					onTouchStart={e => this.handleStartDrag('move', e)}
 				/>
 				<div
 					className="trim-left"
 					style={{ left: start * 100 + '%' }}
 					onMouseDown={e => this.handleStartDrag('start', e)}
+					onTouchStart={e => this.handleStartDrag('start', e)}
 				/>
 				<div
 					className="trim-right"
 					style={{ left: end * 100 + '%' }}
 					onMouseDown={e => this.handleStartDrag('end', e)}
+					onTouchStart={e => this.handleStartDrag('end', e)}
 				/>
 			</div>
 		)

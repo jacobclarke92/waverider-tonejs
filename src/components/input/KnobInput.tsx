@@ -7,6 +7,7 @@ import Donut from './Donut'
 import NumberInput from './NumberInput'
 import PointerLockWrapper from '../PointerLockWrapper'
 import { PointObj } from '../../utils/Point'
+import { GenericProps } from '../../types'
 
 type LabelPosition = 'top' | 'right' | 'bottom' | 'left'
 type InputValidatorFunc = (val: number) => number | false
@@ -25,7 +26,7 @@ interface Props {
 	trackSize?: number
 	trackThickness?: number
 	dragSensitivity?: number
-	inputProps: { [k: string]: any }
+	inputProps: GenericProps
 	inputValidator?: InputValidatorFunc
 	inputValueIsDisplayValue?: boolean
 	loading?: boolean
