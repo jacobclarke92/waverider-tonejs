@@ -7,7 +7,7 @@ import Icon from '../Icon'
 import { GenericProps, ThunkDispatchProp } from '../../types'
 import { DeskItemProps } from '../view/DeskWorkspace'
 
-export type DeskItemMouseEventType = React.MouseEvent<HTMLDivElement, MouseEvent>
+export type DeskItemPointerEventType = React.MouseEvent<HTMLDivElement, MouseEvent> | React.TouchEvent<HTMLDivElement>
 
 export default class DeskItemWrapper extends Component<ThunkDispatchProp & PinMouseEventProps & DeskItemProps> {
 	deskItemElem: HTMLElement
@@ -41,16 +41,16 @@ export default class DeskItemWrapper extends Component<ThunkDispatchProp & PinMo
 		}
 	}
 
-	handleMouseDown(event: DeskItemMouseEventType, childProps: GenericProps) {
+	handlePointerDown(event: DeskItemPointerEventType, childProps: GenericProps) {
 		event.preventDefault()
 		this.props.onPointerDown(event, this.deskItemElem)
 	}
 
-	handleMouseUp(event: DeskItemMouseEventType, childProps: GenericProps) {
+	handlePointerUp(event: DeskItemPointerEventType, childProps: GenericProps) {
 		this.props.onPointerUp(event, this.deskItemElem)
 	}
 
-	handleRemove(event: DeskItemMouseEventType) {
+	handleRemove(event: DeskItemPointerEventType) {
 		if (confirm('Are you sure you want to delete this?')) {
 			this.props.onRemove()
 		}
@@ -98,8 +98,10 @@ export default class DeskItemWrapper extends Component<ThunkDispatchProp & PinMo
 			<div
 				className={cn('desk-item-wrapper', { dragging, selected })}
 				style={wrapperStyles}
-				onMouseDown={e => this.handleMouseDown(e, child ? child.props : {})}
-				onMouseUp={e => this.handleMouseUp(e, child ? child.props : {})}>
+				onMouseDown={e => this.handlePointerDown(e, child ? child.props : {})}
+				onTouchStart={e => this.handlePointerDown(e, child ? child.props : {})}
+				onMouseUp={e => this.handlePointerUp(e, child ? child.props : {})}
+				onTouchEnd={e => this.handlePointerUp(e, child ? child.props : {})}>
 				{newChild}
 				{audioInput && <Pin wireType="audio" ioType="input" {...pinProps} />}
 				{audioOutput && <Pin wireType="audio" ioType="output" {...pinProps} />}
