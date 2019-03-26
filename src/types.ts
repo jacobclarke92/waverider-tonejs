@@ -80,6 +80,16 @@ export interface DeskItemType extends DeskItemIOType {
 	slug: string
 	position: PointObj
 }
+
+export interface MappingType {
+	id?: number
+	ownerId: number
+	ownerType: string
+	paramPath: string
+	min?: number
+	max?: number
+}
+
 export interface Device extends WebMidi.MIDIPort {
 	disconnected: boolean
 }

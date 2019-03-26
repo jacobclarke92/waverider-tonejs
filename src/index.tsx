@@ -18,6 +18,7 @@ import { loadInstruments } from './reducers/instruments'
 import { loadDevices } from './reducers/devices'
 import { loadEffects } from './reducers/effects'
 import { loadDesk } from './reducers/desk'
+import { loadMappings } from './reducers/mappings'
 
 import App from './App'
 import { ThunkDispatchType } from './types'
@@ -41,6 +42,7 @@ initKeyListeners()
 ;(store.dispatch as ThunkDispatchType)(loadEffects())
 ;(store.dispatch as ThunkDispatchType)(loadDevices())
 ;(store.dispatch as ThunkDispatchType)(loadDesk())
+;(store.dispatch as ThunkDispatchType)(loadMappings())
 
 ReactDOM.render(
 	<Provider store={store}>

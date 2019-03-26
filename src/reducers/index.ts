@@ -5,6 +5,7 @@ import devices from './devices'
 import instruments from './instruments'
 import effects from './effects'
 import desk from './desk'
+import mappings from './mappings'
 import gui from './gui'
 
 const reducers = combineReducers({
@@ -14,6 +15,7 @@ const reducers = combineReducers({
 	instruments,
 	effects,
 	desk,
+	mappings,
 	gui,
 })
 

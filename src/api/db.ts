@@ -8,6 +8,7 @@ import { deviceSchema } from './midi'
 import { effectSchema } from '../effectLibrary'
 import { instrumentSchema } from '../instrumentLibrary'
 import { deskSchema } from '../reducers/desk'
+import { mappingsSchema } from '../reducers/mappings'
 import { FileType, InstrumentType, EffectType, Instrument, Device, DeskItemType } from '../types'
 import { PointObj } from '../utils/Point'
 
@@ -51,6 +52,14 @@ type DeskTableSchema = {
 	ownerType: string
 	type: string
 	position: PointObj
+}
+type MappingsTableSchema = {
+	id?: number
+	ownerId: number
+	ownerType: string
+	paramPath: string
+	min?: number
+	max?: number
 }
 
 export class FileEntity {
@@ -112,6 +121,7 @@ class AppDB extends Dexie {
 	effects: Dexie.Table<EffectsTableSchema, number>
 	devices: Dexie.Table<DevicesTableSchema, number>
 	desk: Dexie.Table<DeskTableSchema, number>
+	mappings: Dexie.Table<MappingsTableSchema, number>
 
 	constructor() {
 		super('AppDB')
@@ -121,6 +131,7 @@ class AppDB extends Dexie {
 			effects: effectSchema,
 			devices: deviceSchema,
 			desk: deskSchema,
+			mappings: mappingsSchema,
 		})
 		this.table('files').mapToClass(FileEntity)
 	}
