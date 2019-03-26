@@ -14,8 +14,15 @@ interface Props {
 
 export default class AutoParamInputs extends Component<Props> {
 	render() {
-		const { params } = this.props
-		return <div className="flex">{params.map((param, i) => this.renderParam(param, i))}</div>
+		const { params, children } = this.props
+		return (
+			<div className="flex">
+				{params.map((param, i) => {
+					const node = this.renderParam(param, i)
+					return typeof children == 'function' ? children(node, param, i) : node
+				})}
+			</div>
+		)
 	}
 
 	renderParam(param: AnyParamType, i: number) {
