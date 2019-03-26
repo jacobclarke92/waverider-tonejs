@@ -1,0 +1,19 @@
+.midi-input {
+  display: inline-block;
+  &.active {
+    cursor: pointer;
+    margin: -1px;
+    border: 1px dashed var(--primary);
+    &.selected {
+      background-color: color-mod(var(--success) alpha(20%));
+    }
+    &:not(.selected) {
+      &.used {
+        background-color: color-mod(var(--primary) alpha(20%));
+      }
+      &:not(.used) {
+        background-color: color-mod(var(--secondary) alpha(20%));
+      }
+    }
+  }
+}
