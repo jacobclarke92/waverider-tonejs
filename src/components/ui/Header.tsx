@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import cn from 'classnames'
 import { connect } from 'react-redux'
 import { ReduxStoreType, ThunkDispatchProp } from '../../types'
-import { State as GuiStore, toggleKeyboardPiano } from '../../reducers/gui'
+import { State as GuiStore, toggleKeyboardPiano, toggleMidiMapping } from '../../reducers/gui'
 
 import Icon from '../Icon'
 import UploadWrapper from '../UploadWrapper'
@@ -48,6 +48,11 @@ class Header extends Component<ThunkDispatchProp & StateProps> {
 						</button>
 					</div>
 					<div className="header-right">
+						<button
+							className={cn('icon-button', { active: gui.midiMappingEnabled })}
+							onClick={() => dispatch(toggleMidiMapping())}>
+							<Icon name="midi" size="s" />
+						</button>
 						<UploadWrapper className="button icon-button" accept="application/json" onChange={this.processFile}>
 							<Icon name="load" size="s" />
 						</UploadWrapper>

@@ -9,6 +9,7 @@ export const UPDATE_VIEW_UI_STATE = 'UPDATE_VIEW_UI_STATE'
 export const UPDATE_ACTIVE_ELEMENT = 'UPDATE_ACTIVE_ELEMENT'
 export const CLEAR_ACTIVE_ELEMENT = 'CLEAR_ACTIVE_ELEMENT'
 export const TOGGLE_KEYBOARD_PIANO = 'TOGGLE_KEYBOARD_PIANO'
+export const TOGGLE_MIDI_MAPPING = 'TOGGLE_MIDI_MAPPING'
 
 export interface ViewState {
 	snapping?: boolean
@@ -18,6 +19,7 @@ export interface ViewState {
 export type State = {
 	view: UiView
 	keyboardPianoEnabled: boolean
+	midiMappingEnabled: boolean
 	viewStates: { [key: string]: ViewState }
 	activeElement: null | ActiveElement
 }
@@ -38,6 +40,7 @@ const initialState: State = {
 	view: DESK,
 	activeElement: null,
 	keyboardPianoEnabled: true,
+	midiMappingEnabled: false,
 	viewStates: {
 		[STAGE]: {
 			snapping: false,
@@ -63,6 +66,8 @@ export default function(state: State = initialState, action: ReducerAction) {
 			return { ...state, activeElement: { type: action.deskItemType, element: action.element } }
 		case TOGGLE_KEYBOARD_PIANO:
 			return { ...state, keyboardPianoEnabled: !state.keyboardPianoEnabled }
+		case TOGGLE_MIDI_MAPPING:
+			return { ...state, midiMappingEnabled: !state.midiMappingEnabled }
 	}
 	return state
 }
@@ -75,3 +80,5 @@ export const updateActiveElement = (deskItemType: DeskItem, element: DeskItemTyp
 	({ type: UPDATE_ACTIVE_ELEMENT, deskItemType, element } as ReducerAction)
 
 export const toggleKeyboardPiano = () => ({ type: TOGGLE_KEYBOARD_PIANO })
+
+export const toggleMidiMapping = () => ({ type: TOGGLE_MIDI_MAPPING })
