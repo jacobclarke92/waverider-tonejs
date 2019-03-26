@@ -20,7 +20,7 @@
     background-color: var(--secondary);
     &.output {
       left: 100%;
-      background-color: color(var(--secondary) blackness(-35%));
+      background-color: color-mod(var(--secondary) blackness(-35%));
     }
   }
 
@@ -28,7 +28,7 @@
     bottom: 0;
     background-color: var(--tertiary);
     &.output {
-      background-color: color(var(--tertiary) blackness(-35%));
+      background-color: color-mod(var(--tertiary) blackness(-35%));
     }
   }
 }

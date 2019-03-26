@@ -17,7 +17,7 @@ input[type='checkbox'] {
     transform: scale(0) rotate(0deg);
     transition: all 0.12s ease-in-out;
     background-color: var(--primary);
-    border: 1px solid color(var(--primary) blackness(15%));
+    border: 1px solid color-mod(var(--primary) blackness(15%));
     box-sizing: border-box;
   }
 
