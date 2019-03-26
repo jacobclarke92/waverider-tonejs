@@ -30,6 +30,7 @@ export default class Oscilloscope extends Component<Props> {
 	}
 
 	handleRef = (ref: HTMLCanvasElement) => {
+		if (!ref) return
 		this.canvas = ref
 		this.canvas.width = 2 * this.canvas.clientWidth
 		this.canvas.height = 2 * this.canvas.clientHeight
