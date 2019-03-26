@@ -11,6 +11,7 @@ import { State as EffectsState } from './reducers/effects'
 import { State as GuiState } from './reducers/gui'
 import { State as InstrumentsState } from './reducers/instruments'
 import { State as LastActionState } from './reducers/lastAction'
+import { State as MappingsState } from './reducers/mappings'
 
 declare global {
 	interface Navigator {
@@ -219,6 +220,7 @@ export interface ReduxStoreType {
 	gui: GuiState
 	instruments: InstrumentsState
 	lastAction: LastActionState
+	mappings: MappingsState
 }
 
 export type ThunkDispatchType = ThunkDispatch<ReduxStoreType, void, AnyAction>
