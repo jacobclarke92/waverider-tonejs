@@ -7,6 +7,10 @@ import { Store } from 'redux'
 
 export const NOTE_ON: number = 144
 export const NOTE_OFF: number = 128
+export const CONTROL_CHANGE: number = 176
+export const POLY_AFERTOUCH = 160
+export const PROGRAM_CHANGE = 192
+export const PITCH_BEND = 224
 
 export const deviceSchema = 'id,type,name,manufacturer,version,disconnected'
 
@@ -24,18 +28,25 @@ let midi: WebMidi.MIDIAccess = null
 let listeners: MidiListenerFunction[] = []
 let noteDownListeners: MidiListenerFunction[] = []
 let noteUpListeners: MidiListenerFunction[] = []
+let controlChangeListeners: MidiListenerFunction[] = []
 
 let store: Store = null
 
 export const addListener = (func: MidiListenerFunction) => listeners.push(func)
-export const addNoteDownListener = (func: MidiListenerFunction) => noteDownListeners.push(func)
-export const addNoteUpListener = (func: MidiListenerFunction) => noteUpListeners.push(func)
 export const removeListener = (func: MidiListenerFunction) =>
 	(listeners = listeners.filter(listener => listener != func))
+
+export const addNoteDownListener = (func: MidiListenerFunction) => noteDownListeners.push(func)
 export const removeNoteDownListener = func =>
 	(noteDownListeners = noteDownListeners.filter(listener => listener != func))
+
+export const addNoteUpListener = (func: MidiListenerFunction) => noteUpListeners.push(func)
 export const removeNoteUpListener = (func: MidiListenerFunction) =>
 	(noteUpListeners = noteUpListeners.filter(listener => listener != func))
+
+export const addControlChangeListener = (func: MidiListenerFunction) => controlChangeListeners.push(func)
+export const removeControlChangeListener = (func: MidiListenerFunction) =>
+	(controlChangeListeners = controlChangeListeners.filter(listener => listener != func))
 
 export function init(_store?: Store) {
 	if (_store) store = _store
@@ -102,6 +113,9 @@ const handleMidiMessage = (message: WebMidi.MIDIMessageEvent, device: WebMidi.MI
 			triggerNoteUpListeners(device.id, channel, note, velocity)
 			store.dispatch({ type: NOTE_OFF, deviceId: device.id, channel, note, velocity } as MidiMessageAction)
 			break
+		case CONTROL_CHANGE:
+			triggerControlChangeListeners(device.id, channel, note, velocity)
+			break
 	}
 }
 
@@ -109,3 +123,5 @@ const triggerNoteDownListeners = (deviceId: string, channel: number, note: numbe
 	noteDownListeners.forEach(listener => listener(deviceId, channel, note, velocity))
 const triggerNoteUpListeners = (deviceId: string, channel: number, note: number, velocity: number) =>
 	noteUpListeners.forEach(listener => listener(deviceId, channel, note, velocity))
+const triggerControlChangeListeners = (deviceId: string, channel: number, cc: number, value: number) =>
+	controlChangeListeners.forEach(listener => listener(deviceId, channel, cc, value))
