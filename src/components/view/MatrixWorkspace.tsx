@@ -3,6 +3,8 @@ import cn from 'classnames'
 import { connect } from 'react-redux'
 import { ReduxStoreType, MappingType, ThunkDispatchProp } from '../../types'
 
+import MappingRow from '../matrix/MappingRow'
+
 interface Props {}
 
 interface StateProps {
@@ -15,9 +17,11 @@ class MatrixWorkspace extends Component<ThunkDispatchProp & StateProps & Props> 
 		const { mappings } = this.props
 		return (
 			<div ref={(elem: HTMLDivElement) => (this.container = elem)} className={cn('matrix-interface-container')}>
-				{mappings.map(mapping => (
-					<pre key={mapping.id}>{JSON.stringify(mapping)}</pre>
-				))}
+				<div className="mapping-rows">
+					{mappings.map(mapping => (
+						<MappingRow key={mapping.id} mapping={mapping} />
+					))}
+				</div>
 			</div>
 		)
 	}
