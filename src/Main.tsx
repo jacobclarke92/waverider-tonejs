@@ -17,7 +17,7 @@ import { State as GuiStore } from './reducers/gui'
 import { State as EffectsStore } from './reducers/effects'
 import { State as InstrumentsStore } from './reducers/instruments'
 import PianoRoll from './components/ui/PianoRoll'
-import EffectPropertiesPanelDefault from './components/effects/EffectPropertiesPanelDefault'
+import EffectPropertiesPanelDefault from './components/propertyPanels/effects/EffectPropertiesPanelDefault'
 
 interface StateProps {
 	gui: GuiStore
