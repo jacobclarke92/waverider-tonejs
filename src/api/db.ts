@@ -55,11 +55,15 @@ type DeskTableSchema = {
 }
 type MappingsTableSchema = {
 	id?: number
+	type: string
 	ownerId: number
 	ownerType: string
 	paramPath: string
 	min?: number
 	max?: number
+	deviceId?: string
+	channel?: number
+	cc?: number
 }
 
 export class FileEntity {

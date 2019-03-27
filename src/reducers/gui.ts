@@ -3,6 +3,7 @@ import _merge from 'lodash/merge'
 import _cloneDeep from 'lodash/cloneDeep'
 import { Action } from 'redux'
 import { UiView, DeskItem, DeskItemType, KeyedObject, MappingType } from '../types'
+import { ADD_MAPPING } from './mappings'
 
 export const UPDATE_VIEW = 'UPDATE_VIEW'
 export const UPDATE_VIEW_UI_STATE = 'UPDATE_VIEW_UI_STATE'
@@ -11,6 +12,8 @@ export const UPDATE_ACTIVE_CONTROL = 'UPDATE_ACTIVE_CONTROL'
 export const CLEAR_ACTIVE_ELEMENT = 'CLEAR_ACTIVE_ELEMENT'
 export const TOGGLE_KEYBOARD_PIANO = 'TOGGLE_KEYBOARD_PIANO'
 export const TOGGLE_MIDI_MAPPING = 'TOGGLE_MIDI_MAPPING'
+export const ENABLE_MIDI_MAPPING = 'ENABLE_MIDI_MAPPING'
+export const DISABLE_MIDI_MAPPING = 'DISABLE_MIDI_MAPPING'
 
 export interface ViewState {
 	snapping?: boolean
@@ -72,6 +75,12 @@ export default function(state: State = initialState, action: ReducerAction) {
 			return { ...state, activeControl: action.control }
 		case TOGGLE_KEYBOARD_PIANO:
 			return { ...state, keyboardPianoEnabled: !state.keyboardPianoEnabled }
+		case ENABLE_MIDI_MAPPING:
+			return { ...state, midiMappingEnabled: true }
+		case DISABLE_MIDI_MAPPING:
+			return { ...state, midiMappingEnabled: false, activeControl: null }
+		case ADD_MAPPING:
+			return { ...state, activeControl: null }
 		case TOGGLE_MIDI_MAPPING:
 			return {
 				...state,

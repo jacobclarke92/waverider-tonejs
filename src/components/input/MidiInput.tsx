@@ -1,4 +1,4 @@
-import React, { Component, Children, cloneElement, ReactNode } from 'react'
+import React, { Component, ReactNode } from 'react'
 import cn from 'classnames'
 import { connect, DispatchProp } from 'react-redux'
 import { ReduxStoreType, MappingType } from '../../types'
@@ -7,6 +7,7 @@ import { updateActiveControl } from '../../reducers/gui'
 export interface MidiInputProps {
 	id: number
 	type: string
+	slug: string
 	paramPath: string
 	render?: (renderProps) => ReactNode
 }
@@ -29,8 +30,8 @@ export type MidiInputRenderProps = State &
 
 class MidiInput extends Component<DispatchProp & MidiInputProps & StateProps, State> {
 	onSelect = () => {
-		const { id, type, paramPath } = this.props
-		this.props.dispatch(updateActiveControl({ ownerId: id, ownerType: type, paramPath }))
+		const { id, type, slug, paramPath } = this.props
+		this.props.dispatch(updateActiveControl({ type, ownerId: id, ownerType: slug, paramPath }))
 	}
 
 	render() {

@@ -4,7 +4,7 @@ import { REMOVE_INSTRUMENT } from './instruments'
 import { REMOVE_EFFECT } from './effects'
 import _find from 'lodash/find'
 
-import { getAll, truncate, bulkPut } from '../api/db'
+import { getAll, truncate, bulkPut, add, removeById } from '../api/db'
 import { defer } from '../utils/lifecycleUtils'
 
 export const LOAD_MAPPINGS: string = 'LOAD_MAPPINGS'
@@ -12,7 +12,8 @@ export const RELOAD_MAPPINGS: string = 'RELOAD_MAPPINGS'
 export const ADD_MAPPING: string = 'ADD_MAPPING'
 export const REMOVE_MAPPING: string = 'REMOVE_MAPPING'
 
-export const mappingsSchema = '++id,ownerId,ownerType,paramPath,min,max,[ownerId+ownerType]'
+export const mappingsSchema =
+	'++id,type,ownerId,ownerType,paramPath,min,max,deviceId,channel,cc,[ownerId+ownerType],[deviceId+channel+cc]'
 
 export type State = MappingType[]
 
@@ -54,3 +55,13 @@ export const overwriteMappings = (mappings: MappingType[]) => (dispatch: ThunkDi
 		.then(() => bulkPut<MappingType>('mappings', mappings))
 		.then(() => getAll<MappingType>('mappings'))
 		.then(mappings => defer(() => dispatch({ type: RELOAD_MAPPINGS, mappings } as ActionObj)))
+
+export const addMapping = (newMapping: MappingType) => dispatch =>
+	add<MappingType>('mappings', newMapping)
+		.then(mapping => defer(() => dispatch({ type: ADD_MAPPING, mapping } as ActionObj)))
+		.catch(e => console.warn('Unable to add mapping', newMapping, e))
+
+export const removeMapping = (id: number) => dispatch =>
+	removeById('mappings', id)
+		.then(() => defer(() => dispatch({ type: REMOVE_MAPPING, id } as ActionObj)))
+		.catch(e => console.warn('Unable to remove mapping', id, e))

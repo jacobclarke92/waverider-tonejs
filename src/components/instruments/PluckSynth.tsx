@@ -10,9 +10,9 @@ import DeviceAndChannel from '../DeviceAndChannel'
 
 class PluckSynth extends Component<ThunkDispatchProp & InstrumentPropertiesPanelProps> {
 	render() {
-		const { dispatch, id, instrument, midiDeviceId, midiChannel } = this.props
+		const { dispatch, id, type, instrument, midiDeviceId, midiChannel } = this.props
 		const { voices, attackNoise, dampening, resonance } = instrument
-		const midiInputProps = { id, type: 'instrument' }
+		const midiInputProps = { id, type: 'instrument', slug: type }
 		return (
 			<div className="pluck-synth">
 				<DeviceAndChannel instrumentId={id} deviceId={midiDeviceId} midiChannel={midiChannel} />

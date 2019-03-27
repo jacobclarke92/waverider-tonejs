@@ -9,7 +9,7 @@ import { updateEffect } from '../../reducers/effects'
 
 class EffectPropertiesPanelDefault extends Component<ThunkDispatchProp & EffectPropertiesPanelProps> {
 	render() {
-		const { dispatch, id, effect, params, defaultValue } = this.props
+		const { dispatch, id, type, effect, params, defaultValue } = this.props
 		return (
 			<div className="flex">
 				<div className="flex-column">
@@ -19,7 +19,7 @@ class EffectPropertiesPanelDefault extends Component<ThunkDispatchProp & EffectP
 						value={effect}
 						onChange={(path, value) => dispatch(updateEffect(id, { effect: _set({ ...effect }, path, value) }))}>
 						{(element, param, index) => (
-							<MidiInput key={`param${index}`} id={effect.id} type="effect" paramPath={param.path}>
+							<MidiInput key={`param${index}`} id={id} type="effect" slug={type} paramPath={param.path}>
 								{element}
 							</MidiInput>
 						)}

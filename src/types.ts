@@ -84,11 +84,15 @@ export interface DeskItemType extends DeskItemIOType {
 
 export interface MappingType {
 	id?: number
+	type: string
 	ownerId: number
 	ownerType: string
 	paramPath: string
 	min?: number
 	max?: number
+	deviceId?: string
+	channel?: number
+	cc?: number
 }
 
 export interface Device extends WebMidi.MIDIPort {
