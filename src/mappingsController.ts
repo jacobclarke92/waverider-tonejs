@@ -46,6 +46,8 @@ function handleControlChange(deviceId: string, channel: number, cc: number, valu
 			if ('min' in param && 'max' in param) {
 				mapping.min = param.min
 				mapping.max = param.max
+				mapping.actualMin = param.min
+				mapping.actualMax = param.max
 				;(store.dispatch as ThunkDispatchType)(addMapping(mapping))
 			} else {
 				console.warn('Param not compatible -- missing min/max')

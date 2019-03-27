@@ -61,6 +61,8 @@ type MappingsTableSchema = {
 	paramPath: string
 	min?: number
 	max?: number
+	actualMin?: number
+	actualMax?: number
 	deviceId?: string
 	channel?: number
 	cc?: number

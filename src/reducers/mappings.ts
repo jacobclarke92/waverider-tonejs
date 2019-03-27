@@ -13,7 +13,7 @@ export const ADD_MAPPING: string = 'ADD_MAPPING'
 export const REMOVE_MAPPING: string = 'REMOVE_MAPPING'
 
 export const mappingsSchema =
-	'++id,type,ownerId,ownerType,paramPath,min,max,deviceId,channel,cc,[ownerId+ownerType],[deviceId+channel+cc]'
+	'++id,type,ownerId,ownerType,paramPath,min,max,actualMin,actualMax,deviceId,channel,cc,[ownerId+ownerType],[deviceId+channel+cc]'
 
 export type State = MappingType[]
 
