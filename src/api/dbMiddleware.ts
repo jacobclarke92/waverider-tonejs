@@ -56,7 +56,7 @@ export default ({ getState }) => next => action => {
 
 		case DESK_ITEM_MOVE:
 			deskUpdates[action.id] = _merge(_cloneDeep(deskUpdates[action.id] || {}), { position: action.position })
-			updateFunction = getUpdateFunction<DeskItemType>(instrumentUpdateFuncs, 'desk', action.id)
+			updateFunction = getUpdateFunction<DeskItemType>(deskUpdateFuncs, 'desk', action.id)
 			updateFunction(action.id, deskUpdates[action.id])
 			break
 	}
