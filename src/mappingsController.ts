@@ -1,6 +1,9 @@
 import { Store } from 'redux'
 import _set from 'lodash/set'
-import { ReduxStoreType, MappingType, ThunkDispatchType, AnyParamType } from './types'
+import _throttle from 'lodash/throttle'
+import _merge from 'lodash/merge'
+import _cloneDeep from 'lodash/cloneDeep'
+import { ReduxStoreType, MappingType, ThunkDispatchType, AnyParamType, KeyedObject } from './types'
 
 import { scale } from './utils/mathUtils'
 import { addControlChangeListener } from './api/midi'
@@ -9,8 +12,12 @@ import { updateEffect } from './reducers/effects'
 import { updateInstrument } from './reducers/instruments'
 import instrumentLibrary from './instrumentLibrary'
 import effectLibrary from './effectLibrary'
+import { ccMappingDebounce } from './constants/timings'
 
 let store: Store = null
+
+const effectUpdates: { [key: number]: KeyedObject } = {}
+const instrumentUpdates: { [key: number]: KeyedObject } = {}
 
 export function init(_store: Store) {
 	store = _store
@@ -23,6 +30,22 @@ function handleUpdate() {
 	switch (lastAction.type) {
 	}
 }
+
+const throttledUpdateInstrument = _throttle((id: number) => {
+	const updates = instrumentUpdates[id]
+	if (updates) {
+		;(store.dispatch as ThunkDispatchType)(updateInstrument(id, updates))
+		delete instrumentUpdates[id]
+	}
+}, ccMappingDebounce)
+
+const throttledUpdateEffect = _throttle((id: number) => {
+	const updates = effectUpdates[id]
+	if (updates) {
+		;(store.dispatch as ThunkDispatchType)(updateEffect(id, updates))
+		delete effectUpdates[id]
+	}
+}, ccMappingDebounce)
 
 function handleControlChange(deviceId: string, channel: number, cc: number, value: number) {
 	const { gui, mappings } = store.getState() as ReduxStoreType
@@ -68,13 +91,15 @@ function handleControlChange(deviceId: string, channel: number, cc: number, valu
 	for (let mapping of affectedMappings) {
 		const mappedValue = scale(value, 0, 127, mapping.min, mapping.max)
 		if (mapping.type == 'instrument') {
-			;(store.dispatch as ThunkDispatchType)(
-				updateInstrument(mapping.ownerId, { instrument: _set({}, mapping.paramPath, mappedValue) })
-			)
+			instrumentUpdates[mapping.ownerId] = _merge(_cloneDeep(instrumentUpdates[mapping.ownerId] || {}), {
+				instrument: _set({}, mapping.paramPath, mappedValue),
+			})
+			throttledUpdateInstrument(mapping.ownerId)
 		} else if (mapping.type == 'effect') {
-			;(store.dispatch as ThunkDispatchType)(
-				updateEffect(mapping.ownerId, { effect: _set({}, mapping.paramPath, mappedValue) })
-			)
+			effectUpdates[mapping.ownerId] = _merge(_cloneDeep(effectUpdates[mapping.ownerId] || {}), {
+				effect: _set({}, mapping.paramPath, mappedValue),
+			})
+			throttledUpdateEffect(mapping.ownerId)
 		}
 	}
 }
