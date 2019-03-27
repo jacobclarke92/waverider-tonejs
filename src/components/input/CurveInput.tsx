@@ -157,7 +157,6 @@ export default class CurveCreator extends Component<Props, State> {
 		const { size, strokeStyle, lineWidth } = this.props
 		const points = _points.map<[number, number]>(point => [point.x, point.y])
 		const hashTable = curvesHashTable(points, 0, size)
-		console.log(hashTable)
 
 		if (!this.ctx) this.ctx = this.canvas.getContext('2d')
 		this.ctx.clearRect(0, 0, size, size)

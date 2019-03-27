@@ -788,10 +788,6 @@
   dependencies:
     redux "*"
 
-"@types/regression@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@types/regression/-/regression-2.0.0.tgz#0677ea78d7bdb37039c02ebbccf062042f756ae3"
-
 "@types/tone@https://github.com/Tonejs/TypeScript.git":
   version "0.2.0"
   resolved "https://github.com/Tonejs/TypeScript.git#2a3250598d1da8e3414360004f7f3e5ad9d9140a"
@@ -5857,9 +5853,9 @@ regjsparser@^0.6.0:
   dependencies:
     jsesc "~0.5.0"
 
-regression@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/regression/-/regression-2.0.1.tgz#8d29c3e8224a10850c35e337e85a8b2fac3b0c87"
+regression@1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/regression/-/regression-1.2.1.tgz#d4e96c0341adb38130903b8ae2f9dced905d606d"
 
 remove-array-items@^1.0.0:
   version "1.0.0"

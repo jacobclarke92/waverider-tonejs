@@ -1,5 +1,5 @@
 import Point, { PointObj } from './Point'
-import { polynomial } from 'regression'
+import regression from 'regression'
 
 export const roundToMultiple = (value: number, multiple: number): number => {
 	const resto = value % multiple
@@ -32,7 +32,7 @@ export const scale = (val: number, rangeStart: number, rangeEnd: number, mapStar
 }
 
 export function curvesHashTable(points: [number, number][] = [[0, 0], [255, 255]], min: number = 0, max: number = 255) {
-	const result = polynomial(points, { order: points.length - 1 })
+	const result = regression('polynomial', points, points.length - 1)
 	const coefficients = result.equation
 	const curvesHashTable = []
 	for (var x = min; x <= max; x++) {
