@@ -3,6 +3,7 @@ import { STAGE, DESK, MATRIX } from './constants/uiViews'
 import DeskWorkspace from './components/view/DeskWorkspace'
 import DeskSidebar from './components/view/DeskSidebar'
 import DeskNavbar from './components/view/DeskNavbar'
+import MatrixWorkspace from './components/view/MatrixWorkspace'
 
 export interface UiViewType {
 	Workspace: ComponentType
@@ -22,7 +23,7 @@ const views: { [k: string]: UiViewType } = {
 		Sidebar: DeskSidebar,
 	},
 	[MATRIX]: {
-		Workspace: null,
+		Workspace: MatrixWorkspace,
 		Navbar: null,
 		Sidebar: null,
 	},
