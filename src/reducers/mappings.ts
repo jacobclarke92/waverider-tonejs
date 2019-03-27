@@ -1,8 +1,10 @@
-import { ThunkDispatchType, MappingType } from '../types'
+import { ThunkDispatchType, MappingType, KeyedObject } from '../types'
 import { Action } from 'redux'
 import { REMOVE_INSTRUMENT } from './instruments'
 import { REMOVE_EFFECT } from './effects'
 import _find from 'lodash/find'
+import _merge from 'lodash/merge'
+import _cloneDeep from 'lodash/cloneDeep'
 
 import { getAll, truncate, bulkPut, add, removeById } from '../api/db'
 import { defer } from '../utils/lifecycleUtils'
@@ -11,6 +13,7 @@ export const LOAD_MAPPINGS: string = 'LOAD_MAPPINGS'
 export const RELOAD_MAPPINGS: string = 'RELOAD_MAPPINGS'
 export const ADD_MAPPING: string = 'ADD_MAPPING'
 export const REMOVE_MAPPING: string = 'REMOVE_MAPPING'
+export const UPDATE_MAPPING: string = 'UPDATE_MAPPING'
 
 export const mappingsSchema =
 	'++id,type,ownerId,ownerType,paramPath,min,max,actualMin,actualMax,deviceId,channel,cc,[ownerId+ownerType],[deviceId+channel+cc]'
@@ -21,6 +24,7 @@ export interface ActionObj extends Action {
 	id?: number
 	mappings?: State
 	mapping?: MappingType
+	updates?: KeyedObject
 }
 
 const initialState: State = []
@@ -34,6 +38,8 @@ export default function(state: State = initialState, action: ActionObj) {
 			return [...state, action.mapping]
 		case REMOVE_MAPPING:
 			return state.filter(mapping => mapping.id !== action.id)
+		case UPDATE_MAPPING:
+			return state.map(mapping => (mapping.id === action.id ? _merge(_cloneDeep(mapping), action.updates) : mapping))
 		case REMOVE_EFFECT:
 		case REMOVE_INSTRUMENT:
 			return state
@@ -65,3 +71,5 @@ export const removeMapping = (id: number) => dispatch =>
 	removeById('mappings', id)
 		.then(() => defer(() => dispatch({ type: REMOVE_MAPPING, id } as ActionObj)))
 		.catch(e => console.warn('Unable to remove mapping', id, e))
+
+export const updateMapping = (id: number, updates: KeyedObject) => ({ type: UPDATE_MAPPING, id, updates })

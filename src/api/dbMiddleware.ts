@@ -5,8 +5,9 @@ import { add, updateById } from './db'
 import { dbUpdateDebounce } from '../constants/timings'
 import { DESK_ITEM_MOVE } from '../reducers/desk'
 import { UPDATE_INSTRUMENT, ADD_INSTRUMENT, REMOVE_INSTRUMENT } from '../reducers/instruments'
-import { KeyedObject, DeskItemType, Instrument, ReduxStoreType, Effect } from '../types'
+import { KeyedObject, DeskItemType, Instrument, ReduxStoreType, Effect, MappingType } from '../types'
 import { UPDATE_EFFECT } from '../reducers/effects'
+import { UPDATE_MAPPING } from '../reducers/mappings'
 
 type DbUpdateObjects = { [key: number]: KeyedObject }
 type DbUpdateFunction = (id: number, updates: KeyedObject) => void
@@ -20,6 +21,9 @@ const effectUpdateFuncs: DbUpdateFunctions = {}
 
 const deskUpdates: DbUpdateObjects = {}
 const deskUpdateFuncs: DbUpdateFunctions = {}
+
+const mappingUpdates: DbUpdateObjects = {}
+const mappingUpdateFuncs: DbUpdateFunctions = {}
 
 function getUpdateFunction<T>(functionsObj: DbUpdateFunctions, table: string, id: number): DbUpdateFunction {
 	if (!(id in functionsObj)) {
@@ -58,6 +62,12 @@ export default ({ getState }) => next => action => {
 			deskUpdates[action.id] = _merge(_cloneDeep(deskUpdates[action.id] || {}), { position: action.position })
 			updateFunction = getUpdateFunction<DeskItemType>(deskUpdateFuncs, 'desk', action.id)
 			updateFunction(action.id, deskUpdates[action.id])
+			break
+
+		case UPDATE_MAPPING:
+			mappingUpdates[action.id] = _merge(_cloneDeep(mappingUpdates[action.id] || {}), action.updates)
+			updateFunction = getUpdateFunction<MappingType>(mappingUpdateFuncs, 'mappings', action.id)
+			updateFunction(action.id, mappingUpdates[action.id])
 			break
 	}
 
