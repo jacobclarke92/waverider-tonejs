@@ -16,6 +16,7 @@
 @import './elements/tab.css';
 
 @import './components/audio-trim.css';
+@import './components/curve.css';
 @import './components/desk-item.css';
 @import './components/dropzone.css';
 @import './components/knob.css';

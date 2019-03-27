@@ -4,10 +4,12 @@ import _get from 'lodash/get'
 import _throttle from 'lodash/throttle'
 import { MappingType, ReduxStoreType, Instrument, Effect, ThunkDispatchProp } from '../../types'
 import { connect } from 'react-redux'
-import AudioTrim, { TrimType } from '../AudioTrim'
-import { scale } from '../../utils/mathUtils'
+
 import { ccMappingDebounce } from '../../constants/timings'
+import { scale } from '../../utils/mathUtils'
 import { updateMapping } from '../../reducers/mappings'
+import AudioTrim, { TrimType } from '../AudioTrim'
+import CurveInput from '../input/CurveInput'
 
 interface Props {
 	mapping: MappingType
@@ -54,6 +56,9 @@ class MappingRow extends Component<ThunkDispatchProp & StateProps & Props> {
 					<div style={{ position: 'relative', display: 'block', width: 150, height: 75, border: '1px solid white' }}>
 						<AudioTrim trim={trim} onChange={this.onRangeChange} />
 					</div>
+				</div>
+				<div>
+					<CurveInput size={75} onChange={() => {}} />
 				</div>
 			</div>
 		)
