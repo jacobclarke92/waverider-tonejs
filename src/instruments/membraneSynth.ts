@@ -5,7 +5,7 @@ import { paramUpdateDebounce, voicesUpdateDebounce } from '../constants/timings'
 import { checkDifferenceAny } from '../utils/lifecycleUtils'
 import { allInstrumentDefaults, envelopeParams, voicesParam, oscTypeParam } from '../constants/params'
 import { noteNumberToName } from '../utils/noteUtils'
-import MembraneSynthEditor from '../components/instruments/MembraneSynth'
+import MembraneSynthEditor from '../components/propertyPanels/instruments/MembraneSynth'
 import MembraneSynthDeskItem from '../components/desk/MembraneSynth'
 import BaseInstrument from './BaseInstrument'
 

@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { ThunkDispatchProp, InstrumentPropertiesPanelProps } from '../../types'
-import { updateInstrument } from '../../reducers/instruments'
-import { defaultValue } from '../../instruments/pluckSynth'
+import { ThunkDispatchProp, InstrumentPropertiesPanelProps } from '../../../types'
+import { updateInstrument } from '../../../reducers/instruments'
+import { defaultValue } from '../../../instruments/pluckSynth'
 
-import MidiInput from '../input/MidiInput'
-import KnobInput from '../input/KnobInput'
-import DeviceAndChannel from '../DeviceAndChannel'
+import MidiInput from '../../input/MidiInput'
+import KnobInput from '../../input/KnobInput'
+import DeviceAndChannel from '../../DeviceAndChannel'
 
 class PluckSynth extends Component<ThunkDispatchProp & InstrumentPropertiesPanelProps> {
 	render() {

@@ -1,18 +1,18 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { DropTargetMonitor } from 'react-dnd'
-import { ThunkDispatchProp, GenericProps, InstrumentPropertiesPanelProps } from '../../types'
-import { updateInstrument } from '../../reducers/instruments'
-import { addFile } from '../../api/db'
-import { parseNoteToNumber, noteNumberToName } from '../../utils/noteUtils'
-import { defer } from '../../utils/lifecycleUtils'
+import { ThunkDispatchProp, GenericProps, InstrumentPropertiesPanelProps } from '../../../types'
+import { updateInstrument } from '../../../reducers/instruments'
+import { addFile } from '../../../api/db'
+import { parseNoteToNumber, noteNumberToName } from '../../../utils/noteUtils'
+import { defer } from '../../../utils/lifecycleUtils'
 
-import { defaultValue } from '../../instruments/simpler'
+import { defaultValue } from '../../../instruments/simpler'
 
-import Checkbox from '../input/Checkbox'
-import KnobInput from '../input/KnobInput'
-import DeviceAndChannel from '../DeviceAndChannel'
-import Waveform from '../Waveform'
+import Checkbox from '../../input/Checkbox'
+import KnobInput from '../../input/KnobInput'
+import DeviceAndChannel from '../../DeviceAndChannel'
+import Waveform from '../../Waveform'
 
 class Simpler extends Component<ThunkDispatchProp & InstrumentPropertiesPanelProps> {
 	constructor(props) {

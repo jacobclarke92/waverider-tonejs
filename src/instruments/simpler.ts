@@ -8,7 +8,7 @@ import { noteStrings } from '../constants/noteStrings'
 import { checkDifferenceAny, checkDifferenceAll } from '../utils/lifecycleUtils'
 import { updateInstrument } from '../reducers/instruments'
 
-import SimplerEditor from '../components/instruments/Simpler'
+import SimplerEditor from '../components/propertyPanels/instruments/Simpler'
 import { allInstrumentDefaults, defaultEnvelope, envelopeParams, voicesParam } from '../constants/params'
 import BaseInstrument from './BaseInstrument'
 import { ParamsType, InstrumentType } from '../types'

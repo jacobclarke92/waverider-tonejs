@@ -6,7 +6,7 @@ import { checkDifferenceAny } from '../utils/lifecycleUtils'
 import { allInstrumentDefaults, defaultEnvelope, envelopeParams, voicesParam, oscTypeParam } from '../constants/params'
 import { noteNumberToName } from '../utils/noteUtils'
 import BasicSynthDeskItem from '../components/desk/BasicSynth'
-import BasicSynthEditor from '../components/instruments/BasicSynth'
+import BasicSynthEditor from '../components/propertyPanels/instruments/BasicSynth'
 import BaseInstrument from './BaseInstrument'
 import { REINIT_INSTRUMENT_INSTANCE } from '../reducers/desk'
 

@@ -4,7 +4,7 @@ import _debounce from 'lodash/throttle'
 import { paramUpdateDebounce, voicesUpdateDebounce } from '../constants/timings'
 import { checkDifferenceAny } from '../utils/lifecycleUtils'
 import { allInstrumentDefaults, voicesParam } from '../constants/params'
-import PluckSynthEditor from '../components/instruments/PluckSynth'
+import PluckSynthEditor from '../components/propertyPanels/instruments/PluckSynth'
 import PluckSynthDeskItem from '../components/desk/PluckSynth'
 import BaseInstrument from './BaseInstrument'
 

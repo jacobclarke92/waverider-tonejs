@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { ThunkDispatchProp, InstrumentPropertiesPanelProps } from '../../types'
-import { updateInstrument } from '../../reducers/instruments'
-import { defaultValue } from '../../instruments/membraneSynth'
+import { ThunkDispatchProp, InstrumentPropertiesPanelProps } from '../../../types'
+import { updateInstrument } from '../../../reducers/instruments'
+import { defaultValue } from '../../../instruments/membraneSynth'
 
-import MidiInput from '../input/MidiInput'
-import KnobInput from '../input/KnobInput'
-import SelectInput from '../input/SelectInput'
-import DeviceAndChannel from '../DeviceAndChannel'
+import MidiInput from '../../input/MidiInput'
+import KnobInput from '../../input/KnobInput'
+import SelectInput from '../../input/SelectInput'
+import DeviceAndChannel from '../../DeviceAndChannel'
 
 class MembraneSynth extends Component<ThunkDispatchProp & InstrumentPropertiesPanelProps> {
 	render() {
