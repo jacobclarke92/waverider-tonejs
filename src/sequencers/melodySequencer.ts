@@ -44,6 +44,32 @@ export const params: ParamsType = [
 		max: 13,
 		step: 1,
 	},
+	{
+		label: 'Octaves',
+		path: 'octaves',
+		defaultValue: 2,
+		min: 1,
+		max: 4,
+		step: 1,
+	},
+	{
+		label: 'Mode / Scale',
+		path: 'scale',
+		defaultValue: 'chromatic',
+		options: [
+			'chromatic',
+			'ionian',
+			'dorian',
+			'phrygian',
+			'lydian',
+			'mixolydian',
+			'aeolian',
+			'locrian',
+			'pentatonic',
+			'whole-tone',
+			'octatonic',
+		],
+	},
 ]
 
 const sequencer: SequencerType = {

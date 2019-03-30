@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import cn from 'classnames'
 import _find from 'lodash/find'
 
-import { INSTRUMENT, EFFECT } from './constants/deskItemTypes'
+import { INSTRUMENT, EFFECT, SEQUENCER } from './constants/deskItemTypes'
 import Header from './components/ui/Header'
 import Sidebar from './components/ui/Sidebar'
 import Navbar from './components/ui/Navbar'
@@ -11,11 +11,13 @@ import Views from './Views'
 import PropertiesPanel from './components/ui/PropertiesPanel'
 import effectLibrary from './effectLibrary'
 import instrumentLibrary from './instrumentLibrary'
+import sequencerLibrary from './sequencerLibrary'
 import { ReduxStoreType, ThunkDispatchProp, GenericProps } from './types'
 
 import { State as GuiStore } from './reducers/gui'
 import { State as EffectsStore } from './reducers/effects'
 import { State as InstrumentsStore } from './reducers/instruments'
+import { State as SequencersStore } from './reducers/sequencers'
 import PianoRoll from './components/ui/PianoRoll'
 import EffectPropertiesPanelDefault from './components/propertyPanels/effects/EffectPropertiesPanelDefault'
 
@@ -23,6 +25,7 @@ interface StateProps {
 	gui: GuiStore
 	effects: EffectsStore
 	instruments: InstrumentsStore
+	sequencers: SequencersStore
 }
 
 class Main extends Component<ThunkDispatchProp & StateProps> {
@@ -50,6 +53,15 @@ class Main extends Component<ThunkDispatchProp & StateProps> {
 					propertiesProps.params = effectConstructor.params
 					propertiesProps.defaultValue = effectConstructor.defaultValue
 				}
+			} else if (activeElement.type == SEQUENCER) {
+				const sequencerConstructor = sequencerLibrary[activeElement.element.ownerType]
+				if (sequencerConstructor) {
+					PropertiesComponent = sequencerConstructor.Editor
+					if (!PropertiesComponent) PropertiesComponent = () => <div /> // TODO
+					propertiesProps = _find(effects, { id: activeElement.element.ownerId }) || {}
+					propertiesProps.params = sequencerConstructor.params
+					propertiesProps.defaultValue = sequencerConstructor.defaultValue
+				}
 			}
 		}
 		return (
@@ -75,6 +87,6 @@ class Main extends Component<ThunkDispatchProp & StateProps> {
 	}
 }
 
-export default connect(({ gui, effects, instruments }: ReduxStoreType): StateProps => ({ gui, effects, instruments }))(
-	Main
-)
+export default connect(
+	({ gui, effects, instruments, sequencers }: ReduxStoreType): StateProps => ({ gui, effects, instruments, sequencers })
+)(Main)

@@ -1,4 +1,28 @@
 .desk-item.melody-sequencer {
-  width: 200px;
-  height: 200px;
+  padding-top: 24px;
+  width: auto;
+  height: auto;
+}
+
+.melody-sequencer-main {
+  /* width: 200px;
+  height: 200px; */
+}
+
+.melody-sequencer-grid {
+  display: grid;
+  padding: 1rem;
+  grid-gap: 3px 3px;
+  background-color: var(--shade-800);
+}
+
+.sequencer-cell {
+  border: 1px solid var(--white);
+  font-size: 8px;
+  &:hover {
+    background-color: var(--shade-900);
+  }
+  &.active {
+    background-color: var(--white);
+  }
 }
