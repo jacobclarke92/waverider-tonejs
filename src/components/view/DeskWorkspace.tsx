@@ -15,7 +15,7 @@ import {
 	getRelativeMousePositionNative,
 } from '../../utils/screenUtils'
 import { getDeskWires, getOwnerByDeskItem, validateConnection } from '../../deskController'
-import { EFFECT, BUS, INSTRUMENT, MASTER, LFO } from '../../constants/deskItemTypes'
+import { EFFECT, BUS, INSTRUMENT, MASTER, LFO, SEQUENCER } from '../../constants/deskItemTypes'
 import { DESK } from '../../constants/uiViews'
 import { updateActiveElement } from '../../reducers/gui'
 import { removeEffect } from '../../reducers/effects'
@@ -23,6 +23,7 @@ import { removeInstrument } from '../../reducers/instruments'
 import { moveDeskItem, connectWire, disconnectWire } from '../../reducers/desk'
 import instrumentLibrary from '../../instrumentLibrary'
 import effectLibrary from '../../effectLibrary'
+import sequencerLibrary from '../../sequencerLibrary'
 import WireComponent from '../desk/Wire'
 import MasterDeskItem from '../desk/Master'
 import DefaultDeskItem from '../desk/DefaultDeskItem'
@@ -38,6 +39,7 @@ import {
 	Instrument,
 	Wire,
 	WireJoin,
+	Sequencer,
 } from '../../types'
 import { PinMouseEventProps, PinParams, PinMouseEventType } from '../desk/Pin'
 import { DeskItemPointerEventType } from '../desk/DeskItemWrapper'
@@ -390,7 +392,7 @@ export interface DeskItemProps {
 	dragging?: boolean
 	editable?: boolean
 	removeable?: boolean
-	owner: Effect | Instrument | null
+	owner: Effect | Instrument | Sequencer | null
 	onEdit?: () => void
 	onRemove: () => void
 	onPointerDown: (event: DeskItemPointerEventType, elem: HTMLElement) => void
@@ -406,6 +408,7 @@ class DeskItem extends Component<ThunkDispatchProp & PinMouseEventProps & DeskIt
 		if (type == MASTER) DeskComponent = MasterDeskItem
 		if (type == INSTRUMENT) DeskComponent = instrumentLibrary[ownerType].DeskItem
 		if (type == EFFECT) DeskComponent = effectLibrary[ownerType].DeskItem
+		if (type == SEQUENCER) DeskComponent = sequencerLibrary[ownerType].DeskItem
 		if (!DeskComponent) DeskComponent = DefaultDeskItem
 		return <DeskComponent {...this.props} />
 	}

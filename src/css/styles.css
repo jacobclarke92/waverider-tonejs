@@ -30,6 +30,7 @@
 
 @import './desk-items/master.css';
 @import './desk-items/basic-synth.css';
+@import './desk-items/melody-sequencer.css';
 @import './desk-items/oscilloscope-effect.css';
 
 @import './views/desk.css';

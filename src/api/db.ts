@@ -10,7 +10,17 @@ import { sequencerSchema } from '../sequencerLibrary'
 import { instrumentSchema } from '../instrumentLibrary'
 import { deskSchema } from '../reducers/desk'
 import { mappingsSchema } from '../reducers/mappings'
-import { FileType, InstrumentType, EffectType, Instrument, Device, DeskItemType, SequencerType } from '../types'
+import {
+	FileType,
+	InstrumentType,
+	EffectType,
+	Instrument,
+	Device,
+	DeskItemType,
+	SequencerType,
+	Effect,
+	Sequencer,
+} from '../types'
 import { PointObj } from '../utils/Point'
 
 getStorageQuota()
@@ -156,6 +166,8 @@ const db = new AppDB()
 ;(window as any).logAllTables = () => {
 	getAll<File>('files').then(files => console.log('files', files))
 	getAll<Instrument>('instruments').then(instruments => console.log('instruments', instruments))
+	getAll<Effect>('effects').then(effects => console.log('effects', effects))
+	getAll<Sequencer>('sequencers').then(sequencers => console.log('sequencers', sequencers))
 	getAll<Device>('devices').then(devices => console.log('devices', devices))
 	getAll<DeskItemType>('desk').then(desk => console.log('desk', desk))
 }

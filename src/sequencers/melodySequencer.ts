@@ -1,4 +1,4 @@
-import { SequencerType, ParamsType } from '../types'
+import { SequencerType, ParamsType, KeyedObject } from '../types'
 import BaseSequencer from './BaseSequencer'
 import MelodySequencerDeskItem from '../components/desk/MelodySequencer'
 
@@ -20,8 +20,11 @@ export class MelodySequencer extends BaseSequencer {
 }
 
 // TODO
-export const defaultValue: any = {
-	sequencer: {},
+export const defaultValue: KeyedObject = {
+	sequencer: {
+		bars: 4,
+		beats: 4,
+	},
 }
 
 export const params: ParamsType = [

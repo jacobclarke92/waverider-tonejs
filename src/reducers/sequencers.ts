@@ -4,7 +4,7 @@ import _merge from 'lodash/merge'
 import _cloneDeep from 'lodash/cloneDeep'
 import sequencerLibrary from '../sequencerLibrary'
 import { getWiresRoutedTo } from '../deskController'
-import { deskItemTypeDefaults, EFFECT } from '../constants/deskItemTypes'
+import { deskItemTypeDefaults, SEQUENCER } from '../constants/deskItemTypes'
 import { add, getAll, removeById, truncate, bulkPut } from '../api/db'
 import { PointObj } from '../utils/Point'
 import { defer } from '../utils/lifecycleUtils'
@@ -65,8 +65,6 @@ export const addSequencer = (type: string, position: PointObj = { x: 0, y: 0 }) 
 	const newSequencer: Sequencer = {
 		type,
 		enabled: true,
-		midiChannel: null,
-		midiDeviceId: null,
 		..._cloneDeep(sequencerDef.defaultValue),
 	}
 	return (dispatch: ThunkDispatchType) =>
@@ -77,9 +75,9 @@ export const addSequencer = (type: string, position: PointObj = { x: 0, y: 0 }) 
 					slug: sequencerDef.slug,
 					ownerType: type,
 					ownerId: sequencer.id,
-					type: EFFECT,
+					type: SEQUENCER,
 					position,
-					...deskItemTypeDefaults[EFFECT],
+					...deskItemTypeDefaults[SEQUENCER],
 				}
 				return add<DeskItemType>('desk', newDeskItem)
 					.then(deskItem => defer(() => dispatch({ type: ADD_SEQUENCER, sequencer, deskItem } as ActionObj)))

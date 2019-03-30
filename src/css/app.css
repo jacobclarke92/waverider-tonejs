@@ -81,6 +81,14 @@
 .navbar-right {
 }
 
+.navbar-spacer {
+  display: inline-block;
+  height: var(--button-s);
+  margin: 0 1rem;
+  vertical-align: top;
+  border-left: 1px solid var(--shade-400);
+}
+
 .workspace {
   position: relative;
   flex: 1 1 auto;

@@ -4,10 +4,21 @@ import { Master } from 'tone'
 
 import { getEffectInstance } from './effectsController'
 import { getInstrumentInstance } from './instrumentsController'
-import { MASTER, BUS, INSTRUMENT, EFFECT, LFO } from './constants/deskItemTypes'
+import { MASTER, BUS, INSTRUMENT, EFFECT, LFO, SEQUENCER } from './constants/deskItemTypes'
+import { deskItemTypeDefaults } from './constants/deskItemTypes'
 
 import { Store } from 'redux'
-import { ReduxStoreType, DeskItemType, WireJoins, WireJoin, WireType, Wire, Effect, Instrument } from './types'
+import {
+	ReduxStoreType,
+	DeskItemType,
+	WireJoins,
+	WireJoin,
+	WireType,
+	Wire,
+	Effect,
+	Instrument,
+	Sequencer,
+} from './types'
 import {
 	LOAD_DESK,
 	RELOAD_DESK,
@@ -19,6 +30,7 @@ import {
 } from './reducers/desk'
 import BaseEffect from './effects/BaseEffect'
 import BaseInstrument from './instruments/BaseInstrument'
+import { getSequencerInstance } from './sequencersController'
 
 let store: Store = null
 let oldDesk: DeskStore = []
@@ -87,6 +99,8 @@ function getSource(deskItem: DeskItemType): false | BaseEffect | BaseInstrument 
 		case EFFECT:
 			source = getEffectInstance(deskItem.ownerId)
 			break
+		case SEQUENCER:
+			source = getSequencerInstance(deskItem.ownerId)
 	}
 	return source
 }
@@ -224,9 +238,10 @@ export function validateConnection(wireType: WireType, wireFrom: Wire, wireTo: W
 	return true
 }
 
-export function getOwnerByDeskItem(deskItem: DeskItemType): Effect | Instrument | null {
-	const { instruments, effects } = store.getState() as ReduxStoreType
+export function getOwnerByDeskItem(deskItem: DeskItemType): Effect | Instrument | Sequencer | null {
+	const { instruments, effects, sequencers } = store.getState() as ReduxStoreType
 	if (deskItem.type == EFFECT) return _find(effects, { id: deskItem.ownerId })
 	if (deskItem.type == INSTRUMENT) return _find(instruments, { id: deskItem.ownerId })
+	if (deskItem.type == SEQUENCER) return _find(sequencers, { id: deskItem.ownerId })
 	return null
 }
