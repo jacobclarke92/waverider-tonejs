@@ -28,4 +28,8 @@
 @import './components/waveform.css';
 @import './components/wire.css';
 
+@import './desk-items/master.css';
+@import './desk-items/basic-synth.css';
+@import './desk-items/oscilloscope-effect.css';
+
 @import './views/desk.css';

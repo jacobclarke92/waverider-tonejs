@@ -1,0 +1,12 @@
+.desk-item.master {
+  width: 70px;
+  height: 70px;
+
+  & .icon {
+    position: absolute;
+    left: 50%;
+    top: calc(calc(100% - 12px) / 2);
+    transform: translate(-50%, -50%);
+    color: var(--shade-350);
+  }
+}
