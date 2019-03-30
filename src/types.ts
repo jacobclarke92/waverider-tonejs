@@ -3,11 +3,13 @@ import { ThunkDispatch } from 'redux-thunk'
 import { AnyAction } from 'redux'
 import { BaseEffectConstructor } from './effects/BaseEffect'
 import { BaseInstrumentConstructor } from './instruments/BaseInstrument'
+import { BaseSequencerConstructor } from './sequencers/BaseSequencer'
 import { PointObj } from './utils/Point'
 import { State as ProjectState } from './reducers/project'
 import { State as DeskState } from './reducers/desk'
 import { State as DevicesState } from './reducers/devices'
 import { State as EffectsState } from './reducers/effects'
+import { State as SequencersState } from './reducers/sequencers'
 import { State as GuiState } from './reducers/gui'
 import { State as InstrumentsState } from './reducers/instruments'
 import { State as LastActionState } from './reducers/lastAction'
@@ -35,7 +37,7 @@ export type NumericObject = { [key: number]: any }
 
 export type UiView = 'STAGE' | 'DESK' | 'MATRIX'
 export type Osc = 'sine' | 'triangle' | 'square' | 'sawtooth'
-export type DeskItem = 'EFFECT' | 'BUS' | 'INSTRUMENT' | 'MASTER' | 'LFO'
+export type DeskItem = 'EFFECT' | 'BUS' | 'INSTRUMENT' | 'MASTER' | 'LFO' | 'SEQUENCER'
 export type NoteString = 'C' | 'C#' | 'D' | 'D#' | 'E' | 'F' | 'F#' | 'G' | 'G#' | 'A' | 'A#' | 'B'
 export type WireType = 'audio' | 'data'
 export type SizeType = 'xs' | 's' | 'm' | 'l' | 'xl'
@@ -64,12 +66,16 @@ export interface DeskItemIOType {
 	audioOutput: boolean
 	dataInput: boolean
 	dataOutput: boolean
+	midiInput: boolean
+	midiOutput: boolean
 	editable: boolean
 	removeable: boolean
 	audioOutputs?: WireJoins
 	audioInputs?: WireJoins
 	dataOutputs?: WireJoins
 	dataInputs?: WireJoins
+	midiOutputs?: WireJoins
+	midiInputs?: WireJoins
 }
 
 export interface DeskItemType extends DeskItemIOType {
@@ -131,6 +137,13 @@ export interface Effect {
 	midiDeviceId: null | string
 }
 
+export interface Sequencer {
+	enabled: boolean
+	id?: number
+	type: string
+	sequencer: any // TODO
+}
+
 export interface EnvelopeType {
 	attack: number
 	decay: number
@@ -183,6 +196,10 @@ export interface InstrumentDefaultValueType extends AllInstrumentDefaultValuesTy
 	instrument: KeyedObject
 }
 
+export interface SequencerDefaultValueType {
+	sequencer: KeyedObject
+}
+
 export type AnyParamType = NumberParamType | OptionsParamType | NoteParamType | BooleanParamType
 export type ParamsType = AnyParamType[]
 
@@ -208,6 +225,17 @@ export interface InstrumentType {
 	params: ParamsType
 }
 
+export interface SequencerType {
+	id?: number
+	name: string
+	slug: string
+	Sequencer: BaseSequencerConstructor
+	Editor: ElementType
+	DeskItem: ElementType
+	defaultValue: any // TODO
+	params: ParamsType
+}
+
 export interface EffectPropertiesPanelProps extends Effect {
 	params: ParamsType
 	defaultValue: EffectDefaultValueType
@@ -223,6 +251,7 @@ export interface ReduxStoreType {
 	desk: DeskState
 	devices: DevicesState
 	effects: EffectsState
+	sequencers: SequencersState
 	gui: GuiState
 	instruments: InstrumentsState
 	lastAction: LastActionState

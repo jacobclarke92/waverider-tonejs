@@ -6,10 +6,11 @@ import { readBlobAsText, readBlobAsArrayBuffer, getHashFromBlob, getBlobUrl } fr
 
 import { deviceSchema } from './midi'
 import { effectSchema } from '../effectLibrary'
+import { sequencerSchema } from '../sequencerLibrary'
 import { instrumentSchema } from '../instrumentLibrary'
 import { deskSchema } from '../reducers/desk'
 import { mappingsSchema } from '../reducers/mappings'
-import { FileType, InstrumentType, EffectType, Instrument, Device, DeskItemType } from '../types'
+import { FileType, InstrumentType, EffectType, Instrument, Device, DeskItemType, SequencerType } from '../types'
 import { PointObj } from '../utils/Point'
 
 getStorageQuota()
@@ -36,6 +37,12 @@ type EffectsTableSchema = {
 	enabled: boolean
 	type: string
 	effect: EffectType
+}
+type SequencersTableSchema = {
+	id?: number
+	enabled: boolean
+	type: string
+	sequencer: SequencerType
 }
 type DevicesTableSchema = {
 	id?: number
@@ -125,6 +132,7 @@ class AppDB extends Dexie {
 	files: Dexie.Table<FilesTableSchema, number>
 	instruments: Dexie.Table<InstrumentsTableSchema, number>
 	effects: Dexie.Table<EffectsTableSchema, number>
+	sequencers: Dexie.Table<SequencersTableSchema, number>
 	devices: Dexie.Table<DevicesTableSchema, number>
 	desk: Dexie.Table<DeskTableSchema, number>
 	mappings: Dexie.Table<MappingsTableSchema, number>
@@ -135,6 +143,7 @@ class AppDB extends Dexie {
 			files: '++id,filename,size,type,date,&hash,blob',
 			instruments: instrumentSchema,
 			effects: effectSchema,
+			sequencers: sequencerSchema,
 			devices: deviceSchema,
 			desk: deskSchema,
 			mappings: mappingsSchema,

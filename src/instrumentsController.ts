@@ -27,7 +27,7 @@ let oldInstruments: Instrument[] = []
 
 const instances: { [k: number]: BaseInstrument } = {}
 
-export function init(_store) {
+export function init(_store: Store) {
 	store = _store
 	store.subscribe(handleUpdate)
 }

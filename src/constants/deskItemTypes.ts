@@ -5,6 +5,7 @@ export const BUS: DeskItem = 'BUS'
 export const INSTRUMENT: DeskItem = 'INSTRUMENT'
 export const MASTER: DeskItem = 'MASTER'
 export const LFO: DeskItem = 'LFO'
+export const SEQUENCER: DeskItem = 'SEQUENCER'
 
 export const deskItemTypeDefaults: { [key in DeskItem]: DeskItemIOType } = {
 	[MASTER]: {
@@ -12,6 +13,8 @@ export const deskItemTypeDefaults: { [key in DeskItem]: DeskItemIOType } = {
 		audioOutput: false,
 		dataInput: false,
 		dataOutput: false,
+		midiInput: false,
+		midiOutput: false,
 		editable: false,
 		removeable: false,
 	},
@@ -21,6 +24,8 @@ export const deskItemTypeDefaults: { [key in DeskItem]: DeskItemIOType } = {
 		audioOutputs: {},
 		dataInput: false,
 		dataOutput: false,
+		midiInput: false,
+		midiOutput: false,
 		editable: false,
 		removeable: true,
 	},
@@ -30,6 +35,8 @@ export const deskItemTypeDefaults: { [key in DeskItem]: DeskItemIOType } = {
 		audioOutputs: {},
 		dataInput: true,
 		dataOutput: false,
+		midiInput: true,
+		midiOutput: false,
 		editable: true,
 		removeable: true,
 	},
@@ -39,6 +46,8 @@ export const deskItemTypeDefaults: { [key in DeskItem]: DeskItemIOType } = {
 		audioOutputs: {},
 		dataInput: true,
 		dataOutput: false,
+		midiInput: false,
+		midiOutput: false,
 		editable: true,
 		removeable: true,
 	},
@@ -48,6 +57,19 @@ export const deskItemTypeDefaults: { [key in DeskItem]: DeskItemIOType } = {
 		dataInput: false,
 		dataOutput: true,
 		dataOutputs: {},
+		midiInput: false,
+		midiOutput: false,
+		editable: true,
+		removeable: true,
+	},
+	[SEQUENCER]: {
+		audioInput: false,
+		audioOutput: false,
+		dataInput: false,
+		dataOutput: false,
+		midiInput: false,
+		midiOutput: true,
+		midiOutputs: {},
 		editable: true,
 		removeable: true,
 	},
