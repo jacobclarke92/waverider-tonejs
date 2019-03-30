@@ -4,8 +4,13 @@ import { updateInstrument } from '../../reducers/instruments'
 
 import Pin, { PinMouseEventProps } from './Pin'
 import Icon from '../Icon'
-import { GenericProps, ThunkDispatchProp } from '../../types'
+import { GenericProps, ThunkDispatchProp, ParamsType } from '../../types'
 import { DeskItemProps } from '../view/DeskWorkspace'
+import { INSTRUMENT, EFFECT, SEQUENCER } from '../../constants/deskItemTypes'
+
+import instrumentLibrary from '../../instrumentLibrary'
+import effectLibrary from '../../effectLibrary'
+import sequencerLibrary from '../../sequencerLibrary'
 
 export type DeskItemPointerEventType = React.MouseEvent<HTMLDivElement, MouseEvent> | React.TouchEvent<HTMLDivElement>
 
@@ -79,7 +84,7 @@ export default class DeskItemWrapper extends Component<ThunkDispatchProp & PinMo
 			onPinOver,
 			onPinOut,
 		} = this.props
-		const { name, position, audioInput, audioOutput } = deskItem
+		const { name, position, audioInput, audioOutput, dataInput, dataOutput, midiInput, midiOutput } = deskItem
 
 		const wrapperStyles = {
 			transform: `translate(${position.x || 0}px, ${position.y || 0}px)`,
@@ -94,6 +99,11 @@ export default class DeskItemWrapper extends Component<ThunkDispatchProp & PinMo
 
 		const disabled = !owner.enabled
 
+		let params: ParamsType = []
+		if (deskItem.type === INSTRUMENT) params = instrumentLibrary[owner.type].params
+		else if (deskItem.type === EFFECT) params = effectLibrary[owner.type].params
+		else if (deskItem.type === SEQUENCER) params = sequencerLibrary[owner.type].params
+
 		return (
 			<div
 				className={cn('desk-item-wrapper', { dragging, selected })}
@@ -103,8 +113,27 @@ export default class DeskItemWrapper extends Component<ThunkDispatchProp & PinMo
 				onMouseUp={e => this.handlePointerUp(e, child ? child.props : {})}
 				onTouchEnd={e => this.handlePointerUp(e, child ? child.props : {})}>
 				{newChild}
+				{midiInput && <Pin wireType="midi" ioType="input" {...pinProps} />}
 				{audioInput && <Pin wireType="audio" ioType="input" {...pinProps} />}
+				{midiOutput && <Pin wireType="midi" ioType="output" {...pinProps} />}
 				{audioOutput && <Pin wireType="audio" ioType="output" {...pinProps} />}
+				{dataInput && (
+					<div className="data-pins">
+						{params
+							.filter(param => 'min' in param && 'max' in param)
+							.map((param, i) => (
+								<Pin
+									key={i}
+									wireType="data"
+									ioType="input"
+									label={param.label}
+									param={param.path}
+									style={{ left: `${(i / params.length) * 100}%` }}
+									{...pinProps}
+								/>
+							))}
+					</div>
+				)}
 				<div className="desk-item-header">
 					<div
 						className={cn('desk-item-icon', { disabled })}

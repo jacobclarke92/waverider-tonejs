@@ -57,4 +57,10 @@
 
   --vu-gradient-h: linear-gradient(to right, var(--vu-gradient));
   --vu-gradient-v: linear-gradient(to bottom, var(--vu-gradient));
+
+  --transition-xs: 100ms;
+  --transition-s: 150ms;
+  --transition-m: 200ms;
+  --transition-l: 350ms;
+  --transition-xl: 500ms;
 }

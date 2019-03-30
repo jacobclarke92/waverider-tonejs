@@ -346,6 +346,7 @@ class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, St
 					{connections.map(wire => (
 						<WireComponent
 							key={wire.id}
+							type={wire.type}
 							wireFrom={{ ...wire.wireFrom, deskItem: _find(desk, { id: wire.wireFrom.deskItemId }) }}
 							wireTo={{ ...wire.wireTo, deskItem: _find(desk, { id: wire.wireTo.deskItemId }) }}
 							stagePointer={stagePointer}

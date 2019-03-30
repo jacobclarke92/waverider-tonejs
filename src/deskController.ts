@@ -184,6 +184,11 @@ export function getDeskWires(): WireJoin[] {
 				const wire: WireJoin = fromItem.dataOutputs[outputId]
 				connections.push(wire)
 			})
+		if (fromItem.midiOutput)
+			Object.keys(fromItem.midiOutputs).forEach(outputId => {
+				const wire: WireJoin = fromItem.midiOutputs[outputId]
+				connections.push(wire)
+			})
 	}
 	return connections
 }

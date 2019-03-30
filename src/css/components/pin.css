@@ -31,4 +31,29 @@
       background-color: color-mod(var(--tertiary) blackness(-35%));
     }
   }
+
+  &.midi {
+    top: 50%;
+    left: 0;
+    background-color: var(--primary);
+    &.output {
+      left: 100%;
+      background-color: color-mod(var(--primary) blackness(-35%));
+    }
+  }
+}
+
+.data-pins {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+
+  & .pin {
+    position: static;
+    flex: none;
+    transform: translate(0, -50%);
+  }
 }

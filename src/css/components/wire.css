@@ -9,12 +9,22 @@
     pointer-events: none;
   }
 
+  &.audio {
+    color: var(--secondary);
+  }
+  &.data {
+    color: var(--tertiary);
+  }
+  &.midi {
+    color: var(--primary);
+  }
+
   &.valid {
     color: var(--success);
   }
 
   &.selected {
-    color: var(--primary);
+    color: var(--white);
   }
 
   &:not(.active) {

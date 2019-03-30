@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import cn from 'classname'
 import _find from 'lodash/find'
 import Point, { PointObj } from '../../utils/Point'
-import { Wire, ReduxStoreType, ThunkDispatchProp } from '../../types'
+import { Wire, ReduxStoreType, ThunkDispatchProp, WireType } from '../../types'
 import { State as DeskStore } from '../../reducers/desk'
 
 interface Props {
@@ -11,6 +11,7 @@ interface Props {
 	valid?: boolean
 	selected?: boolean
 	onSelect?: () => void
+	type?: WireType
 	wireFrom: Wire
 	wireTo: Wire
 	stagePointer: Point
@@ -35,7 +36,7 @@ class WireComponent extends Component<ThunkDispatchProp & StateProps & Props> {
 	}
 
 	render() {
-		const { desk, wireFrom, wireTo, valid, active, selected, stagePointer } = this.props
+		const { desk, type, wireFrom, wireTo, valid, active, selected, stagePointer } = this.props
 
 		const fromDeskItem = _find(desk, { id: wireFrom.deskItemId })
 		const toDeskItem = wireTo ? _find(desk, { id: wireTo.deskItemId }) : null
@@ -110,7 +111,7 @@ class WireComponent extends Component<ThunkDispatchProp & StateProps & Props> {
 		}
 
 		return (
-			<svg className={cn('wire', { valid, active, selected })} viewBox={`0 0 ${width} ${height}`} style={styles}>
+			<svg className={cn('wire', type, { valid, active, selected })} viewBox={`0 0 ${width} ${height}`} style={styles}>
 				<path d={path} strokeWidth={3} stroke="currentColor" />
 				<path d={path} strokeWidth={16} stroke="rgba(255,255,255,0)" onClick={e => this.handleClick()} />
 			</svg>

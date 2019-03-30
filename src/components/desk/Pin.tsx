@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
+import React, { Component, CSSProperties } from 'react'
 import cn from 'classnames'
-import { WireType, IOType } from '../../types'
+import { WireType, IOType, GenericProps } from '../../types'
 
 export interface PinParams {
 	wireType: WireType
@@ -22,6 +22,8 @@ export interface PinMouseEventProps {
 export interface Props {
 	wiring: boolean
 	valid: boolean
+	className?: string
+	style?: CSSProperties
 }
 
 export default class Pin extends Component<PinMouseEventProps & PinParams & Props> {
@@ -37,10 +39,15 @@ export default class Pin extends Component<PinMouseEventProps & PinParams & Prop
 			onPinPointerUp,
 			onPinOver,
 			onPinOut,
+			className,
+			style,
 		} = this.props
+		const props: GenericProps = label ? { 'data-tooltip': label } : {}
 		return (
 			<div
-				className={cn('pin', wireType, ioType, { wiring, invalid: !valid })}
+				{...props}
+				className={cn('pin', className, wireType, ioType, { wiring, invalid: !valid })}
+				style={style}
 				onMouseOver={e => onPinOver(e, { wireType, ioType, label, param })}
 				onMouseOut={e => onPinOut(e, { wireType, ioType, label, param })}
 				onMouseDown={e => onPinPointerDown(e, { wireType, ioType, label, param })}

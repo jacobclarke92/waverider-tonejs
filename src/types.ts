@@ -39,7 +39,7 @@ export type UiView = 'STAGE' | 'DESK' | 'MATRIX'
 export type Osc = 'sine' | 'triangle' | 'square' | 'sawtooth'
 export type DeskItem = 'EFFECT' | 'BUS' | 'INSTRUMENT' | 'MASTER' | 'LFO' | 'SEQUENCER'
 export type NoteString = 'C' | 'C#' | 'D' | 'D#' | 'E' | 'F' | 'F#' | 'G' | 'G#' | 'A' | 'A#' | 'B'
-export type WireType = 'audio' | 'data'
+export type WireType = 'audio' | 'data' | 'midi'
 export type SizeType = 'xs' | 's' | 'm' | 'l' | 'xl'
 export type IOType = 'input' | 'output'
 export type CheckerFunc = (a: any, b: any) => boolean
@@ -50,6 +50,7 @@ export interface Wire {
 	deskItemId: number
 	position: PointObj
 	relativePosition: PointObj
+	deskItem?: DeskItemType
 }
 
 export interface WireJoin {
