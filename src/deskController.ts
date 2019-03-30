@@ -97,6 +97,9 @@ export function connectAudioWires(fromDeskItem: DeskItemType, disconnectFirst: b
 		return
 	}
 
+	// Only consider desk items that have audio output
+	if (!fromDeskItem.type || !deskItemTypeDefaults[fromDeskItem.type].audioOutput) return
+
 	const fromSource = getSource(fromDeskItem)
 	if (!fromSource) {
 		console.warn('Could not find source for output item', fromDeskItem)
