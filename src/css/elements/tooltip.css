@@ -1,0 +1,122 @@
+:root {
+  --tooltip-arrow-size: 6px;
+}
+
+[data-tooltip] {
+  position: relative;
+  cursor: pointer;
+  vertical-align: text-bottom;
+
+  &:before,
+  &:after {
+    position: absolute;
+    display: block;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity var(--transition-s) linear, visibility var(--transition-s) linear;
+    pointer-events: none;
+  }
+
+  &:before {
+    z-index: 10001;
+    border: var(--tooltip-arrow-size) solid transparent;
+    content: '';
+    background: transparent;
+  }
+
+  &:after {
+    z-index: 10000;
+    padding: 0.5rem 0.5rem;
+    min-width: 3rem;
+    max-width: 24rem;
+    content: attr(data-tooltip);
+    font-size: 1.1rem;
+    color: var(--white);
+    background: var(--shade-300);
+  }
+
+  &:hover,
+  &:focus {
+    &:before,
+    &:after {
+      visibility: visible;
+      opacity: 1;
+    }
+  }
+}
+
+[data-tooltip-direction='top'] {
+  &:before,
+  &:after {
+    bottom: 100%;
+    left: 50%;
+  }
+
+  &:before {
+    border-top-color: var(--shade-300);
+    transform: translate(-50%, 50%);
+  }
+
+  &:after {
+    text-align: center;
+    transform: translate(-50%, calc(-1 * var(--tooltip-arrow-size)));
+  }
+}
+
+[data-tooltip-direction='right'] {
+  &:before,
+  &:after {
+    top: 50%;
+    left: 100%;
+    transform: translateY(-50%);
+  }
+
+  &:before {
+    margin-left: calc(-1 * var(--tooltip-arrow-size));
+    border-right-color: var(--shade-300);
+  }
+
+  &:after {
+    margin-left: var(--tooltip-arrow-size);
+    text-align: left;
+  }
+}
+
+[data-tooltip-direction='bottom'],
+[data-tooltip]:not([data-tooltip-direction]) {
+  &:before,
+  &:after {
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  &:before {
+    margin-top: calc(-1 * var(--tooltip-arrow-size));
+    border-bottom-color: var(--shade-300);
+  }
+
+  &:after {
+    margin-top: var(--tooltip-arrow-size);
+    text-align: center;
+  }
+}
+
+[data-tooltip-direction='left'] {
+  &:before,
+  &:after {
+    top: 50%;
+    right: 100%;
+    transform: translateY(-50%);
+  }
+
+  &:before {
+    margin-right: calc(-1 * var(--tooltip-arrow-size));
+    border-left-color: var(--shade-300);
+  }
+
+  &:after {
+    margin-right: var(--tooltip-arrow-size);
+    text-align: left;
+  }
+}

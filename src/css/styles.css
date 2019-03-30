@@ -14,6 +14,7 @@
 @import './elements/midi-input.css';
 @import './elements/select.css';
 @import './elements/tab.css';
+@import './elements/tooltip.css';
 
 @import './components/audio-trim.css';
 @import './components/curve.css';
