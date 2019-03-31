@@ -6,6 +6,7 @@ import { State as GuiStore, toggleKeyboardPiano, toggleMidiMapping } from '../..
 
 import Icon from '../Icon'
 import UploadWrapper from '../UploadWrapper'
+import TransportControls from './TransportControls'
 import { updateView } from '../../reducers/gui'
 import { STAGE, DESK, MATRIX } from '../../constants/uiViews'
 import { saveProjectFile, loadProjectFile } from '../../fileManager'
@@ -25,9 +26,6 @@ class Header extends Component<ThunkDispatchProp & StateProps> {
 			<header className="header">
 				<div className="header-inner">
 					<div className="header-left">
-						<button type="button" className="icon-button margin-r-m">
-							<Icon name="play" />
-						</button>
 						<button
 							type="button"
 							className={cn({ active: gui.view == STAGE })}
@@ -46,6 +44,7 @@ class Header extends Component<ThunkDispatchProp & StateProps> {
 							onClick={() => dispatch(updateView(MATRIX))}>
 							Matrix
 						</button>
+						<TransportControls />
 					</div>
 					<div className="header-right">
 						<button

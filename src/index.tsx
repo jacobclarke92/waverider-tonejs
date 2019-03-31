@@ -15,6 +15,7 @@ import { init as initEffects } from './effectsController'
 import { init as initInstruments } from './instrumentsController'
 import { init as initSequencers } from './sequencersController'
 import { init as initMappings } from './mappingsController'
+import { init as initTransport } from './transportController'
 import { init as initFileManager } from './fileManager'
 import { loadInstruments } from './reducers/instruments'
 import { loadDevices } from './reducers/devices'
@@ -41,6 +42,7 @@ initEffects(store)
 initInstruments(store)
 initSequencers(store)
 initMappings(store)
+initTransport(store)
 initFileManager(store)
 initKeyListeners()
 ;(store.dispatch as ThunkDispatchType)(loadInstruments())

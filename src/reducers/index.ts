@@ -8,6 +8,7 @@ import sequencers from './sequencers'
 import desk from './desk'
 import mappings from './mappings'
 import gui from './gui'
+import transport from './transport'
 
 const reducers = combineReducers({
 	lastAction,
@@ -19,6 +20,7 @@ const reducers = combineReducers({
 	desk,
 	mappings,
 	gui,
+	transport,
 })
 
 export default reducers
