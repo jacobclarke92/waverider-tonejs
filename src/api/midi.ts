@@ -2,7 +2,7 @@ import _find from 'lodash/find'
 import _difference from 'lodash/difference'
 import { updateDevices, internalPiano } from '../reducers/devices'
 import { isDeviceUsedByInstrument } from '../instrumentsController'
-import { Device, ThunkDispatchType } from '../types'
+import { Device, ThunkDispatchType, ReduxStoreType } from '../types'
 import { Store } from 'redux'
 
 export const NOTE_ON: number = 144
@@ -67,8 +67,9 @@ const handleMidiFailure = e => console.warn("No access to MIDI devices or your b
 
 const handleDeviceUpdates = () => {
 	if (!midi) return init()
-
-	const devices: Device[] = [internalPiano]
+	const state = store.getState() as ReduxStoreType
+	const oldDevices = state.devices
+	const devices: Device[] = state.devices.filter(device => device.id === internalPiano.id || device.sequencerId)
 	const inputs: IterableIterator<WebMidi.MIDIInput> = midi.inputs.values()
 	for (let input = inputs.next(); input && !input.done; input = inputs.next()) {
 		const device: WebMidi.MIDIInput = input.value
@@ -81,10 +82,7 @@ const handleDeviceUpdates = () => {
 		devices.push(deviceObj as Device)
 	}
 
-	const oldDevices: Device[] = store.getState().devices
-	const unpluggedDeviceIds: string[] = _difference(oldDevices.map(({ id }) => id), devices.map(({ id }) => id)).filter(
-		id => id != internalPiano.id
-	)
+	const unpluggedDeviceIds: string[] = _difference(oldDevices.map(({ id }) => id), devices.map(({ id }) => id))
 	for (let deviceId of unpluggedDeviceIds) {
 		const usedByInstrument = isDeviceUsedByInstrument(deviceId)
 		console.log(`Device unplugged: ${deviceId} (${usedByInstrument ? 'was' : 'was not'} used by instrument)`)
