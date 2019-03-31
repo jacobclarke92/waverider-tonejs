@@ -106,6 +106,7 @@ export interface MappingType {
 
 export interface Device extends WebMidi.MIDIPort {
 	disconnected: boolean
+	sequencerId?: number
 }
 
 export interface FileType {

@@ -12,7 +12,7 @@ export const POLY_AFERTOUCH = 160
 export const PROGRAM_CHANGE = 192
 export const PITCH_BEND = 224
 
-export const deviceSchema = 'id,type,name,manufacturer,version,disconnected'
+export const deviceSchema = 'id,type,name,manufacturer,version,disconnected,sequencerId'
 
 export type MidiListenerFunction = (deviceId: string, channel: number, note: number, velocity: number) => void
 export type MidiMessageAction = {

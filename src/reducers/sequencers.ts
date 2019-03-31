@@ -1,11 +1,11 @@
-import { Sequencer, SequencerType, DeskItemType, ThunkDispatchType, KeyedObject } from '../types'
+import { Sequencer, SequencerType, DeskItemType, ThunkDispatchType, KeyedObject, Device } from '../types'
 import { Action } from 'redux'
 import _merge from 'lodash/merge'
 import _cloneDeep from 'lodash/cloneDeep'
 import sequencerLibrary from '../sequencerLibrary'
 import { getWiresRoutedTo } from '../deskController'
 import { deskItemTypeDefaults, SEQUENCER } from '../constants/deskItemTypes'
-import { add, getAll, removeById, truncate, bulkPut } from '../api/db'
+import { add, getAll, removeById, truncate, bulkPut, removeBy } from '../api/db'
 import { PointObj } from '../utils/Point'
 import { defer } from '../utils/lifecycleUtils'
 import { disconnectWire, State as DeskStore } from './desk'
@@ -80,7 +80,20 @@ export const addSequencer = (type: string, position: PointObj = { x: 0, y: 0 }) 
 					...deskItemTypeDefaults[SEQUENCER],
 				}
 				return add<DeskItemType>('desk', newDeskItem)
-					.then(deskItem => defer(() => dispatch({ type: ADD_SEQUENCER, sequencer, deskItem } as ActionObj)))
+					.then(deskItem => {
+						const newDevice: Device = {
+							id: sequencerDef.slug + sequencer.id,
+							name: sequencerDef.name,
+							type: 'input',
+							disconnected: false,
+							state: 'connected',
+							connection: 'open',
+							sequencerId: sequencer.id,
+						} as Device
+						return add<Device>('devices', newDevice)
+							.then(device => defer(() => dispatch({ type: ADD_SEQUENCER, sequencer, deskItem, device } as ActionObj)))
+							.catch(e => console.warn('Unsable to add device for sequencer', newDeskItem, newSequencer, newDevice))
+					})
 					.catch(e => console.warn('Unable to add desk item for sequencer', newDeskItem, newSequencer))
 			})
 			.catch(e => console.warn('Unable to add sequencer', newSequencer))
@@ -94,12 +107,14 @@ export const removeSequencer = (desk: DeskStore, deskItem: DeskItemType) => (dis
 		.then(() =>
 			removeById('desk', deskItem.id)
 				.then(() => {
-					const deadConnections = getWiresRoutedTo(deskItem)
-					console.log('STRAY CONNECTIONS', deadConnections)
-					defer(() => {
-						if (deadConnections.length > 0)
-							deadConnections.forEach(deadConnection => dispatch(disconnectWire(desk, deadConnection)))
-						dispatch({ type: REMOVE_SEQUENCER, id: deskItem.ownerId } as ActionObj)
+					removeBy('devices', 'sequencerId', deskItem.ownerId).then(() => {
+						const deadConnections = getWiresRoutedTo(deskItem)
+						console.log('STRAY CONNECTIONS', deadConnections)
+						defer(() => {
+							if (deadConnections.length > 0)
+								deadConnections.forEach(deadConnection => dispatch(disconnectWire(desk, deadConnection)))
+							dispatch({ type: REMOVE_SEQUENCER, id: deskItem.ownerId } as ActionObj)
+						})
 					})
 				})
 				.catch(e => console.warn('Unable to remove desk item for sequencer', deskItem, e))

@@ -46,6 +46,7 @@ import { DeskItemPointerEventType } from '../desk/DeskItemWrapper'
 import { State as GuiStore } from '../../reducers/gui'
 import { State as DeskStore } from '../../reducers/desk'
 import { State as InstrumentsStore } from '../../reducers/instruments'
+import { removeSequencer } from '../../reducers/sequencers'
 
 const snapGrid = 10
 
@@ -303,6 +304,7 @@ class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, St
 	handleRemoveDeskItem(deskItem: DeskItemType) {
 		if (deskItem.type == EFFECT) this.props.dispatch(removeEffect(this.props.desk, deskItem))
 		if (deskItem.type == INSTRUMENT) this.props.dispatch(removeInstrument(deskItem))
+		if (deskItem.type == SEQUENCER) this.props.dispatch(removeSequencer(this.props.desk, deskItem))
 	}
 
 	removeActiveItem() {

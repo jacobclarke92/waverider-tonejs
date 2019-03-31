@@ -6,6 +6,7 @@ import { DeskItemProps } from '../view/DeskWorkspace'
 
 export default class MelodySequencerDeskItem extends Component<ThunkDispatchProp & PinMouseEventProps & DeskItemProps> {
 	render() {
+		if (!this.props.owner) return null
 		const sequencer: Props = (this.props.owner as Sequencer).sequencer
 		return (
 			<DeskItemWrapper {...this.props}>

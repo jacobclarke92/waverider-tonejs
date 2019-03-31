@@ -55,12 +55,13 @@ type SequencersTableSchema = {
 	sequencer: SequencerType
 }
 type DevicesTableSchema = {
-	id?: number
+	id?: string
 	type: string
 	name: string
 	manufacturer: string
 	version: string
 	disconnected: boolean
+	sequencerId?: number
 }
 type DeskTableSchema = {
 	id?: number
@@ -271,6 +272,19 @@ export const removeById = (table: string, id: number): Promise<void> =>
 			.table(table)
 			.delete(id)
 			.then(resolve)
+			.catch(reject)
+	)
+
+export const removeBy = <T>(table: string, field: string, value: IndexableType): Promise<void> =>
+	new Promise((resolve, reject) =>
+		getBy<T>(table, field, value)
+			.then(entity =>
+				db
+					.table(table)
+					.delete((entity as any).id)
+					.then(resolve)
+					.catch(reject)
+			)
 			.catch(reject)
 	)
 

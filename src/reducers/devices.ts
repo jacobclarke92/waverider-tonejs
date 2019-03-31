@@ -2,6 +2,7 @@ import { Device, ThunkDispatchType } from '../types'
 import { Action } from 'redux'
 import { getAll, bulkPut } from '../api/db'
 import { defer } from '../utils/lifecycleUtils'
+import { REMOVE_SEQUENCER } from './sequencers'
 
 export const DEVICES_UPDATED = 'DEVICES_UPDATED'
 export const DEVICE_CONNECTED = 'DEVICE_CONNECTED'
@@ -11,6 +12,7 @@ export type State = Device[]
 
 interface ReducerAction extends Action {
 	devices: Device[]
+	id?: number
 }
 
 export const internalPiano: Device = {
@@ -34,6 +36,8 @@ export default function(state: State = initialState, action: ReducerAction) {
 	switch (action.type) {
 		case DEVICES_UPDATED:
 			return action.devices || []
+		case REMOVE_SEQUENCER:
+			return state.filter(device => device.sequencerId !== action.id)
 	}
 	return state
 }
