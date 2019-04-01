@@ -43,6 +43,8 @@ export type NoteString = 'C' | 'C#' | 'D' | 'D#' | 'E' | 'F' | 'F#' | 'G' | 'G#'
 export type WireType = 'audio' | 'data' | 'midi'
 export type SizeType = 'xs' | 's' | 'm' | 'l' | 'xl'
 export type IOType = 'input' | 'output'
+export type TimeSignature = [number, number]
+export type Fraction = [number, number]
 export type CheckerFunc = (a: any, b: any) => boolean
 export type GenericProps = { [k: string]: any }
 

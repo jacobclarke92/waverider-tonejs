@@ -22,7 +22,6 @@ export default class SelectInput extends Component<Props> {
 		options: [],
 		empty: 'Please select ...',
 		defaultValue: undefined,
-		onChange: () => {},
 		coerceValueToOptions: true,
 	}
 
@@ -67,7 +66,7 @@ export default class SelectInput extends Component<Props> {
 				<select
 					value={value === null ? undefined : value}
 					disabled={readOnly}
-					onChange={event => this.props.onChange(event.target.value)}>
+					onChange={event => onChange(event.target.value)}>
 					{this.renderOptions()}
 				</select>
 			</label>

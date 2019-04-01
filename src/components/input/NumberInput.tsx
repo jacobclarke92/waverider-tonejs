@@ -3,9 +3,12 @@ import React, { Component, FormEvent } from 'react'
 interface Props {
 	autoFocus: boolean
 	value: number
+	min?: number
+	max?: number
+	step?: number
 	onChange: (val: number) => void
-	onBlur: (e: FormEvent<HTMLInputElement>) => void
-	beforeOnChange: (e: FormEvent<HTMLInputElement>) => number
+	onBlur?: (e: FormEvent<HTMLInputElement>) => void
+	beforeOnChange?: (e: FormEvent<HTMLInputElement>) => number
 }
 
 export default class NumberInput extends Component<Props> {

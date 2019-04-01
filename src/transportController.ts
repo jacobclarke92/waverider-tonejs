@@ -1,5 +1,5 @@
 import { Transport, State } from 'tone'
-import { ReduxStoreType } from './types'
+import { ReduxStoreType, TimeSignature } from './types'
 import { Store } from 'redux'
 import {
 	TRANSPORT_PAUSE,
@@ -7,6 +7,7 @@ import {
 	TRANSPORT_STOP,
 	TRANSPORT_SEEK,
 	TRANSPORT_UPDATE_BPM,
+	TRANSPORT_UPDATE_TIME_SIGNATURE,
 } from './reducers/transport'
 
 let store: Store = null
@@ -35,6 +36,10 @@ function handleUpdate() {
 		case TRANSPORT_UPDATE_BPM:
 			Transport.bpm.value = lastAction.bpm
 			// Transport.bpm.rampTo(lastAction.bpm, '4n')
+			break
+		case TRANSPORT_UPDATE_TIME_SIGNATURE:
+			console.log('Updating time signature to ' + lastAction.timeSignature.join(':'))
+			Transport.timeSignature = lastAction.timeSignature as TimeSignature
 			break
 	}
 }

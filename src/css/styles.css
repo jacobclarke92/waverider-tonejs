@@ -9,6 +9,7 @@
 
 @import './elements/button.css';
 @import './elements/checkbox.css';
+@import './elements/field.css';
 @import './elements/file-label.css';
 @import './elements/icon.css';
 @import './elements/midi-input.css';
