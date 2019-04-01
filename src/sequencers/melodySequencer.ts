@@ -1,6 +1,8 @@
-import { SequencerType, ParamsType, KeyedObject } from '../types'
+import { SequencerType, ParamsType, KeyedObject, Sequencer } from '../types'
 import BaseSequencer from './BaseSequencer'
 import MelodySequencerDeskItem from '../components/desk/MelodySequencer'
+import { Transport, Time } from 'tone'
+import { checkDifferenceAny } from '../utils/lifecycleUtils'
 
 export class MelodySequencer extends BaseSequencer {
 	constructor(value = {}, dispatch) {
@@ -14,8 +16,21 @@ export class MelodySequencer extends BaseSequencer {
 		})
 	}
 
-	initSequencer(callback) {
+	initSequencer(callback?: () => void) {
+		console.log('initing sequencer to trigger every 1/' + this.sequencer.subdivisions + ' of a bar')
+		this.tickEvent = Transport.scheduleRepeat(this.tick, this.sequencer.subdivisions + 'n')
 		callback()
+	}
+
+	tick(time: number) {
+		console.log('tick', new Time(time).toBarsBeatsSixteenths())
+	}
+
+	update(oldData: Sequencer, newData: Sequencer) {
+		if (checkDifferenceAny(oldData, newData, ['sequencer.subdivisions', 'sequencer.bars'])) {
+			if (this.tickEvent) Transport.clear(this.tickEvent)
+			this.initSequencer()
+		}
 	}
 }
 
@@ -23,7 +38,10 @@ export class MelodySequencer extends BaseSequencer {
 export const defaultValue: KeyedObject = {
 	sequencer: {
 		bars: 4,
-		beats: 4,
+		subdivisions: 8,
+		octaves: 2,
+		octave: 4,
+		data: [],
 	},
 }
 
@@ -37,11 +55,11 @@ export const params: ParamsType = [
 		step: 1,
 	},
 	{
-		label: 'Beats',
-		path: 'beats',
-		defaultValue: 4,
+		label: 'Subdivisions',
+		path: 'subdivisions',
+		defaultValue: 8,
 		min: 2,
-		max: 13,
+		max: 64,
 		step: 1,
 	},
 	{
@@ -50,6 +68,14 @@ export const params: ParamsType = [
 		defaultValue: 2,
 		min: 1,
 		max: 4,
+		step: 1,
+	},
+	{
+		label: 'Octave',
+		path: 'octave',
+		defaultValue: 4,
+		min: 0,
+		max: 8,
 		step: 1,
 	},
 	{

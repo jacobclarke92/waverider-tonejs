@@ -44,3 +44,18 @@ export function curvesHashTable(points: [number, number][] = [[0, 0], [255, 255]
 	}
 	return curvesHashTable
 }
+
+const gcd = (a: number, b: number) => {
+	if (b < 0.0000001) return a
+	return gcd(b, Math.floor(a % b))
+}
+
+export function getFractionFromDecimal(val: number): [number, number] {
+	const len = val.toString().length - 2
+	let denominator = Math.pow(10, len)
+	let numerator = val * denominator
+	const divisor = gcd(numerator, denominator)
+	numerator /= divisor
+	denominator /= divisor
+	return [Math.floor(numerator), Math.floor(denominator)]
+}
