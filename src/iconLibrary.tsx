@@ -3,6 +3,7 @@ import React, { ReactNode } from 'react'
 const iconLibrary: { [k: string]: ReactNode } = {
 	play: <path d="M8 5v14l11-7z" />,
 	pause: <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />,
+	stop: <path d="M6,6 h12 v12 h-12 Z" />,
 	'volume-down': <path d="M18.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM5 9v6h4l5 5V4L9 9H5z" />,
 	'volume-mute': <path d="M7 9v6h4l5 5V4l-5 5H7z" />,
 	'volume-off': (

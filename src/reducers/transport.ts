@@ -6,9 +6,11 @@ export const TRANSPORT_PLAY: string = 'TRANSPORT_PLAY'
 export const TRANSPORT_PAUSE: string = 'TRANSPORT_PAUSE'
 export const TRANSPORT_STOP: string = 'TRANSPORT_STOP'
 export const TRANSPORT_SEEK: string = 'TRANSPORT_SEEK'
+export const TRANSPORT_UPDATE_BPM: string = 'TRANSPORT_UPDATE_BPM'
 
 interface ReducerAction extends Action {
 	updates?: KeyedObject
+	bpm?: number
 }
 
 export type State = {
@@ -35,6 +37,8 @@ export default function(state: State = initialState, action: ReducerAction) {
 			return { ...state, playing: false }
 		case TRANSPORT_PLAY:
 			return { ...state, playing: true }
+		case TRANSPORT_UPDATE_BPM:
+			return { ...state, bpm: action.bpm }
 	}
 	return state
 }
@@ -42,3 +46,4 @@ export default function(state: State = initialState, action: ReducerAction) {
 export const transportPlay = () => ({ type: TRANSPORT_PLAY })
 export const transportPause = () => ({ type: TRANSPORT_PAUSE })
 export const transportStop = () => ({ type: TRANSPORT_STOP })
+export const updateBpm = (bpm: number) => ({ type: TRANSPORT_UPDATE_BPM, bpm })
