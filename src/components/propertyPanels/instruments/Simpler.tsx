@@ -61,7 +61,7 @@ class Simpler extends Component<ThunkDispatchProp & InstrumentPropertiesPanelPro
 			<div className="simpler">
 				<div className="flex">
 					<div className="flex-column">
-						<DeviceAndChannel instrumentId={id} deviceId={midiDeviceId} midiChannel={midiChannel} />
+						<DeviceAndChannel instrumentId={id} deviceId={midiDeviceId} midiChannel={midiChannel} type="input" />
 						<br />
 						<KnobInput
 							label="Voices"

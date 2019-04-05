@@ -17,7 +17,7 @@ class MembraneSynth extends Component<ThunkDispatchProp & InstrumentPropertiesPa
 		const midiInputProps = { id, type: 'instrument', slug: type }
 		return (
 			<div className="membrane-synth">
-				<DeviceAndChannel instrumentId={id} deviceId={midiDeviceId} midiChannel={midiChannel} />
+				<DeviceAndChannel instrumentId={id} deviceId={midiDeviceId} midiChannel={midiChannel} type="input" />
 				{/* <KnobInput
 					label="Voices"
 					min={1}

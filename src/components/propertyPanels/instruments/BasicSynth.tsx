@@ -19,7 +19,7 @@ class BasicSynth extends Component<ThunkDispatchProp & InstrumentPropertiesPanel
 			<div className="pluck-synth">
 				<div className="flex">
 					<div className="flex-column">
-						<DeviceAndChannel instrumentId={id} deviceId={midiDeviceId} midiChannel={midiChannel} />
+						<DeviceAndChannel instrumentId={id} deviceId={midiDeviceId} midiChannel={midiChannel} type="input" />
 						<br />
 						<SelectInput
 							empty={false}

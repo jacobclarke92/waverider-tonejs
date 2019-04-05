@@ -15,7 +15,7 @@ class PluckSynth extends Component<ThunkDispatchProp & InstrumentPropertiesPanel
 		const midiInputProps = { id, type: 'instrument', slug: type }
 		return (
 			<div className="pluck-synth">
-				<DeviceAndChannel instrumentId={id} deviceId={midiDeviceId} midiChannel={midiChannel} />
+				<DeviceAndChannel instrumentId={id} deviceId={midiDeviceId} midiChannel={midiChannel} type="input" />
 				{/* <KnobInput
 					label="Voices"
 					min={1}

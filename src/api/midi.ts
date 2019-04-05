@@ -70,11 +70,22 @@ const handleDeviceUpdates = () => {
 	const state = store.getState() as ReduxStoreType
 	const oldDevices = state.devices
 	const devices: Device[] = state.devices.filter(device => device.id === internalPiano.id || device.sequencerId)
+
 	const inputs: IterableIterator<WebMidi.MIDIInput> = midi.inputs.values()
 	for (let input = inputs.next(); input && !input.done; input = inputs.next()) {
 		const device: WebMidi.MIDIInput = input.value
 		device.onmidimessage = (message: WebMidi.MIDIMessageEvent) => handleMidiMessage(message, device)
 
+		const deviceObj = { disconnected: false }
+		for (let key in device) {
+			if (typeof device[key] == 'string') deviceObj[key] = device[key]
+		}
+		devices.push(deviceObj as Device)
+	}
+
+	const outputs: IterableIterator<WebMidi.MIDIOutput> = midi.outputs.values()
+	for (let output = outputs.next(); output && !output.done; output = outputs.next()) {
+		const device: WebMidi.MIDIOutput = output.value
 		const deviceObj = { disconnected: false }
 		for (let key in device) {
 			if (typeof device[key] == 'string') deviceObj[key] = device[key]
