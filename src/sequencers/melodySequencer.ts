@@ -1,6 +1,7 @@
 import { SequencerType, ParamsType, KeyedObject, Sequencer } from '../types'
 import BaseSequencer from './BaseSequencer'
 import MelodySequencerDeskItem from '../components/desk/MelodySequencer'
+import MelodySequencerEditor from '../components/propertyPanels/sequencers/MelodySequencer'
 import { Transport, Time } from 'tone'
 import { checkDifferenceAny } from '../utils/lifecycleUtils'
 
@@ -19,7 +20,7 @@ export class MelodySequencer extends BaseSequencer {
 	initSequencer(callback?: () => void) {
 		console.log('initing sequencer to trigger every 1/' + this.sequencer.subdivisions + ' of a bar')
 		this.tickEvent = Transport.scheduleRepeat(this.tick, this.sequencer.subdivisions + 'n')
-		callback()
+		callback && callback()
 	}
 
 	tick(time: number) {
@@ -102,7 +103,7 @@ const sequencer: SequencerType = {
 	name: 'Melody Sequencer',
 	slug: 'melodySequencer',
 	Sequencer: MelodySequencer,
-	Editor: null,
+	Editor: MelodySequencerEditor,
 	DeskItem: MelodySequencerDeskItem,
 	defaultValue,
 	params,

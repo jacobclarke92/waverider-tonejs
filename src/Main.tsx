@@ -30,7 +30,7 @@ interface StateProps {
 
 class Main extends Component<ThunkDispatchProp & StateProps> {
 	render() {
-		const { gui, instruments = [], effects = [] } = this.props
+		const { gui, instruments = [], effects = [], sequencers = [] } = this.props
 		const { view, activeElement, keyboardPianoEnabled } = gui
 		const View = Views[view]
 		let PropertiesComponent: ElementType = null
@@ -58,7 +58,7 @@ class Main extends Component<ThunkDispatchProp & StateProps> {
 				if (sequencerConstructor) {
 					PropertiesComponent = sequencerConstructor.Editor
 					if (!PropertiesComponent) PropertiesComponent = () => <div /> // TODO
-					propertiesProps = _find(effects, { id: activeElement.element.ownerId }) || {}
+					propertiesProps = _find(sequencers, { id: activeElement.element.ownerId }) || {}
 					propertiesProps.params = sequencerConstructor.params
 					propertiesProps.defaultValue = sequencerConstructor.defaultValue
 				}

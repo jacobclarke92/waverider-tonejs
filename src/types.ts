@@ -251,6 +251,11 @@ export interface InstrumentPropertiesPanelProps extends Instrument {
 	defaultValue: InstrumentDefaultValueType
 }
 
+export interface SequencerPropertiesPanelProps extends Sequencer {
+	params: ParamsType
+	defaultValue: SequencerDefaultValueType
+}
+
 export interface ReduxStoreType {
 	project: ProjectState
 	desk: DeskState

@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { checkDifferenceAny } from '../utils/lifecycleUtils'
 
 interface Props {
 	width: number
@@ -27,6 +28,12 @@ export default class Canvas extends Component<Props, State> {
 
 	componentWillUnmount() {
 		this.pixelRatioQuery.removeListener(this.handlePixelRatioChange)
+	}
+
+	componentDidUpdate(prevProps: Props) {
+		if (checkDifferenceAny(this.props, prevProps, ['width', 'height'])) {
+			this.initCanvas()
+		}
 	}
 
 	handlePixelRatioChange = (e: MediaQueryListEvent) => {
