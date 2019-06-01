@@ -1,9 +1,12 @@
+import _uniq from 'lodash/uniq'
 import { SequencerType, ParamsType, KeyedObject, Sequencer } from '../types'
 import BaseSequencer from './BaseSequencer'
 import MelodySequencerDeskItem from '../components/desk/MelodySequencer'
 import MelodySequencerEditor from '../components/propertyPanels/sequencers/MelodySequencer'
-import { Transport, Time } from 'tone'
+import { Transport } from 'tone'
 import { checkDifferenceAny } from '../utils/lifecycleUtils'
+import { getCurrentSubdivisionIndex } from '../utils/timeUtils'
+import { NOTE_ON, MidiMessageAction, NOTE_OFF } from '../api/midi'
 
 export class MelodySequencer extends BaseSequencer {
 	constructor(value = {}, dispatch) {
@@ -19,17 +22,37 @@ export class MelodySequencer extends BaseSequencer {
 
 	initSequencer(callback?: () => void) {
 		console.log('initing sequencer to trigger every 1/' + this.sequencer.subdivisions + ' of a bar')
+		if (this.tickEvent) Transport.clear(this.tickEvent)
 		this.tickEvent = Transport.scheduleRepeat(this.tick, this.sequencer.subdivisions + 'n')
 		callback && callback()
 	}
 
-	tick(time: number) {
-		console.log('tick', new Time(time).toBarsBeatsSixteenths())
+	tick = (time: number) => {
+		const { octave, subdivisions, bars, data = [] } = this.sequencer
+		const { subdivisonIndex } = getCurrentSubdivisionIndex(subdivisions, bars)
+		const noteIndexesToTrigger = _uniq<number>(
+			data.filter(str => str.indexOf(subdivisonIndex + '.') === 0).map(str => parseInt(str.split('.')[1]))
+		)
+
+		// Here down is temporary and disgusting -- notes should be scheduled via Tone not trigger in runtime
+		if (noteIndexesToTrigger.length > 0)
+			noteIndexesToTrigger.forEach(noteIndex => {
+				const scale = [0, 1, 3, 5, 7, 8, 10] // phrygian
+				const note = octave * 12 + scale[noteIndex % 7]
+				const actionParams = {
+					deviceId: `melodySequencer${this.id}`,
+					channel: 1,
+					note,
+				}
+				this.dispatch({ type: NOTE_ON, ...actionParams, velocity: 96 } as MidiMessageAction)
+				setTimeout(() => {
+					this.dispatch({ type: NOTE_OFF, ...actionParams, velocity: 0 } as MidiMessageAction), 10
+				})
+			})
 	}
 
 	update(oldData: Sequencer, newData: Sequencer) {
 		if (checkDifferenceAny(oldData, newData, ['sequencer.subdivisions', 'sequencer.bars'])) {
-			if (this.tickEvent) Transport.clear(this.tickEvent)
 			this.initSequencer()
 		}
 	}

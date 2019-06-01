@@ -2,12 +2,14 @@ import React, { Component, CSSProperties, memo } from 'react'
 import throttle from 'lodash/throttle'
 import DeskItemWrapper, { DeskItemPointerEventType } from './DeskItemWrapper'
 import Canvas from '../Canvas'
+import { Transport } from 'tone'
 import { ThunkDispatchProp, Sequencer } from '../../types'
 import { PinMouseEventProps } from './Pin'
 import { DeskItemProps } from '../view/DeskWorkspace'
 import { getRelativeMousePositionNative } from '../../utils/screenUtils'
 import { checkDifferenceAny } from '../../utils/lifecycleUtils'
 import { updateSequencer } from '../../reducers/sequencers'
+import { getCurrentSubdivisionIndex } from '../../utils/timeUtils'
 
 export default class MelodySequencerDeskItem extends Component<ThunkDispatchProp & PinMouseEventProps & DeskItemProps> {
 	render() {
@@ -52,6 +54,7 @@ interface State {
 	canvasHeight: number
 	over: boolean
 	hoverCell: Coord
+	subdivisonIndex: number
 }
 
 const coordToStr = (coord: Coord): string => coord.join('.')
@@ -63,6 +66,7 @@ const strToCoord = (str: string): Coord => {
 class MelodySequencer extends Component<Props, State> {
 	ctx: CanvasRenderingContext2D
 	canvas: HTMLCanvasElement
+	tickEvent: number
 
 	static defaultProps = {
 		bars: 4,
@@ -80,6 +84,7 @@ class MelodySequencer extends Component<Props, State> {
 			...this.getNewStateFromProps(props),
 			over: false,
 			hoverCell: [-1, -1],
+			subdivisonIndex: 0,
 		}
 		this.handleMouseMove = throttle(this.handleMouseMove.bind(this), 1000 / 60)
 	}
@@ -87,11 +92,13 @@ class MelodySequencer extends Component<Props, State> {
 	componentDidMount() {
 		document.addEventListener('mousemove', this.handleMouseMove)
 		document.addEventListener('touchmove', this.handleMouseMove)
+		this.tickEvent = Transport.scheduleRepeat(this.tick, this.props.subdivisions + 'n')
 	}
 
 	componentWillUnmount() {
 		document.removeEventListener('mousemove', this.handleMouseMove)
 		document.removeEventListener('touchmove', this.handleMouseMove)
+		if (this.tickEvent) Transport.cancel(this.tickEvent)
 	}
 
 	componentWillReceiveProps(nextProps: Props) {
@@ -111,6 +118,12 @@ class MelodySequencer extends Component<Props, State> {
 			canvasWidth: cols * props.cellSize + (cols - 1) * props.cellGap,
 			canvasHeight: rows * props.cellSize + (rows - 1) * props.cellGap,
 		}
+	}
+
+	tick = (time: number) => {
+		const { subdivisions, bars } = this.props
+		const { subdivisonIndex } = getCurrentSubdivisionIndex(subdivisions, bars)
+		this.setState({ subdivisonIndex })
 	}
 
 	handleCellToggle(coord: Coord = this.state.hoverCell) {
@@ -169,10 +182,18 @@ class MelodySequencer extends Component<Props, State> {
 
 	drawCanvas() {
 		const { cellSize, cellGap, bars, subdivisions, octaves, data } = this.props
-		const { cols, rows, notesInScale, canvasWidth, canvasHeight, hoverCell } = this.state
+		const { cols, rows, notesInScale, canvasWidth, canvasHeight, hoverCell, subdivisonIndex } = this.state
 		const totalCellSize = cellSize + cellGap
+
+		// Clear canvas
 		this.ctx.fillStyle = '#000000'
 		this.ctx.fillRect(0, 0, canvasWidth, canvasHeight)
+
+		// Draw playhead
+		this.ctx.fillStyle = '#4a8fe9'
+		this.ctx.fillRect(subdivisonIndex * totalCellSize, 0, cellSize, canvasHeight)
+
+		// Draw cells
 		for (let x = 0; x < cols; x++) {
 			for (let y = 0; y < rows; y++) {
 				const coordStr = coordToStr([x, y])
@@ -193,6 +214,8 @@ class MelodySequencer extends Component<Props, State> {
 				}
 			}
 		}
+
+		// Draw bar & octave divider lines
 		this.ctx.fillStyle = '#aaaaaa'
 		for (let b = 1; b < bars; b++) {
 			this.ctx.fillRect(b * subdivisions * totalCellSize - cellGap, 0, cellGap, canvasHeight)
