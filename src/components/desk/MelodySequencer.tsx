@@ -19,7 +19,7 @@ export default class MelodySequencerDeskItem extends Component<ThunkDispatchProp
 				<div className="desk-item melody-sequencer">
 					<MelodySequencer
 						{...sequencer}
-						updateData={data => this.props.dispatch(updateSequencer(owner.id, { sequencer: { data } }))}
+						updateData={data => this.props.dispatch(updateSequencer(owner.id, { sequencer: { ...sequencer, data } }))}
 					/>
 				</div>
 			</DeskItemWrapper>

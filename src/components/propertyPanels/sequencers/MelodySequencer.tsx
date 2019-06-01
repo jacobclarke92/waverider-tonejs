@@ -19,21 +19,21 @@ class MelodySequencer extends Component<ThunkDispatchProp & SequencerPropertiesP
 					<KnobInput
 						{...params.find(({ path }) => path == 'bars') as NumberParamType}
 						value={bars || defaultValue.sequencer.bars}
-						onChange={bars => dispatch(updateSequencer(id, { sequencer: { bars } }))}
+						onChange={bars => dispatch(updateSequencer(id, { sequencer: { ...sequencer, bars } }))}
 					/>
 				</MidiInput>
 				<MidiInput {...midiInputProps} paramPath="subdivisions">
 					<KnobInput
 						{...params.find(({ path }) => path == 'subdivisions') as NumberParamType}
 						value={subdivisions || defaultValue.sequencer.subdivisions}
-						onChange={subdivisions => dispatch(updateSequencer(id, { sequencer: { subdivisions } }))}
+						onChange={subdivisions => dispatch(updateSequencer(id, { sequencer: { ...sequencer, subdivisions } }))}
 					/>
 				</MidiInput>
 				<MidiInput {...midiInputProps} paramPath="octaves">
 					<KnobInput
 						{...params.find(({ path }) => path == 'octaves') as NumberParamType}
 						value={octaves || defaultValue.sequencer.octaves}
-						onChange={octaves => dispatch(updateSequencer(id, { sequencer: { octaves } }))}
+						onChange={octaves => dispatch(updateSequencer(id, { sequencer: { ...sequencer, octaves } }))}
 					/>
 				</MidiInput>
 			</div>
