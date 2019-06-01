@@ -66,6 +66,7 @@ function updateSequencer(id: number, sequencers: SequencersStore) {
 	if (!id) return
 	const sequencer = _find(sequencers, { id })
 	const oldSequencer = _find(oldSequencers, { id })
+	if (!sequencer) return console.log('Sequencer not found for', id)
 	if (!(id in instances)) initSequencer(sequencer)
 	else instances[id].update(sequencer, oldSequencer)
 }

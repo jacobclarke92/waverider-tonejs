@@ -5,9 +5,10 @@ import { add, updateById } from './db'
 import { dbUpdateDebounce } from '../constants/timings'
 import { DESK_ITEM_MOVE } from '../reducers/desk'
 import { UPDATE_INSTRUMENT, ADD_INSTRUMENT, REMOVE_INSTRUMENT } from '../reducers/instruments'
-import { KeyedObject, DeskItemType, Instrument, ReduxStoreType, Effect, MappingType } from '../types'
+import { KeyedObject, DeskItemType, Instrument, ReduxStoreType, Effect, MappingType, Sequencer } from '../types'
 import { UPDATE_EFFECT } from '../reducers/effects'
 import { UPDATE_MAPPING } from '../reducers/mappings'
+import { UPDATE_SEQUENCER } from '../reducers/sequencers'
 
 type DbUpdateObjects = { [key: number]: KeyedObject }
 type DbUpdateFunction = (id: number, updates: KeyedObject) => void
@@ -18,6 +19,9 @@ const instrumentUpdateFuncs: DbUpdateFunctions = {}
 
 const effectUpdates: DbUpdateObjects = {}
 const effectUpdateFuncs: DbUpdateFunctions = {}
+
+const sequencerUpdates: DbUpdateObjects = {}
+const sequencerUpdateFuncs: DbUpdateFunctions = {}
 
 const deskUpdates: DbUpdateObjects = {}
 const deskUpdateFuncs: DbUpdateFunctions = {}
@@ -56,6 +60,12 @@ export default ({ getState }) => next => action => {
 			effectUpdates[action.id] = _merge(_cloneDeep(effectUpdates[action.id] || {}), action.updates)
 			updateFunction = getUpdateFunction<Effect>(effectUpdateFuncs, 'effects', action.id)
 			updateFunction(action.id, effectUpdates[action.id])
+			break
+
+		case UPDATE_SEQUENCER:
+			sequencerUpdates[action.id] = _merge(_cloneDeep(sequencerUpdates[action.id] || {}), action.updates)
+			updateFunction = getUpdateFunction<Sequencer>(sequencerUpdateFuncs, 'sequencers', action.id)
+			updateFunction(action.id, sequencerUpdates[action.id])
 			break
 
 		case DESK_ITEM_MOVE:

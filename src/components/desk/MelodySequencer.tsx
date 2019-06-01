@@ -1,34 +1,47 @@
 import React, { Component, CSSProperties, memo } from 'react'
 import throttle from 'lodash/throttle'
-import DeskItemWrapper from './DeskItemWrapper'
+import DeskItemWrapper, { DeskItemPointerEventType } from './DeskItemWrapper'
 import Canvas from '../Canvas'
 import { ThunkDispatchProp, Sequencer } from '../../types'
 import { PinMouseEventProps } from './Pin'
 import { DeskItemProps } from '../view/DeskWorkspace'
 import { getRelativeMousePositionNative } from '../../utils/screenUtils'
 import { checkDifferenceAny } from '../../utils/lifecycleUtils'
+import { updateSequencer } from '../../reducers/sequencers'
 
 export default class MelodySequencerDeskItem extends Component<ThunkDispatchProp & PinMouseEventProps & DeskItemProps> {
 	render() {
 		if (!this.props.owner) return null
-		const sequencer: Props = (this.props.owner as Sequencer).sequencer
+		const owner: Sequencer = this.props.owner as Sequencer
+		const sequencer: SequencerDataProps = owner.sequencer
 		return (
 			<DeskItemWrapper {...this.props}>
 				<div className="desk-item melody-sequencer">
-					<MelodySequencer {...sequencer} />
+					<MelodySequencer
+						{...sequencer}
+						updateData={data => this.props.dispatch(updateSequencer(owner.id, { sequencer: { data } }))}
+					/>
 				</div>
 			</DeskItemWrapper>
 		)
 	}
 }
 
-interface Props {
+type Coord = [number, number]
+
+interface SequencerDataProps {
+	id: number
 	bars: number
 	subdivisions: number
 	octaves: number
 	scale: string
+	data: string[]
+}
+
+interface Props extends SequencerDataProps {
 	cellSize?: number
 	cellGap?: number
+	updateData: (data: string[]) => void
 }
 
 interface State {
@@ -38,7 +51,13 @@ interface State {
 	canvasWidth: number
 	canvasHeight: number
 	over: boolean
-	hoverCell: [number, number]
+	hoverCell: Coord
+}
+
+const coordToStr = (coord: Coord): string => coord.join('.')
+const strToCoord = (str: string): Coord => {
+	const parts = str.split('.')
+	return parts.length === 2 ? [parseInt(parts[0]), parseInt(parts[1])] : [-1, -1]
 }
 
 class MelodySequencer extends Component<Props, State> {
@@ -47,9 +66,10 @@ class MelodySequencer extends Component<Props, State> {
 
 	static defaultProps = {
 		bars: 4,
-		subdivisions: 4,
-		octaves: 1,
+		subdivisions: 8,
+		octaves: 2,
 		scale: 'major', // TODO
+		data: [],
 		cellSize: 16,
 		cellGap: 4,
 	}
@@ -61,20 +81,15 @@ class MelodySequencer extends Component<Props, State> {
 			over: false,
 			hoverCell: [-1, -1],
 		}
-		this.handleMouseUp = this.handleMouseUp.bind(this)
 		this.handleMouseMove = throttle(this.handleMouseMove.bind(this), 1000 / 60)
 	}
 
 	componentDidMount() {
-		document.addEventListener('mouseup', this.handleMouseUp)
-		document.addEventListener('touchend', this.handleMouseUp)
 		document.addEventListener('mousemove', this.handleMouseMove)
 		document.addEventListener('touchmove', this.handleMouseMove)
 	}
 
 	componentWillUnmount() {
-		document.removeEventListener('mouseup', this.handleMouseUp)
-		document.removeEventListener('touchend', this.handleMouseUp)
 		document.removeEventListener('mousemove', this.handleMouseMove)
 		document.removeEventListener('touchmove', this.handleMouseMove)
 	}
@@ -98,8 +113,25 @@ class MelodySequencer extends Component<Props, State> {
 		}
 	}
 
-	handleMouseUp(event: MouseEvent | TouchEvent) {
-		// idk
+	handleCellToggle(coord: Coord = this.state.hoverCell) {
+		const { data, updateData } = this.props
+		const coordStr = coordToStr(coord)
+		if (data.indexOf(coordStr) >= 0) {
+			updateData(data.filter(str => str != coordStr))
+		} else {
+			updateData([...data, coordStr])
+		}
+	}
+
+	handlePointerDown(event: DeskItemPointerEventType) {
+		event.stopPropagation()
+	}
+
+	handlePointerUp(event: DeskItemPointerEventType) {
+		const { over, hoverCell } = this.state
+		if (over && hoverCell && hoverCell[0] >= 0 && hoverCell[1] >= 0) {
+			this.handleCellToggle(hoverCell)
+		}
 	}
 
 	handleMouseOver = () => {
@@ -136,15 +168,24 @@ class MelodySequencer extends Component<Props, State> {
 	}
 
 	drawCanvas() {
-		const { cellSize, cellGap, bars, subdivisions, octaves } = this.props
+		const { cellSize, cellGap, bars, subdivisions, octaves, data } = this.props
 		const { cols, rows, notesInScale, canvasWidth, canvasHeight, hoverCell } = this.state
 		const totalCellSize = cellSize + cellGap
 		this.ctx.fillStyle = '#000000'
 		this.ctx.fillRect(0, 0, canvasWidth, canvasHeight)
 		for (let x = 0; x < cols; x++) {
 			for (let y = 0; y < rows; y++) {
-				if (hoverCell && hoverCell[0] === x && hoverCell[1] === y) {
+				const coordStr = coordToStr([x, y])
+				const isHover = hoverCell && hoverCell[0] === x && hoverCell[1] === y
+				const isActive = data.indexOf(coordStr) >= 0
+				if (isHover && isActive) {
+					this.ctx.fillStyle = '#CCCCCC'
+					this.ctx.fillRect(x * totalCellSize, y * totalCellSize, cellSize, cellSize)
+				} else if (isHover) {
 					this.ctx.fillStyle = '#777777'
+					this.ctx.fillRect(x * totalCellSize, y * totalCellSize, cellSize, cellSize)
+				} else if (isActive) {
+					this.ctx.fillStyle = '#FFFFFF'
 					this.ctx.fillRect(x * totalCellSize, y * totalCellSize, cellSize, cellSize)
 				} else {
 					this.ctx.strokeStyle = '#FFFFFF'
@@ -162,6 +203,7 @@ class MelodySequencer extends Component<Props, State> {
 	}
 
 	componentWillUpdate() {
+		// TODO: only redraw if relevant state/props have changed
 		this.drawCanvas()
 	}
 
@@ -169,7 +211,14 @@ class MelodySequencer extends Component<Props, State> {
 		const { canvasWidth, canvasHeight } = this.state
 
 		return (
-			<div className="melody-sequencer-main" onMouseOver={this.handleMouseOver} onMouseOut={this.handleMouseOut}>
+			<div
+				className="melody-sequencer-main"
+				onMouseOver={this.handleMouseOver}
+				onMouseOut={this.handleMouseOut}
+				onMouseDown={e => this.handlePointerDown(e)}
+				onTouchStart={e => this.handlePointerDown(e)}
+				onMouseUp={e => this.handlePointerUp(e)}
+				onTouchEnd={e => this.handlePointerUp(e)}>
 				<Canvas width={canvasWidth} height={canvasHeight} onReady={this.handleCanvasReady} />
 			</div>
 		)

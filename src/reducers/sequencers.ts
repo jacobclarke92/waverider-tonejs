@@ -37,9 +37,10 @@ export default function(state: State = initialState, action: ActionObj) {
 		case ADD_SEQUENCER:
 			return [...state, action.sequencer]
 		case UPDATE_SEQUENCER:
-			return state.map(sequencer =>
-				sequencer.id === action.id ? _merge(_cloneDeep(sequencer), action.updates) : sequencer
-			)
+			return state.map(sequencer => {
+				if (sequencer.id === action.id) return _merge(_cloneDeep(sequencer), action.updates)
+				return sequencer
+			})
 		case REMOVE_SEQUENCER:
 			return state.filter(sequencer => sequencer.id !== action.id)
 	}
