@@ -71,9 +71,9 @@ export default class Waveform extends Component<Props, State> {
 		if (this.raf) window.cancelAnimationFrame(this.raf)
 	}
 
-	componentWillReceiveProps(newProps) {
-		if (this.props.fileHash != newProps.fileHash) this.loadFileFromHash(newProps.fileHash)
-		if (checkDifferenceAny(this.props, newProps, 'trim')) this.setState({ trim: newProps.trim })
+	componentDidUpdate(prevProps) {
+		if (this.props.fileHash != prevProps.fileHash) this.loadFileFromHash(this.props.fileHash)
+		if (checkDifferenceAny(this.props, prevProps, 'trim')) this.setState({ trim: this.props.trim })
 	}
 
 	loadFileFromHash(fileHash: string = this.props.fileHash) {
