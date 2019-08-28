@@ -32,8 +32,8 @@ export default class VuMeterSmart extends Component<Props, State> {
 		if (this.raf) cancelAnimationFrame(this.raf)
 	}
 
-	componentWillReceiveProps(nextProps) {
-		if (nextProps.id != this.props.id || nextProps.type != this.props.type) this.getInstance(nextProps)
+	componentDidUpdate(prevProps) {
+		if (prevProps.id != this.props.id || prevProps.type != this.props.type) this.getInstance()
 	}
 
 	getInstance(props = this.props) {
