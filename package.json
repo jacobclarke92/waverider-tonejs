@@ -62,7 +62,7 @@
 		"debounce": "^1.2.0",
 		"deep-equal": "^1.0.1",
 		"dexie": "^2.0.4",
-		"jquery": "^3.0.0",
+		"jquery": "^3.5.0",
 		"keycode": "^2.1.9",
 		"lodash": "^4.17.13",
 		"pixi.js": "^4.5.5",
