@@ -8,7 +8,7 @@ import { Store } from 'redux'
 export const NOTE_ON: number = 144
 export const NOTE_OFF: number = 128
 export const CONTROL_CHANGE: number = 176
-export const POLY_AFERTOUCH = 160
+export const POLY_AFTERTOUCH = 160
 export const PROGRAM_CHANGE = 192
 export const PITCH_BEND = 224
 
@@ -23,21 +23,21 @@ export type MidiMessageAction = {
 	velocity: number
 }
 
-let midi: WebMidi.MIDIAccess = null
+let midi: WebMidi.MIDIAccess
 
 let listeners: MidiListenerFunction[] = []
 let noteDownListeners: MidiListenerFunction[] = []
 let noteUpListeners: MidiListenerFunction[] = []
 let controlChangeListeners: MidiListenerFunction[] = []
 
-let store: Store = null
+let store: Store
 
 export const addListener = (func: MidiListenerFunction) => listeners.push(func)
 export const removeListener = (func: MidiListenerFunction) =>
 	(listeners = listeners.filter(listener => listener != func))
 
 export const addNoteDownListener = (func: MidiListenerFunction) => noteDownListeners.push(func)
-export const removeNoteDownListener = func =>
+export const removeNoteDownListener = (func: MidiListenerFunction) =>
 	(noteDownListeners = noteDownListeners.filter(listener => listener != func))
 
 export const addNoteUpListener = (func: MidiListenerFunction) => noteUpListeners.push(func)
@@ -63,7 +63,8 @@ const handleMidiSuccess = (midiAccess: WebMidi.MIDIAccess) => {
 	handleDeviceUpdates()
 }
 
-const handleMidiFailure = e => console.warn("No access to MIDI devices or your browser doesn't support WebMIDI API.", e)
+const handleMidiFailure = (e: any) =>
+	console.warn("No access to MIDI devices or your browser doesn't support WebMIDI API.", e)
 
 const handleDeviceUpdates = () => {
 	if (!midi) return init()
@@ -78,6 +79,8 @@ const handleDeviceUpdates = () => {
 
 		const deviceObj = { disconnected: false }
 		for (let key in device) {
+			// i'm not sure what this achieving -- will need to revisit
+			// @ts-ignore
 			if (typeof device[key] == 'string') deviceObj[key] = device[key]
 		}
 		devices.push(deviceObj as Device)
@@ -88,6 +91,8 @@ const handleDeviceUpdates = () => {
 		const device: WebMidi.MIDIOutput = output.value
 		const deviceObj = { disconnected: false }
 		for (let key in device) {
+			// i'm not sure what this achieving -- will need to revisit
+			// @ts-ignore
 			if (typeof device[key] == 'string') deviceObj[key] = device[key]
 		}
 		devices.push(deviceObj as Device)
@@ -97,7 +102,8 @@ const handleDeviceUpdates = () => {
 	for (let deviceId of unpluggedDeviceIds) {
 		const usedByInstrument = isDeviceUsedByInstrument(deviceId)
 		console.log(`Device unplugged: ${deviceId} (${usedByInstrument ? 'was' : 'was not'} used by instrument)`)
-		devices.push({ ..._find(oldDevices, { id: deviceId }), disconnected: true })
+		const device = _find(oldDevices, { id: deviceId })
+		if (device) devices.push({ ...device, disconnected: true })
 	}
 	;(store.dispatch as ThunkDispatchType)(updateDevices(devices))
 }

@@ -6,7 +6,7 @@ import { overwriteInstruments } from './reducers/instruments'
 import { overwriteEffects } from './reducers/effects'
 import { overwriteDesk } from './reducers/desk'
 
-let store: Store = null
+let store: Store
 
 export function init(_store: Store) {
 	store = _store
@@ -28,7 +28,7 @@ export function saveProjectFile() {
 
 export function loadProjectFile(file: string) {
 	console.log('----- LOADING PROJECT FILE -----')
-	let data: ReduxStoreType = null
+	let data: ReduxStoreType
 	try {
 		data = JSON.parse(file) as ReduxStoreType
 	} catch (error) {

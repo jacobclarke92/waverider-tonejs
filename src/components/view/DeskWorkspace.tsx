@@ -367,7 +367,7 @@ class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, St
 							wiring={!!wireFrom}
 							validWire={wireToValid}
 							editable={deskItem.editable}
-							removeable={deskItem.removeable}
+							removable={deskItem.removable}
 							selected={selectedDeskItem && selectedDeskItem.id === deskItem.id}
 							dragging={dragTarget && dragTarget.id === deskItem.id}
 							onRemove={() => this.handleRemoveDeskItem(deskItem)}
@@ -394,7 +394,7 @@ export interface DeskItemProps {
 	selected?: boolean
 	dragging?: boolean
 	editable?: boolean
-	removeable?: boolean
+	removable?: boolean
 	owner: Effect | Instrument | Sequencer | null
 	onEdit?: () => void
 	onRemove: () => void

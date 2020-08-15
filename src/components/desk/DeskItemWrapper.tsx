@@ -23,7 +23,7 @@ export default class DeskItemWrapper extends Component<ThunkDispatchProp & PinMo
 		selected: false,
 		dragging: false,
 		editable: true,
-		removeable: true,
+		removable: true,
 		owner: {},
 		dispatch: () => {},
 		onEdit: () => {},
@@ -77,7 +77,7 @@ export default class DeskItemWrapper extends Component<ThunkDispatchProp & PinMo
 			wiring,
 			validWire,
 			editable,
-			removeable,
+			removable,
 			onEdit,
 			onPinPointerDown,
 			onPinPointerUp,
@@ -147,7 +147,7 @@ export default class DeskItemWrapper extends Component<ThunkDispatchProp & PinMo
 							<Icon name="edit" size={16} />
 						</div>
 					)}
-					{removeable && (
+					{removable && (
 						<div className="desk-item-icon" onClick={e => this.handleRemove(e)}>
 							<Icon name="close" size={16} />
 						</div>

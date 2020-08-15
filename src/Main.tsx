@@ -33,7 +33,7 @@ class Main extends Component<ThunkDispatchProp & StateProps> {
 		const { gui, instruments = [], effects = [], sequencers = [] } = this.props
 		const { view, activeElement, keyboardPianoEnabled } = gui
 		const View = Views[view]
-		let PropertiesComponent: ElementType = null
+		let PropertiesComponent: ElementType = () => null
 		let propertiesProps: GenericProps = {}
 		if (activeElement) {
 			if (activeElement.type == INSTRUMENT) {

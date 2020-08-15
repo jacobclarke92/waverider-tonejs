@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import Tone from 'tone'
+import { getContext } from 'tone'
 import thunk from 'redux-thunk'
 import StartAudioContext from 'startaudiocontext'
 import { createStore, applyMiddleware, Store } from 'redux'
@@ -28,14 +28,20 @@ import { loadMappings } from './reducers/mappings'
 import App from './App'
 import { ThunkDispatchType } from './types'
 
+declare global {
+	interface Window {
+		logStore: () => void
+	}
+}
+
 const store: Store = createStore(reducers, {}, composeWithDevTools(applyMiddleware(thunk, dbMiddleware)))
-;(window as any).logStore = () => console.log(store.getState())
+window.logStore = () => console.log(store.getState())
 
 // Hack to enable Tone for chrome anti-autoplay measures
-StartAudioContext((Tone as any).context, document.body)
+StartAudioContext(getContext(), document.body)
 document.documentElement.addEventListener('mousedown', () => {
-	// @ts-ignore
-	if (Tone.context.state !== 'running') Tone.context.resume()
+	const ctx = getContext()
+	if (ctx.state !== 'running') ctx.resume()
 })
 
 initMidi(store)

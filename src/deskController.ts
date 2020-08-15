@@ -32,7 +32,7 @@ import BaseEffect from './effects/BaseEffect'
 import BaseInstrument from './instruments/BaseInstrument'
 import { getSequencerInstance } from './sequencersController'
 
-let store: Store = null
+let store: Store
 let oldDesk: DeskStore = []
 
 const connectionAttempts = {}
@@ -227,9 +227,7 @@ export function validateConnection(wireType: WireType, wireFrom: Wire, wireTo: W
 
 	if (!fromDeskItem[wireType + 'Output'] || !toDeskItem[wireType + 'Input']) {
 		console.warn(
-			`Invalid connection -- either ${fromDeskItem.name} does not allow ${wireType} output or  ${
-				toDeskItem.name
-			} does not allow ${wireType} input`
+			`Invalid connection -- either ${fromDeskItem.name} does not allow ${wireType} output or  ${toDeskItem.name} does not allow ${wireType} input`
 		)
 		return false
 	}

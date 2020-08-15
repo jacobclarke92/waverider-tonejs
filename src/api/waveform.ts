@@ -1,10 +1,10 @@
-import WaveSurfer, { WaveSurferOptions } from 'wavesurfer.js'
+import WaveSurfer, { WaveSurferParams } from 'wavesurfer.js'
 import base64toBlob from 'b64-to-blob'
-import { getFileByHash } from './db'
+import { getFileByHash, FileEntity } from './db'
 import { getBlobUrl } from '../utils/blobUtils'
 import { FileType } from '../types'
 
-const defaultOptions: WaveSurferOptions = {
+const defaultOptions: Omit<WaveSurferParams, 'container'> = {
 	waveColor: '#FFF',
 	minPxPerSec: 3000,
 	normalize: false,
@@ -13,7 +13,11 @@ const defaultOptions: WaveSurferOptions = {
 
 const waveforms: { [k: string]: string } = {}
 
-export function getWaveformFromBlob(blob: Blob, options, hash?: string): Promise<string> {
+export function getWaveformFromBlob(
+	blob: Blob,
+	options: Omit<WaveSurferParams, 'container'>,
+	hash?: string
+): Promise<string> {
 	return new Promise((resolve, reject) => {
 		const container = document.createElement('div')
 		container.setAttribute('id', 'waveform-renderer')
@@ -25,7 +29,7 @@ export function getWaveformFromBlob(blob: Blob, options, hash?: string): Promise
 		})
 		WS.init()
 		WS.on('ready', () => {
-			const waveformUri = WS.exportImage()
+			const waveformUri = WS.exportImage() as string // will be string because we're giving it blob
 			document.body.removeChild(container)
 			WS.destroy()
 			if (waveformUri) {
@@ -41,10 +45,20 @@ export function getWaveformFromBlob(blob: Blob, options, hash?: string): Promise
 	})
 }
 
-export function getWaveformFromFile(file: FileType, options: WaveSurferOptions = {}): string | Promise<string> {
-	return file.hash in waveforms ? waveforms[file.hash] : getWaveformFromBlob(file.blob, options, file.hash)
+export function getWaveformFromFile(
+	file: FileEntity,
+	options: Omit<WaveSurferParams, 'container'> = {}
+): string | Promise<string> | false {
+	return file.hash && file.hash in waveforms
+		? waveforms[file.hash]
+		: file.blob
+		? getWaveformFromBlob(file.blob, options, file.hash)
+		: false
 }
 
-export function getWaveformFromFileHash(hash: string, options: WaveSurferOptions = {}): Promise<string> {
-	return getFileByHash(hash).then(file => file && getWaveformFromFile(file, options))
+export function getWaveformFromFileHash(
+	hash: string,
+	options: Omit<WaveSurferParams, 'container'> = {}
+): Promise<string | false> {
+	return getFileByHash(hash).then(file => getWaveformFromFile(file, options))
 }

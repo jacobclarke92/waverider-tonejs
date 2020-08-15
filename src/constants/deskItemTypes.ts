@@ -16,7 +16,7 @@ export const deskItemTypeDefaults: { [key in DeskItem]: DeskItemIOType } = {
 		midiInput: false,
 		midiOutput: false,
 		editable: false,
-		removeable: false,
+		removable: false,
 	},
 	[BUS]: {
 		audioInput: true,
@@ -27,7 +27,7 @@ export const deskItemTypeDefaults: { [key in DeskItem]: DeskItemIOType } = {
 		midiInput: false,
 		midiOutput: false,
 		editable: false,
-		removeable: true,
+		removable: true,
 	},
 	[INSTRUMENT]: {
 		audioInput: false,
@@ -38,7 +38,7 @@ export const deskItemTypeDefaults: { [key in DeskItem]: DeskItemIOType } = {
 		midiInput: true,
 		midiOutput: false,
 		editable: true,
-		removeable: true,
+		removable: true,
 	},
 	[EFFECT]: {
 		audioInput: true,
@@ -49,7 +49,7 @@ export const deskItemTypeDefaults: { [key in DeskItem]: DeskItemIOType } = {
 		midiInput: false,
 		midiOutput: false,
 		editable: true,
-		removeable: true,
+		removable: true,
 	},
 	[LFO]: {
 		audioInput: false,
@@ -60,7 +60,7 @@ export const deskItemTypeDefaults: { [key in DeskItem]: DeskItemIOType } = {
 		midiInput: false,
 		midiOutput: false,
 		editable: true,
-		removeable: true,
+		removable: true,
 	},
 	[SEQUENCER]: {
 		audioInput: false,
@@ -71,6 +71,6 @@ export const deskItemTypeDefaults: { [key in DeskItem]: DeskItemIOType } = {
 		midiOutput: true,
 		midiOutputs: {},
 		editable: true,
-		removeable: true,
+		removable: true,
 	},
 }

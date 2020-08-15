@@ -87,23 +87,24 @@ type MappingsTableSchema = {
 }
 
 export class FileEntity {
-	id: number
-	filename: string
-	size: number
-	type: string
-	date: string
-	note: number
-	hash: string
-	data: Blob
-	blob: Blob
+	id?: number
+	filename?: string
+	size?: number
+	type?: string
+	date?: string
+	note?: number
+	hash?: string
+	data?: Blob
+	blob?: Blob
 
 	disposed: boolean
-	_url: string
+	_url?: string
 
 	constructor(value: FileType) {
 		this.disposed = false
 		for (let key in value) {
-			this[key] = value
+			// @ts-ignore
+			this[key as keyof typeof value] = value[key as keyof typeof value]
 		}
 	}
 
@@ -115,22 +116,22 @@ export class FileEntity {
 		return this.blob ? readBlobAsArrayBuffer(this.blob) : null
 	}
 
-	revokeObjectUrl = function() {
+	revokeObjectUrl() {
+		if (!this._url) return
 		URL.revokeObjectURL(this._url)
 		this._url = ''
 	}
 
-	disposeData = function() {
-		URL.revokeObjectURL(this._url)
-		this._url = ''
-		this.data = null
+	disposeData() {
+		this.revokeObjectUrl()
+		this.data = undefined
 		this.disposed = true
 	}
 
 	get url(): string {
-		if (this._url !== '' && !this.disposed) {
+		if (this._url && !this.disposed) {
 			return this._url
-		} else if (!this.disposed) {
+		} else if (this.blob && !this.disposed) {
 			this._url = getBlobUrl(this.blob)
 			return this._url
 		} else {
@@ -140,13 +141,13 @@ export class FileEntity {
 }
 
 class AppDB extends Dexie {
-	files: Dexie.Table<FilesTableSchema, number>
-	instruments: Dexie.Table<InstrumentsTableSchema, number>
-	effects: Dexie.Table<EffectsTableSchema, number>
-	sequencers: Dexie.Table<SequencersTableSchema, number>
-	devices: Dexie.Table<DevicesTableSchema, number>
-	desk: Dexie.Table<DeskTableSchema, number>
-	mappings: Dexie.Table<MappingsTableSchema, number>
+	files?: Dexie.Table<FilesTableSchema, number>
+	instruments?: Dexie.Table<InstrumentsTableSchema, number>
+	effects?: Dexie.Table<EffectsTableSchema, number>
+	sequencers?: Dexie.Table<SequencersTableSchema, number>
+	devices?: Dexie.Table<DevicesTableSchema, number>
+	desk?: Dexie.Table<DeskTableSchema, number>
+	mappings?: Dexie.Table<MappingsTableSchema, number>
 
 	constructor() {
 		super('AppDB')
@@ -260,7 +261,7 @@ export const bulkPut = <T>(table: string, entities: T[]): Promise<T[]> =>
 			.table(table)
 			.bulkPut(entities)
 			.then(lastKey => resolve(entities))
-			.catch(e => {
+			.catch((e: Dexie.BulkError) => {
 				const failedIds = e.failures.map(({ id }) => id)
 				resolve(entities.filter((entity: T) => failedIds.indexOf((entity as any).id) < 0))
 			})

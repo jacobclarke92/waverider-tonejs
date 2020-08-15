@@ -3,33 +3,33 @@ import { updateFileById, FileEntity } from './db'
 
 export const getNote = (soundUrl: string): Promise<number> =>
 	new Promise((resolve, reject) => {
-		let analysing = true
+		let analyzing = true
 		const analyser = new Analyser('waveform', 1024)
 		analyser.type = 'waveform'
 
 		const noteStore: { [k: number]: number } = {}
-		let mostReoccuring = 0
-		let mostLikelyNote: number = null
+		let mostReoccurring = 0
+		let mostLikelyNote: number
 
 		const analyserFrame = () => {
 			const buffer = analyser.getValue()
-			const pitch = autoCorrelate(buffer, 1024)
+			const pitch = autoCorrelate(buffer instanceof Array ? buffer[0] : buffer, 1024)
 			if (pitch !== -1) {
 				const note = noteFromPitch(pitch)
 				noteStore[note] = (noteStore[note] || 0) + 1
-				if (noteStore[note] > mostReoccuring) {
-					mostReoccuring = noteStore[note]
+				if (noteStore[note] > mostReoccurring) {
+					mostReoccurring = noteStore[note]
 					mostLikelyNote = note
 				}
 			}
-			if (analysing) window.requestAnimationFrame(analyserFrame)
+			if (analyzing) window.requestAnimationFrame(analyserFrame)
 		}
 
 		const player = new Player(soundUrl, () => {
 			player.start()
 			window.requestAnimationFrame(analyserFrame)
 			setTimeout(() => {
-				analysing = false
+				analyzing = false
 				if (mostLikelyNote) resolve(mostLikelyNote)
 				else reject()
 			}, (player.buffer.duration || 0) * 1000)
@@ -41,11 +41,13 @@ export const getNoteByFile = (file: FileEntity): Promise<number> =>
 		if (file.note) resolve(file.note)
 		else
 			getNote(file.url)
-				.then(note =>
-					updateFileById(file.id, { note })
-						.then(() => resolve(note))
-						.catch(reject)
-				)
+				.then(note => {
+					if (file.id)
+						return updateFileById(file.id, { note })
+							.then(() => resolve(note))
+							.catch(reject)
+					else reject()
+				})
 				.catch(reject)
 	})
 

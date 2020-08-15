@@ -1,7 +1,18 @@
+declare global {
+	interface Navigator {
+		webkitTemporaryStorage: {
+			queryUsageAndQuota: <T>(
+				successCallback: (usedBytes: number, grantedBytes: number) => void,
+				errorCallback: (e: unknown) => void
+			) => Promise<T>
+		}
+	}
+}
+
 const defaultLocalStorageBytes: number = 1024 * 1024 * 128
 
 export const getStorageQuota = () =>
-	new Promise((resolve, reject) => {
+	new Promise<{ usedBytes: number; grantedBytes: number }>((resolve, reject) => {
 		if (navigator.webkitTemporaryStorage) {
 			navigator.webkitTemporaryStorage.queryUsageAndQuota(
 				(usedBytes, grantedBytes) => resolve({ usedBytes, grantedBytes }),

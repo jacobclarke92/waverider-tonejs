@@ -73,7 +73,7 @@ export interface DeskItemIOType {
 	midiInput: boolean
 	midiOutput: boolean
 	editable: boolean
-	removeable: boolean
+	removable: boolean
 	audioOutputs?: WireJoins
 	audioInputs?: WireJoins
 	dataOutputs?: WireJoins

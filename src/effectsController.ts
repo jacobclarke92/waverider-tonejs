@@ -14,7 +14,7 @@ import { Store } from 'redux'
 import BaseEffect from './effects/BaseEffect'
 import { ReduxStoreType, Effect } from './types'
 
-let store: Store = null
+let store: Store
 let oldEffects: EffectsStore = []
 
 const instances: { [k: number]: BaseEffect } = {}

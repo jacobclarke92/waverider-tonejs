@@ -22,7 +22,7 @@ import {
 	ActionObj as InstrumentsActionObj,
 } from './reducers/instruments'
 
-let store: Store = null
+let store: Store
 let oldInstruments: Instrument[] = []
 
 const instances: { [k: number]: BaseInstrument } = {}

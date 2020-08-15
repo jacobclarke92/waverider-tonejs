@@ -46,12 +46,14 @@ export class SimplerInstrument extends BaseInstrument {
 		if (checkDifferenceAny(value.instrument, oldValue.instrument, ['trim'])) {
 			if (this.file)
 				this.updateAudioFile(this.file.url, () => {
+					console.log('Sample loaded', this.file)
 					this.triggerUpdateVoiceParams()
 				})
 		}
 		if (checkDifferenceAny(value, oldValue, 'instrument.fileHash')) {
 			this.loadAudioFile(value.instrument.fileHash as string, file => {
 				this.updateAudioFile(file.url, () => {
+					console.log('Sample loaded', this.file)
 					this.triggerUpdateVoiceParams()
 				})
 			})
@@ -84,6 +86,7 @@ export class SimplerInstrument extends BaseInstrument {
 		if (!fileHash) return callback()
 		this.loadAudioFile(fileHash, file => {
 			this.updateAudioFile(file.url, () => {
+				console.log('Sample loaded', file)
 				this.updateVoiceParams()
 				callback()
 			})

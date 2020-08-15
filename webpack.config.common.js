@@ -6,6 +6,7 @@ module.exports = {
 		extensions: ['.ts', '.tsx', '.js', '.jsx'],
 		alias: {
 			'wavesurfer.js': 'wavesurfer.js/src/wavesurfer.js',
+			// tone: resolve(__dirname, 'node_modules/tone/build/esm'),
 		},
 	},
 	module: {
