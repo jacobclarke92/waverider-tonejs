@@ -23,12 +23,12 @@ const DeviceTarget: FunctionComponent<ThunkDispatchProp & Props> = ({
 	<Fragment>
 		<DeviceSelect
 			value={deviceId}
-			onChange={midiDeviceId => dispatch(updateInstrument(instrumentId, { midiDeviceId }))}
+			onChange={(midiDeviceId: string | null) => dispatch(updateInstrument(instrumentId, { midiDeviceId }))}
 			type={type}
 		/>
 		<ChannelSelect
 			value={midiChannel}
-			onChange={midiChannel => dispatch(updateInstrument(instrumentId, { midiChannel }))}
+			onChange={(midiChannel: number | null) => dispatch(updateInstrument(instrumentId, { midiChannel }))}
 		/>
 	</Fragment>
 )

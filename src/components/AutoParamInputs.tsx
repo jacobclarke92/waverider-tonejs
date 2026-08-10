@@ -10,6 +10,7 @@ interface Props {
 	defaultValue: KeyedObject
 	params: AnyParamType[]
 	onChange: (path: string, value: any) => void
+	children?: React.ReactNode | ((node: React.ReactNode, param: AnyParamType, i: number) => React.ReactNode)
 }
 
 export default class AutoParamInputs extends Component<Props> {
@@ -26,7 +27,7 @@ export default class AutoParamInputs extends Component<Props> {
 	}
 
 	renderParam(param: AnyParamType, i: number) {
-		let ParamComponent: ElementType = null
+		let ParamComponent: ElementType | null = null
 		let props: GenericProps = { ...param }
 		if ('type' in param && param.type == 'boolean') {
 			ParamComponent = Checkbox
@@ -38,7 +39,7 @@ export default class AutoParamInputs extends Component<Props> {
 			ParamComponent = KnobInput
 		}
 		props.value = _get(this.props.value, param.path)
-		props.onChange = val => this.props.onChange(param.path, val)
+		props.onChange = (val: any) => this.props.onChange(param.path, val)
 		return <ParamComponent key={`param${i}`} {...props} />
 	}
 }

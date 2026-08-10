@@ -1,12 +1,13 @@
 import { allInstrumentDefaults } from '../constants/params'
 import { Meter } from 'tone'
 import BaseInstrument from './BaseInstrument'
-import { InstrumentDefaultValueType, ParamsType, InstrumentType } from '../types'
+import { InstrumentDefaultValueType, ParamsType, InstrumentType, ThunkDispatchType, Instrument } from '../types'
 
 export class SamplerInstrument extends BaseInstrument {
-	sampler: any
+	sampler!: any
+	[key: string]: any
 
-	constructor(value = {}, dispatch) {
+	constructor(value: any = {}, dispatch: ThunkDispatchType) {
 		super()
 		console.log('Mounting sampler...')
 		this.mounted = false
@@ -25,11 +26,11 @@ export class SamplerInstrument extends BaseInstrument {
 		callback()
 	}
 
-	noteDown(note, velocity) {
+	noteDown(note: number, velocity: number) {
 		// if (this.mounted && this.synth) this.synth.triggerAttack(note, now(), velocity / 2)
 	}
 
-	noteUp(note) {
+	noteUp(note: number) {
 		// if (this.mounted && this.synth) this.synth.triggerRelease(note, now())
 	}
 
@@ -48,9 +49,9 @@ export const params: ParamsType = []
 const instrument: InstrumentType = {
 	name: 'Sampler',
 	slug: 'sampler',
-	Editor: null,
-	Instrument: null,
-	DeskItem: null,
+	Editor: null as any,
+	Instrument: SamplerInstrument as any,
+	DeskItem: null as any,
 	defaultValue,
 	params,
 }

@@ -14,20 +14,20 @@ class BasicSynth extends Component<ThunkDispatchProp & InstrumentPropertiesPanel
 		const { dispatch, id, type, instrument = {}, midiDeviceId, midiChannel } = this.props
 		const { voices, portamento, envelope = {}, oscillator = {} } = instrument
 		const { attack, decay, sustain, release } = envelope
-		const midiInputProps = { id, type: 'instrument', slug: type }
+		const midiInputProps = { id: id!, type: 'instrument', slug: type }
 		return (
 			<div className="pluck-synth">
 				<div className="flex">
 					<div className="flex-column">
-						<DeviceAndChannel instrumentId={id} deviceId={midiDeviceId} midiChannel={midiChannel} type="input" />
+						<DeviceAndChannel instrumentId={id!} deviceId={midiDeviceId!} midiChannel={midiChannel!} type="input" />
 						<br />
-						<SelectInput
+						<SelectInput<string>
 							empty={false}
 							value={oscillator.type}
 							defaultValue={defaultValue.instrument.oscillator.type}
 							options={['square', 'triangle', 'sine', 'sawtooth'].map(value => ({ value, text: value }))}
 							onChange={type =>
-								dispatch(updateInstrument(id, { instrument: { ...instrument, oscillator: { ...oscillator, type } } }))
+								dispatch(updateInstrument(id!, { instrument: { ...instrument, oscillator: { ...oscillator, type } } }))
 							}
 						/>
 						<br />
@@ -39,7 +39,7 @@ class BasicSynth extends Component<ThunkDispatchProp & InstrumentPropertiesPanel
 								step={1}
 								defaultValue={defaultValue.instrument.voices}
 								value={voices}
-								onChange={voices => dispatch(updateInstrument(id, { instrument: { ...instrument, voices } }))}
+								onChange={voices => dispatch(updateInstrument(id!, { instrument: { ...instrument, voices } }))}
 							/>
 						</MidiInput>
 						<MidiInput {...midiInputProps} paramPath="portamento">
@@ -50,7 +50,7 @@ class BasicSynth extends Component<ThunkDispatchProp & InstrumentPropertiesPanel
 								step={0.05}
 								value={portamento}
 								defaultValue={defaultValue.instrument.portamento}
-								onChange={portamento => dispatch(updateInstrument(id, { instrument: { ...instrument, portamento } }))}
+								onChange={portamento => dispatch(updateInstrument(id!, { instrument: { ...instrument, portamento } }))}
 							/>
 						</MidiInput>
 					</div>
@@ -65,7 +65,7 @@ class BasicSynth extends Component<ThunkDispatchProp & InstrumentPropertiesPanel
 								valueDisplay={value => value + 's'}
 								defaultValue={defaultValue.instrument.envelope.attack}
 								onChange={attack =>
-									dispatch(updateInstrument(id, { instrument: { ...instrument, envelope: { ...envelope, attack } } }))
+									dispatch(updateInstrument(id!, { instrument: { ...instrument, envelope: { ...envelope, attack } } }))
 								}
 							/>
 						</MidiInput>
@@ -79,7 +79,7 @@ class BasicSynth extends Component<ThunkDispatchProp & InstrumentPropertiesPanel
 								valueDisplay={value => value + 's'}
 								defaultValue={defaultValue.instrument.envelope.decay}
 								onChange={decay =>
-									dispatch(updateInstrument(id, { instrument: { ...instrument, envelope: { ...envelope, decay } } }))
+									dispatch(updateInstrument(id!, { instrument: { ...instrument, envelope: { ...envelope, decay } } }))
 								}
 							/>
 						</MidiInput>
@@ -93,7 +93,7 @@ class BasicSynth extends Component<ThunkDispatchProp & InstrumentPropertiesPanel
 								valueDisplay={value => Math.round(value * 100) + '%'}
 								defaultValue={defaultValue.instrument.envelope.sustain}
 								onChange={sustain =>
-									dispatch(updateInstrument(id, { instrument: { ...instrument, envelope: { ...envelope, sustain } } }))
+									dispatch(updateInstrument(id!, { instrument: { ...instrument, envelope: { ...envelope, sustain } } }))
 								}
 							/>
 						</MidiInput>
@@ -107,7 +107,7 @@ class BasicSynth extends Component<ThunkDispatchProp & InstrumentPropertiesPanel
 								valueDisplay={value => value + 's'}
 								defaultValue={defaultValue.instrument.envelope.release}
 								onChange={release =>
-									dispatch(updateInstrument(id, { instrument: { ...instrument, envelope: { ...envelope, release } } }))
+									dispatch(updateInstrument(id!, { instrument: { ...instrument, envelope: { ...envelope, release } } }))
 								}
 							/>
 						</MidiInput>

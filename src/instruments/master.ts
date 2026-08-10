@@ -1,12 +1,13 @@
-import { ParamsType } from '../types'
-import { Master, Gain, Meter, now } from 'tone'
+import { ParamsType, Instrument, ThunkDispatchType, InstrumentType } from '../types'
+import { Master, Gain, Meter } from 'tone'
 import BaseInstrument from './BaseInstrument'
 import MasterDeskItem from '../components/desk/Master'
 
 export class MasterInstrument extends BaseInstrument {
-	submaster: Gain
+	submaster!: Gain
+	[key: string]: any
 
-	constructor(value = {}, dispatch) {
+	constructor(value: any = {}, dispatch: ThunkDispatchType) {
 		super()
 		console.log('Mounting master...')
 		this.mounted = false
@@ -19,17 +20,15 @@ export class MasterInstrument extends BaseInstrument {
 		})
 	}
 
-	update(value, oldValue) {
-		Object.keys(value).forEach(key => (this[key] = value[key]))
+	update(value: Instrument, oldValue: Instrument) {
+		const val = value as any
+		Object.keys(val).forEach(key => (this[key] = val[key]))
 	}
 
 	initSynth(callback = () => {}) {
-		// @ts-ignore
 		if (this.submaster) this.submaster.dispose()
 		this.submaster = new Gain(1)
-		// @ts-ignore
 		this.submaster.connect(this.meter)
-		// @ts-ignore
 		this.submaster.connect(Master)
 		callback()
 	}

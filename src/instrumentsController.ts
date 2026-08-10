@@ -47,18 +47,19 @@ function handleUpdate() {
 	const { lastAction, instruments, desk } = store.getState() as ReduxStoreType
 	switch (lastAction.type) {
 		case RELOAD_INSTRUMENTS:
-			instruments.forEach(instrument => removeInstrumentInstance(instrument.id))
+			instruments.forEach(instrument => removeInstrumentInstance(instrument.id!))
+			break
 		case LOAD_INSTRUMENTS:
 			initInstruments(instruments)
 			break
 		case UPDATE_INSTRUMENT:
-			updateInstrument((lastAction as InstrumentsActionObj).id, instruments)
+			updateInstrument((lastAction as InstrumentsActionObj).id!, instruments)
 			break
 		case ADD_INSTRUMENT:
-			initInstrument((lastAction as InstrumentsActionObj).instrument)
+			initInstrument((lastAction as InstrumentsActionObj).instrument!)
 			break
 		case REMOVE_INSTRUMENT:
-			removeInstrumentInstance((lastAction as InstrumentsActionObj).id)
+			removeInstrumentInstance((lastAction as InstrumentsActionObj).id!)
 			break
 		case NOTE_ON:
 		case NOTE_OFF:
@@ -83,7 +84,7 @@ function initInstrument(instrument: Instrument) {
 	if (!instrument) return
 	if (!(instrument.type in instrumentLibrary)) return
 	const InstrumentClass: BaseInstrumentConstructor = instrumentLibrary[instrument.type].Instrument
-	instances[instrument.id] = new InstrumentClass(instrument, store.dispatch)
+	instances[instrument.id!] = new InstrumentClass(instrument, store.dispatch)
 }
 
 // TODO
@@ -91,7 +92,7 @@ function updateInstrument(id: number, instruments: Instrument[]) {
 	if (!id) return
 	const instrument = _find(instruments, { id })
 	if (!instrument) return
-	const oldInstrument = _find(oldInstruments, { id })
+	const oldInstrument = _find(oldInstruments, { id })!
 	if (!(id in instances)) initInstrument(instrument as Instrument)
 	else instances[id].update(instrument, oldInstrument)
 }
@@ -112,8 +113,8 @@ function handleNoteAction({ type, deviceId, channel, note, velocity }: MidiMessa
 			enabled && (!midiDeviceId || midiDeviceId == deviceId) && (!midiChannel || midiChannel == channel)
 	)
 	targetInstruments.forEach(instrument => {
-		if (type == NOTE_ON) instances[instrument.id].noteDown(note, velocity)
-		else if (type == NOTE_OFF) instances[instrument.id].noteUp(note)
+		if (type == NOTE_ON) instances[instrument.id!].noteDown(note, velocity)
+		else if (type == NOTE_OFF) instances[instrument.id!].noteUp(note)
 	})
 }
 

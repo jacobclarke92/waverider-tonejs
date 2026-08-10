@@ -28,11 +28,6 @@ export const defaultValue: EffectDefaultValueType = {
 }
 
 export class OscilloscopeEffect extends BaseEffect {
-	constructor(value = {}, dispatch, params) {
-		super(value, dispatch, params)
-		this.initEffect.bind(this)
-	}
-
 	initEffect(callback = () => {}) {
 		if (!this.analyser) this.analyser = new Waveform(32768 / 16)
 		if (this.instance) this.instance.dispose()

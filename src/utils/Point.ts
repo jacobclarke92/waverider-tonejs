@@ -17,12 +17,12 @@ export default class Point {
 	constructor(x: PointObj)
 	constructor(x: Point)
 	constructor(x: any, y?: number) {
-		if (typeof x == 'object') {
-			this.x = x.x
-			this.y = x.y
+		if (typeof x == 'object' && x !== null) {
+			this.x = x.x || 0
+			this.y = x.y || 0
 		} else {
-			this.x = x
-			this.y = y
+			this.x = x || 0
+			this.y = y || 0
 		}
 		return this
 	}

@@ -15,7 +15,7 @@ import {
 	ActionObj as SequencersActionObj,
 } from './reducers/sequencers'
 
-let store: Store = null
+let store: Store = (null as unknown) as Store
 let oldSequencers: SequencersStore = []
 
 const instances: { [k: number]: BaseSequencer } = {}
@@ -34,18 +34,19 @@ function handleUpdate() {
 	const { lastAction, sequencers } = store.getState() as ReduxStoreType
 	switch (lastAction.type) {
 		case RELOAD_SEQUENCERS:
-			sequencers.forEach(sequencer => removeSequencerInstance(sequencer.id))
+			sequencers.forEach(sequencer => removeSequencerInstance(sequencer.id!))
+			break
 		case LOAD_SEQUENCERS:
 			initSequencers(sequencers)
 			break
 		case UPDATE_SEQUENCER:
-			updateSequencer((lastAction as SequencersActionObj).id, sequencers)
+			updateSequencer((lastAction as SequencersActionObj).id!, sequencers)
 			break
 		case ADD_SEQUENCER:
-			initSequencer((lastAction as SequencersActionObj).sequencer)
+			initSequencer((lastAction as SequencersActionObj).sequencer!)
 			break
 		case REMOVE_SEQUENCER:
-			removeSequencerInstance((lastAction as SequencersActionObj).id)
+			removeSequencerInstance((lastAction as SequencersActionObj).id!)
 			break
 	}
 	oldSequencers = _cloneDeep(sequencers)
@@ -59,13 +60,13 @@ function initSequencers(sequencers: SequencersStore) {
 function initSequencer(sequencer: Sequencer) {
 	const sequencerConstructor = sequencerLibrary[sequencer.type]
 	const Sequencer = sequencerConstructor.Sequencer
-	instances[sequencer.id] = new Sequencer(sequencer, store.dispatch)
+	instances[sequencer.id!] = new Sequencer(sequencer, store.dispatch)
 }
 
 function updateSequencer(id: number, sequencers: SequencersStore) {
 	if (!id) return
 	const sequencer = _find(sequencers, { id })
-	const oldSequencer = _find(oldSequencers, { id })
+	const oldSequencer = _find(oldSequencers, { id })!
 	if (!sequencer) return console.log('Sequencer not found for', id)
 	if (!(id in instances)) initSequencer(sequencer)
 	else instances[id].update(sequencer, oldSequencer)

@@ -8,14 +8,14 @@ interface Props {
 }
 
 export default class PointerLockWrapper extends Component<Props> {
-	elem: HTMLElement
+	elem: HTMLElement | null
 	mouseDown: boolean
 
 	static defaultProps = {
 		onMovement: () => {},
 	}
 
-	constructor(props) {
+	constructor(props: Props) {
 		super(props)
 		this.elem = null
 		this.mouseDown = false
@@ -31,7 +31,7 @@ export default class PointerLockWrapper extends Component<Props> {
 		document.removeEventListener('mouseup', this.handleMouseUp)
 	}
 
-	handleMouseDown(event: MouseEvent, child) {
+	handleMouseDown(event: MouseEvent, child: ReactElement<any>) {
 		if (!this.elem) return
 		this.mouseDown = true
 		requestPointerLock(this.elem)
@@ -59,8 +59,8 @@ export default class PointerLockWrapper extends Component<Props> {
 	render() {
 		const child = Children.only(this.props.children) as ReactElement<any>
 		return cloneElement(child, {
-			ref: (elem: HTMLElement) => (this.elem = elem),
-			onMouseDown: (e: MouseEvent) => this.handleMouseDown(e, child),
+			ref: (elem: HTMLElement | null) => (this.elem = elem),
+			onMouseDown: (e: React.MouseEvent) => this.handleMouseDown((e as unknown) as MouseEvent, child),
 		})
 	}
 }

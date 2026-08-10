@@ -24,7 +24,7 @@ interface StateProps {
 }
 
 class TransportControls extends Component<ThunkDispatchProp & StateProps & Props> {
-	constructor(props) {
+	constructor(props: ThunkDispatchProp & StateProps & Props) {
 		super(props)
 		this.handleBpmChange = _throttle(this.handleBpmChange, ccMappingDebounce)
 	}
@@ -52,21 +52,21 @@ class TransportControls extends Component<ThunkDispatchProp & StateProps & Props
 				<KnobInput label="BPM" value={bpm} min={20} max={320} step={1} onChange={this.handleBpmChange} />
 				<div className="field margin-l-m">
 					<label>Beats</label>
-					<SelectInput
+					<SelectInput<number>
 						empty={false}
 						options={[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(value => ({ value, text: value.toString() }))}
 						value={timeSignature[0]}
-						onChange={(val: string) => this.handleTimeSignatureChange([parseInt(val), timeSignature[1]])}
+						onChange={val => this.handleTimeSignatureChange([val || timeSignature[0], timeSignature[1]])}
 					/>
 				</div>
 				<div className="margin-h-s font-size-m">/</div>
 				<div className="field">
 					<label>Division</label>
-					<SelectInput
+					<SelectInput<number>
 						empty={false}
 						options={[2, 4, 8, 16].map(value => ({ value, text: value.toString() }))}
 						value={timeSignature[1]}
-						onChange={(val: string) => this.handleTimeSignatureChange([timeSignature[0], parseInt(val)])}
+						onChange={val => this.handleTimeSignatureChange([timeSignature[0], val || timeSignature[1]])}
 					/>
 				</div>
 			</div>

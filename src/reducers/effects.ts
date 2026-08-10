@@ -58,7 +58,7 @@ export const overwriteEffects = (effects: Effect[]) => (dispatch: ThunkDispatchT
 
 export const addEffect = (type: string, position: PointObj = { x: 0, y: 0 }) => {
 	const effectDef: EffectType = effectLibrary[type]
-	if (!effectDef) return null
+	if (!effectDef) throw new Error(`Effect type ${type} not found in effect library`)
 
 	const newEffect: Effect = {
 		type,
@@ -74,7 +74,7 @@ export const addEffect = (type: string, position: PointObj = { x: 0, y: 0 }) => 
 					name: effectDef.name,
 					slug: effectDef.slug,
 					ownerType: type,
-					ownerId: effect.id,
+					ownerId: effect.id!,
 					type: EFFECT,
 					position,
 					...deskItemTypeDefaults[EFFECT],
@@ -91,7 +91,7 @@ export const updateEffect = (id: number, updates: KeyedObject) => ({ type: UPDAT
 export const removeEffect = (desk: DeskStore, deskItem: DeskItemType) => (dispatch: ThunkDispatchType) =>
 	removeById('effects', deskItem.ownerId)
 		.then(() =>
-			removeById('desk', deskItem.id)
+			removeById('desk', deskItem.id!)
 				.then(() => {
 					const deadConnections = getWiresRoutedTo(deskItem)
 					console.log('STRAY CONNECTIONS', deadConnections)

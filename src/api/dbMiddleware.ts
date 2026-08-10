@@ -45,7 +45,7 @@ function getUpdateFunction<T>(functionsObj: DbUpdateFunctions, table: string, id
 
 // TODO types for redux middleware
 // export default ({ getState }: MiddlewareAPI): Middleware<ThunkDispatchType> => (next: ThunkDispatch) => (action) => {
-export default ({ getState }) => next => action => {
+export default ({ getState }: { getState: () => any }) => (next: any) => (action: any) => {
 	const state: ReduxStoreType = getState()
 	let updateFunction: DbUpdateFunction
 

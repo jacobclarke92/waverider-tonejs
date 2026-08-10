@@ -21,18 +21,18 @@ interface State {
 }
 
 export default class PianoRoll extends Component<Props, State> {
-	hideOverlayTimeout: number
+	hideOverlayTimeout!: number
 	static defaultProps = {
 		octaves: 6,
 		octaveStart: 0,
 		height: 100,
 		keyWidth: 18,
 	}
-	constructor(props) {
+	constructor(props: Props) {
 		super(props)
 		this.state = {
 			velocity: 96,
-			activeOctave: Math.min(props.octaves, 4),
+			activeOctave: Math.min(props.octaves || 6, 4),
 			overlayMessage: '',
 			overlayHidden: true,
 		}
@@ -51,12 +51,17 @@ export default class PianoRoll extends Component<Props, State> {
 	}
 	deincrementActiveOctave = () =>
 		this.setState({ activeOctave: Math.max(0, this.state.activeOctave - 1) }, () =>
-			this.displayMessage(`Starts at C${this.state.activeOctave + this.props.octaveStart}`)
+			this.displayMessage(`Starts at C${this.state.activeOctave + (this.props.octaveStart || 0)}`)
 		)
 	incrementActiveOctave = () =>
 		this.setState(
-			{ activeOctave: Math.min(this.props.octaves - this.props.octaveStart - 1, this.state.activeOctave + 1) },
-			() => this.displayMessage(`Starts at C${this.state.activeOctave + this.props.octaveStart}`)
+			{
+				activeOctave: Math.min(
+					(this.props.octaves || 6) - (this.props.octaveStart || 0) - 1,
+					this.state.activeOctave + 1
+				),
+			},
+			() => this.displayMessage(`Starts at C${this.state.activeOctave + (this.props.octaveStart || 0)}`)
 		)
 	decreaseVelocity = () =>
 		this.setState({ velocity: Math.max(0, this.state.velocity - 8) }, () =>
@@ -72,11 +77,14 @@ export default class PianoRoll extends Component<Props, State> {
 		this.hideOverlayTimeout = setTimeout(() => this.setState({ overlayHidden: true }), 1000)
 	}
 	render() {
-		const { octaves, octaveStart, keyWidth, height, className } = this.props
+		const octaves = this.props.octaves || 6
+		const octaveStart = this.props.octaveStart || 0
+		const keyWidth = this.props.keyWidth || 18
+		const { height, className } = this.props
 		const { activeOctave, velocity, overlayMessage, overlayHidden } = this.state
 		return (
 			<div className={cn('piano-wrapper', className)} style={{ height }}>
-				{generateArray(octaves - octaveStart).map(i => (
+				{generateArray<number>(octaves - octaveStart, i => i).map(i => (
 					<Octave
 						key={i}
 						octave={i}
@@ -125,6 +133,8 @@ const getWhiteKeyIndex = (i: number): number => {
 			return 9
 		case 6:
 			return 11
+		default:
+			return 0
 	}
 }
 
@@ -141,6 +151,8 @@ const getBlackKeyIndex = (i: number): number => {
 			return 8
 		case 4:
 			return 10
+		default:
+			return 0
 	}
 }
 const getBlackKeyLeft = (i: number, width: number): number => {

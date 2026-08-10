@@ -14,7 +14,7 @@ import instrumentLibrary from './instrumentLibrary'
 import effectLibrary from './effectLibrary'
 import { ccMappingDebounce } from './constants/timings'
 
-let store: Store = null
+let store: Store = (null as unknown) as Store
 
 const effectUpdates: { [key: number]: KeyedObject } = {}
 const instrumentUpdates: { [key: number]: KeyedObject } = {}
@@ -54,7 +54,7 @@ function handleControlChange(deviceId: string, channel: number, cc: number, valu
 		const mapping: MappingType = { ...activeControl, deviceId, channel, cc }
 
 		// Attempt to find corresponding param from instrument/effect library
-		let param: AnyParamType = null
+		let param: AnyParamType | undefined = undefined
 		if (activeControl.type == 'instrument') {
 			const instrument = instrumentLibrary[activeControl.ownerType]
 			if (instrument && instrument.params)
@@ -89,7 +89,7 @@ function handleControlChange(deviceId: string, channel: number, cc: number, valu
 		mapping => mapping.deviceId === deviceId && mapping.channel === channel && mapping.cc === cc
 	)
 	for (let mapping of affectedMappings) {
-		const mappedValue = scale(value, 0, 127, mapping.min, mapping.max)
+		const mappedValue = scale(value, 0, 127, mapping.min || 0, mapping.max || 1)
 		if (mapping.type == 'instrument') {
 			instrumentUpdates[mapping.ownerId] = _merge(_cloneDeep(instrumentUpdates[mapping.ownerId] || {}), {
 				instrument: _set({}, mapping.paramPath, mappedValue),

@@ -1,37 +1,32 @@
-import React, { Component, FormEvent } from 'react'
+import React, { FormEvent, useEffect, useRef } from 'react'
 
 interface Props {
-	autoFocus: boolean
+	autoFocus?: boolean
 	value: number
 	min?: number
 	max?: number
 	step?: number
 	onChange: (val: number) => void
 	onBlur?: (e: FormEvent<HTMLInputElement>) => void
-	beforeOnChange?: (e: FormEvent<HTMLInputElement>) => number
+	beforeOnChange?: (e: React.ChangeEvent<HTMLInputElement>) => number
+	className?: string
 }
 
-export default class NumberInput extends Component<Props> {
-	input: HTMLInputElement
+export default function NumberInput({
+	autoFocus = false,
+	value = 0,
+	onChange,
+	beforeOnChange = e => parseFloat(e.target.value),
+	...props
+}: Props) {
+	const inputRef = useRef<HTMLInputElement>(null)
 
-	static defaultProps = {
-		autoFocus: false,
-		value: 0,
-		onChange: () => {},
-		beforeOnChange: e => parseFloat(e.target.value),
-	}
-
-	componentDidMount() {
-		if (this.props.autoFocus) {
-			this.input.focus()
-			this.input.select()
+	useEffect(() => {
+		if (autoFocus && inputRef.current) {
+			inputRef.current.focus()
+			inputRef.current.select()
 		}
-	}
+	}, [autoFocus])
 
-	render() {
-		const { onChange, beforeOnChange, ...props } = this.props
-		return (
-			<input type="number" ref={elem => (this.input = elem)} onChange={e => onChange(beforeOnChange(e))} {...props} />
-		)
-	}
+	return <input type="number" ref={inputRef} value={value} onChange={e => onChange(beforeOnChange(e))} {...props} />
 }

@@ -61,7 +61,7 @@ export const overwriteSequencers = (sequencers: Sequencer[]) => (dispatch: Thunk
 
 export const addSequencer = (type: string, position: PointObj = { x: 0, y: 0 }) => {
 	const sequencerDef: SequencerType = sequencerLibrary[type]
-	if (!sequencerDef) return null
+	if (!sequencerDef) throw new Error(`Sequencer type ${type} not found in sequencer library`)
 
 	const newSequencer: Sequencer = {
 		type,
@@ -75,7 +75,7 @@ export const addSequencer = (type: string, position: PointObj = { x: 0, y: 0 }) 
 					name: sequencerDef.name,
 					slug: sequencerDef.slug,
 					ownerType: type,
-					ownerId: sequencer.id,
+					ownerId: sequencer.id!,
 					type: SEQUENCER,
 					position,
 					...deskItemTypeDefaults[SEQUENCER],
@@ -106,7 +106,7 @@ export const updateSequencer = (id: number, updates: KeyedObject) =>
 export const removeSequencer = (desk: DeskStore, deskItem: DeskItemType) => (dispatch: ThunkDispatchType) =>
 	removeById('sequencers', deskItem.ownerId)
 		.then(() =>
-			removeById('desk', deskItem.id)
+			removeById('desk', deskItem.id!)
 				.then(() => {
 					removeBy('devices', 'sequencerId', deskItem.ownerId).then(() => {
 						const deadConnections = getWiresRoutedTo(deskItem)

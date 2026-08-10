@@ -1,4 +1,4 @@
-import { ParamsType, InstrumentType, InstrumentDefaultValueType } from '../types'
+import { ParamsType, InstrumentType, InstrumentDefaultValueType, ThunkDispatchType, Instrument } from '../types'
 import { Synth, PolySynth, Meter, now } from 'tone'
 import _debounce from 'lodash/throttle'
 import { paramUpdateDebounce, voicesUpdateDebounce } from '../constants/timings'
@@ -11,9 +11,10 @@ import BaseInstrument from './BaseInstrument'
 import { REINIT_INSTRUMENT_INSTANCE } from '../reducers/desk'
 
 export class BasicSynthInstrument extends BaseInstrument {
-	synth: PolySynth
+	synth!: PolySynth
+	[key: string]: any
 
-	constructor(value = {}, dispatch) {
+	constructor(value: any = {}, dispatch: ThunkDispatchType) {
 		super()
 		console.log('Mounting basicSynth...')
 		this.mounted = false
@@ -28,8 +29,9 @@ export class BasicSynthInstrument extends BaseInstrument {
 		})
 	}
 
-	update(value, oldValue) {
-		Object.keys(value).forEach(key => (this[key] = value[key]))
+	update(value: Instrument, oldValue: Instrument) {
+		const val = value as any
+		Object.keys(val).forEach(key => (this[key] = val[key]))
 		if (checkDifferenceAny(value.instrument, oldValue.instrument, ['voices'])) {
 			this.reinitSynth()
 			this.dispatch({ type: REINIT_INSTRUMENT_INSTANCE, id: this.id })
@@ -53,10 +55,11 @@ export class BasicSynthInstrument extends BaseInstrument {
 		const { voices } = this.instrument
 		if (this.synth) {
 			this.synth.dispose()
-			delete this.synth
 		}
-		this.synth = new PolySynth(voices, Synth)
-		this.synth.set('volume', -39)
+		this.synth = new PolySynth(Synth, {
+			/*maxPolyphony: voices*/
+		})
+		this.synth.set({ volume: -39 })
 		this.synth.connect(this.meter)
 		this.updateVoiceParams()
 		callback()

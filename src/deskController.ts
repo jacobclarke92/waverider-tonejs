@@ -31,11 +31,13 @@ import {
 import BaseEffect from './effects/BaseEffect'
 import BaseInstrument from './instruments/BaseInstrument'
 import { getSequencerInstance } from './sequencersController'
+import { DestinationClass } from 'tone/build/esm/core/context/Destination'
+import BaseSequencer from './sequencers/BaseSequencer'
 
 let store: Store
 let oldDesk: DeskStore = []
 
-const connectionAttempts = {}
+const connectionAttempts: { [key: number]: number } = {}
 
 export function init(_store: Store) {
 	store = _store
@@ -69,11 +71,11 @@ function initConnections(desk: DeskStore) {
 }
 
 function handleNewConnection(action: DeskActionObj) {
-	connectAudioWires(action.deskItem)
+	connectAudioWires(action.deskItem!)
 }
 
 function handleRemoveConnection(action: DeskActionObj) {
-	connectAudioWires(action.deskItem, true)
+	connectAudioWires(action.deskItem!, true)
 }
 
 function handleReinitDeskInstance(deskItemId: number) {
@@ -87,22 +89,23 @@ function handleReinitDeskInstance(deskItemId: number) {
 	connectAudioWires(deskItem, true)
 }
 
-function getSource(deskItem: DeskItemType): false | BaseEffect | BaseInstrument {
-	let source = null
+function getSource(deskItem: DeskItemType): false | BaseEffect | BaseInstrument  {
 	switch (deskItem.type) {
 		case MASTER:
-			source = Master
-			break
+			// @ts-ignore
+			return Master
+			
 		case INSTRUMENT:
-			source = getInstrumentInstance(deskItem.ownerId)
-			break
+			return getInstrumentInstance(deskItem.ownerId)
+			
 		case EFFECT:
-			source = getEffectInstance(deskItem.ownerId)
-			break
+			return getEffectInstance(deskItem.ownerId)
+			
 		case SEQUENCER:
-			source = getSequencerInstance(deskItem.ownerId)
+			// @ts-ignore
+			return getSequencerInstance(deskItem.ownerId)
 	}
-	return source
+	return false
 }
 
 export function connectAudioWires(fromDeskItem: DeskItemType, disconnectFirst: boolean = false) {
@@ -123,7 +126,7 @@ export function connectAudioWires(fromDeskItem: DeskItemType, disconnectFirst: b
 	const { desk = [] } = store.getState() as ReduxStoreType
 
 	const outputs: WireJoins = fromDeskItem.audioOutputs || {}
-	const connections = []
+	const connections: any[] = []
 	for (let ownerId in outputs) {
 		const toDeskItem = _find(desk, { id: outputs[ownerId].wireTo.deskItemId })
 		// console.log('TO DESK ITEM', toDeskItem)
@@ -146,18 +149,18 @@ export function connectAudioWires(fromDeskItem: DeskItemType, disconnectFirst: b
 			if (disconnectFirst) fromToneSource.disconnect()
 			if (connections.length > 0) {
 				fromToneSource.fan.apply(fromToneSource, connections)
-				if (fromSource.id in connectionAttempts)
-					console.log(`Connected ${fromDeskItem.type} after ${connectionAttempts[fromSource.id]} attempts`)
+				if (fromSource.id! in connectionAttempts)
+					console.log(`Connected ${fromDeskItem.type} after ${connectionAttempts[fromSource.id!]} attempts`)
 			}
 		} else {
 			console.warn(
-				`Unable to connect ${fromDeskItem.type} (${fromSource.id}) because tone.js source is not available yet`
+				`Unable to connect ${fromDeskItem.type} (${fromSource.id!}) because tone.js source is not available yet`
 			)
-			if (!(fromSource.id in connectionAttempts)) connectionAttempts[fromSource.id] = 0
-			if (connectionAttempts[fromSource.id] < 5) {
-				connectionAttempts[fromSource.id] += 1
+			if (!(fromSource.id! in connectionAttempts)) connectionAttempts[fromSource.id!] = 0
+			if (connectionAttempts[fromSource.id!] < 5) {
+				connectionAttempts[fromSource.id!] += 1
 				setTimeout(() => {
-					console.log(`Attempting ${fromDeskItem.type} output connection #${connectionAttempts[fromSource.id]}...`)
+					console.log(`Attempting ${fromDeskItem.type} output connection #${connectionAttempts[fromSource.id!]}...`)
 					attemptConnectingOutputs()
 				}, 500)
 			} else {
@@ -175,19 +178,19 @@ export function getDeskWires(): WireJoin[] {
 	const connections: WireJoin[] = []
 	for (let fromItem of desk) {
 		if (fromItem.audioOutput)
-			Object.keys(fromItem.audioOutputs).forEach(outputId => {
-				const wire: WireJoin = fromItem.audioOutputs[outputId]
-				connections.push(wire)
+			Object.keys(fromItem.audioOutputs || {}).forEach(outputId => {
+				const wire = fromItem.audioOutputs?.[parseInt(outputId)]
+				if(wire) connections.push(wire)
 			})
 		if (fromItem.dataOutput)
-			Object.keys(fromItem.dataOutputs).forEach(outputId => {
-				const wire: WireJoin = fromItem.dataOutputs[outputId]
-				connections.push(wire)
+			Object.keys(fromItem.dataOutputs || {}).forEach(outputId => {
+				const wire = fromItem.dataOutputs?.[parseInt(outputId)]
+				if(wire) connections.push(wire)
 			})
 		if (fromItem.midiOutput)
-			Object.keys(fromItem.midiOutputs).forEach(outputId => {
-				const wire: WireJoin = fromItem.midiOutputs[outputId]
-				connections.push(wire)
+			Object.keys(fromItem.midiOutputs || {}).forEach(outputId => {
+				const wire = fromItem.midiOutputs?.[parseInt(outputId)]
+				if(wire) connections.push(wire)
 			})
 	}
 	return connections
@@ -196,10 +199,10 @@ export function getDeskWires(): WireJoin[] {
 export function getDeskItemsConnectedTo(targetDeskItem: DeskItemType): DeskItemType[] {
 	const { desk = [] } = store.getState() as ReduxStoreType
 	return desk.filter(deskItem => {
-		if (deskItem.audioOutput && Object.keys(deskItem.audioOutputs).length > 0) {
-			for (let key in deskItem.audioOutputs) {
-				const connection = deskItem.audioOutputs[key]
-				if (connection.wireTo.deskItemId == targetDeskItem.id) return true
+		if (deskItem.audioOutput && Object.keys(deskItem.audioOutputs || {}).length > 0) {
+			for (let key in deskItem.audioOutputs || {}) {
+				const connection = deskItem.audioOutputs?.[parseInt(key)]
+				if (connection && connection.wireTo.deskItemId == targetDeskItem.id) return true
 			}
 		}
 		return false
@@ -210,10 +213,10 @@ export function getWiresRoutedTo(targetDeskItem: DeskItemType): WireJoin[] {
 	const wireJoins: WireJoin[] = []
 	const { desk = [] } = store.getState() as ReduxStoreType
 	desk
-		.filter(({ audioOutput, audioOutputs }) => audioOutput && Object.keys(audioOutputs).length > 0)
+		.filter(({ audioOutput, audioOutputs }) => audioOutput && Object.keys(audioOutputs || {}).length > 0)
 		.forEach(deskItem => {
 			for (let key in deskItem.audioOutputs) {
-				const connection = deskItem.audioOutputs[key]
+				const connection = deskItem.audioOutputs?.[parseInt(key)]
 				if (connection.wireTo.deskItemId == targetDeskItem.id) wireJoins.push(connection)
 			}
 		})
@@ -222,9 +225,10 @@ export function getWiresRoutedTo(targetDeskItem: DeskItemType): WireJoin[] {
 
 export function validateConnection(wireType: WireType, wireFrom: Wire, wireTo: Wire): boolean {
 	const { desk } = store.getState() as ReduxStoreType
-	const fromDeskItem: DeskItemType = _find(desk, { id: wireFrom.deskItemId })
-	const toDeskItem: DeskItemType = _find(desk, { id: wireTo.deskItemId })
+	const fromDeskItem: DeskItemType = _find(desk, { id: wireFrom.deskItemId })!
+	const toDeskItem: DeskItemType = _find(desk, { id: wireTo.deskItemId })!
 
+	// @ts-ignore
 	if (!fromDeskItem[wireType + 'Output'] || !toDeskItem[wireType + 'Input']) {
 		console.warn(
 			`Invalid connection -- either ${fromDeskItem.name} does not allow ${wireType} output or  ${toDeskItem.name} does not allow ${wireType} input`
@@ -232,6 +236,7 @@ export function validateConnection(wireType: WireType, wireFrom: Wire, wireTo: W
 		return false
 	}
 
+	// @ts-ignore
 	const outputs = fromDeskItem[wireType + 'Outputs'] || {}
 	if (toDeskItem.ownerId in outputs) {
 		console.warn(`Connection already exists between ${fromDeskItem.name} and ${toDeskItem.name}`)
@@ -243,8 +248,8 @@ export function validateConnection(wireType: WireType, wireFrom: Wire, wireTo: W
 
 export function getOwnerByDeskItem(deskItem: DeskItemType): Effect | Instrument | Sequencer | null {
 	const { instruments, effects, sequencers } = store.getState() as ReduxStoreType
-	if (deskItem.type == EFFECT) return _find(effects, { id: deskItem.ownerId })
-	if (deskItem.type == INSTRUMENT) return _find(instruments, { id: deskItem.ownerId })
-	if (deskItem.type == SEQUENCER) return _find(sequencers, { id: deskItem.ownerId })
+	if (deskItem.type == EFFECT) return _find(effects, { id: deskItem.ownerId })!
+	if (deskItem.type == INSTRUMENT) return _find(instruments, { id: deskItem.ownerId })!
+	if (deskItem.type == SEQUENCER) return _find(sequencers, { id: deskItem.ownerId })!
 	return null
 }

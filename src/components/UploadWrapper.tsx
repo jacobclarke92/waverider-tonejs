@@ -7,6 +7,7 @@ interface Props {
 	multiple?: boolean
 	accept?: string
 	onChange: (files: FileList) => void
+	children?: React.ReactNode
 }
 
 export default class UploadWrapper extends Component<Props> {
@@ -16,13 +17,13 @@ export default class UploadWrapper extends Component<Props> {
 		multiple: false,
 	}
 
-	constructor(props) {
+	constructor(props: Props) {
 		super(props)
 		this.labelFor = 'uploader' + Math.round(Math.random() * 9999999)
 	}
 
 	handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		this.props.onChange(e.target.files)
+		this.props.onChange(e.target.files!)
 	}
 
 	render() {

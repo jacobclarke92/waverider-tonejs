@@ -1,4 +1,4 @@
-import { Transport, State } from 'tone'
+import { Transport } from 'tone'
 import { ReduxStoreType, TimeSignature } from './types'
 import { Store } from 'redux'
 import {
@@ -10,7 +10,7 @@ import {
 	TRANSPORT_UPDATE_TIME_SIGNATURE,
 } from './reducers/transport'
 
-let store: Store = null
+let store: Store = (null as unknown) as Store
 
 export function init(_store: Store) {
 	store = _store

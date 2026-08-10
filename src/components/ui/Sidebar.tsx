@@ -1,7 +1,8 @@
 import React, { FunctionComponent, ComponentType } from 'react'
 
 interface Props {
-	Component: ComponentType
+	Component?: ComponentType | null
+	children?: React.ReactNode
 }
 
 const Sidebar: FunctionComponent<Props> = ({ children = null, Component }) => (

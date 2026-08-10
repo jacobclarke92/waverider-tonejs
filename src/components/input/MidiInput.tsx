@@ -9,7 +9,8 @@ export interface MidiInputProps {
 	type: string
 	slug: string
 	paramPath: string
-	render?: (renderProps) => ReactNode
+	render?: (renderProps: MidiInputRenderProps) => ReactNode
+	children?: React.ReactNode | ((renderProps: MidiInputRenderProps) => ReactNode)
 }
 
 interface State {
@@ -65,6 +66,11 @@ export default connect(
 			gui.activeControl.ownerId === props.id &&
 			gui.activeControl.ownerType === props.type &&
 			gui.activeControl.paramPath === props.paramPath
-		return { selected, mapping, hasMapping: !!mapping, midiMappingEnabled: gui.midiMappingEnabled }
+		return {
+			selected: !!selected,
+			mapping: mapping || null,
+			hasMapping: !!mapping,
+			midiMappingEnabled: gui.midiMappingEnabled,
+		}
 	}
 )(MidiInput)

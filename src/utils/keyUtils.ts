@@ -58,7 +58,7 @@ function handleKeyDown(event: Event) {
 	}
 }
 
-function handleKeyUp(event) {
+function handleKeyUp(event: Event) {
 	const inputIsFocused = isInputFocused()
 	const key = keycode(event)
 	switch (key) {

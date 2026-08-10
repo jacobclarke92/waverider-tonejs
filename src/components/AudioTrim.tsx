@@ -16,9 +16,9 @@ interface Props {
 
 export default class AudioTrim extends Component<Props> {
 	dragging: DragType
-	initDragMousePosition: MousePosition
-	previousPosition: TrimType
-	container: HTMLDivElement
+	initDragMousePosition!: MousePosition
+	previousPosition!: TrimType
+	container!: HTMLDivElement | null
 
 	static defaultProps = {
 		onChange: () => {},
@@ -29,7 +29,7 @@ export default class AudioTrim extends Component<Props> {
 		},
 	}
 
-	constructor(props) {
+	constructor(props: Props) {
 		super(props)
 		this.dragging = false
 		this.handleMouseUp = this.handleMouseUp.bind(this)

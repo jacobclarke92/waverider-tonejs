@@ -1,4 +1,4 @@
-import Dexie, { IndexableType } from 'dexie'
+import Dexie, { IndexableType, BulkError } from 'dexie'
 import prettySize from 'prettysize'
 import _get from 'lodash/get'
 import { getStorageQuota, requestStorage } from '../utils/localStorageUtils'
@@ -261,8 +261,8 @@ export const bulkPut = <T>(table: string, entities: T[]): Promise<T[]> =>
 			.table(table)
 			.bulkPut(entities)
 			.then(lastKey => resolve(entities))
-			.catch((e: Dexie.BulkError) => {
-				const failedIds = e.failures.map(({ id }) => id)
+			.catch((e: BulkError) => {
+				const failedIds = (e.failures as any[]).map(f => f.id)
 				resolve(entities.filter((entity: T) => failedIds.indexOf((entity as any).id) < 0))
 			})
 	)
@@ -294,11 +294,11 @@ export const addFile = (blob: Blob): Promise<FileEntity> =>
 		.then(hash => {
 			console.log('FILE HASH', hash)
 			return getFileByHash(hash)
-				.then(existingFile => {
+				.then((existingFile: FileEntity) => {
 					console.log('EXISTING FILE', existingFile)
 					return existingFile
 				})
-				.catch(message => {
+				.catch((message: any) => {
 					const file: FileType = {
 						id: ++fileId,
 						filename: (blob as any).name,
@@ -311,10 +311,13 @@ export const addFile = (blob: Blob): Promise<FileEntity> =>
 					return db
 						.table('files')
 						.add(file)
-						.then(id => getById<FileEntity>('files', id))
+						.then(id => getById<FileEntity>('files', id as number))
 				})
 		})
-		.catch(e => console.warn('Unable to get file hash', e))
+		.catch(e => {
+			console.warn('Unable to get file hash', e)
+			throw e
+		}) as Promise<FileEntity>
 
 export const getFileBy = (field: string | string[], value: any): Promise<FileEntity> =>
 	getBy<FileEntity>('files', field, value)

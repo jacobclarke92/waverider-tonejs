@@ -14,6 +14,6 @@ export default class ChannelSelect extends Component<Props> {
 				.fill(0)
 				.map((x, i) => ({ value: i + 1, text: 'Ch. ' + (i + 1) })),
 		]
-		return <SelectInput {...this.props} empty={false} defaultValue={null} options={deviceOptions} />
+		return <SelectInput {...this.props} onChange={(val) => this.props.onChange(val as number | null)} empty={false} defaultValue={null} options={deviceOptions} />
 	}
 }

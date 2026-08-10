@@ -1,7 +1,8 @@
 import React, { ComponentType, FunctionComponent } from 'react'
 
 interface Props {
-	Component: ComponentType
+	Component?: ComponentType | null
+	children?: React.ReactNode
 }
 
 const Navbar: FunctionComponent<Props> = ({ children, Component }) => (

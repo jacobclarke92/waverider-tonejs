@@ -36,8 +36,8 @@ export function defer(func: Function): void {
 	setTimeout(func)
 }
 
-export function getDeepDiff(object: GenericProps, base: GenericProps) {
-	return _transform(object, (result, value, key) => {
+export function getDeepDiff(object: GenericProps, base: GenericProps): GenericProps {
+	return _transform(object, (result: GenericProps, value, key) => {
 		if (!_isEqual(value, base[key])) {
 			result[key] = _isObject(value) && _isObject(base[key]) ? getDeepDiff(value, base[key]) : value
 		}

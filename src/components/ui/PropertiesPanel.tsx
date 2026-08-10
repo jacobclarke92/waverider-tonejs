@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
-import cn from 'classname'
+import cn from 'classnames'
 
 interface Props {
 	icon?: string
 	status?: string
 	title?: string
+	children?: React.ReactNode
 }
 
 interface State {
@@ -14,7 +15,7 @@ interface State {
 export default class PropertiesPanel extends Component<Props, State> {
 	static defaultProps = {
 		icon: null,
-		status: 'noraml',
+		status: 'normal',
 		title: 'Properties',
 	}
 

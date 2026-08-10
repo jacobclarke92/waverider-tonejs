@@ -62,12 +62,12 @@ export const overwriteMappings = (mappings: MappingType[]) => (dispatch: ThunkDi
 		.then(() => getAll<MappingType>('mappings'))
 		.then(mappings => defer(() => dispatch({ type: RELOAD_MAPPINGS, mappings } as ActionObj)))
 
-export const addMapping = (newMapping: MappingType) => dispatch =>
+export const addMapping = (newMapping: MappingType) => (dispatch: ThunkDispatchType) =>
 	add<MappingType>('mappings', newMapping)
 		.then(mapping => defer(() => dispatch({ type: ADD_MAPPING, mapping } as ActionObj)))
 		.catch(e => console.warn('Unable to add mapping', newMapping, e))
 
-export const removeMapping = (id: number) => dispatch =>
+export const removeMapping = (id: number) => (dispatch: ThunkDispatchType) =>
 	removeById('mappings', id)
 		.then(() => defer(() => dispatch({ type: REMOVE_MAPPING, id } as ActionObj)))
 		.catch(e => console.warn('Unable to remove mapping', id, e))

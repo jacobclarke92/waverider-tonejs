@@ -12,8 +12,8 @@ interface State {
 }
 
 export default class Canvas extends Component<Props, State> {
-	canvas: HTMLCanvasElement
-	ctx: CanvasRenderingContext2D
+	canvas!: HTMLCanvasElement | null
+	ctx!: CanvasRenderingContext2D | null
 	pixelRatioQuery: MediaQueryList
 
 	constructor(props: Props) {
@@ -44,10 +44,11 @@ export default class Canvas extends Component<Props, State> {
 		this.canvas = ref
 		this.ctx = this.canvas.getContext('2d')
 		this.initCanvas()
-		this.props.onReady(this.ctx, this.canvas)
+		if (this.ctx) this.props.onReady(this.ctx, this.canvas)
 	}
 
 	initCanvas() {
+		if (!this.canvas || !this.ctx) return
 		const { pixelRatio } = this.state
 		const rect = this.canvas.getBoundingClientRect()
 		this.canvas.width = rect.width * pixelRatio

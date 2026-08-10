@@ -14,10 +14,10 @@ class MembraneSynth extends Component<ThunkDispatchProp & InstrumentPropertiesPa
 		const { dispatch, id, type, instrument, midiDeviceId, midiChannel } = this.props
 		const { voices, pitchDecay, octaves, envelope, oscillator } = instrument
 		const { attack, decay, sustain, release } = envelope
-		const midiInputProps = { id, type: 'instrument', slug: type }
+		const midiInputProps = { id: id!, type: 'instrument', slug: type }
 		return (
 			<div className="membrane-synth">
-				<DeviceAndChannel instrumentId={id} deviceId={midiDeviceId} midiChannel={midiChannel} type="input" />
+				<DeviceAndChannel instrumentId={id!} deviceId={midiDeviceId!} midiChannel={midiChannel!} type="input" />
 				{/* <KnobInput
 					label="Voices"
 					min={1}
@@ -25,7 +25,7 @@ class MembraneSynth extends Component<ThunkDispatchProp & InstrumentPropertiesPa
 					step={1}
 					value={voices}
 					defaultValue={defaultValue.instrument.voices}
-					onChange={voices => dispatch(updateInstrument(id, { instrument: { ...instrument, voices } }))}
+					onChange={voices => dispatch(updateInstrument(id!, { instrument: { ...instrument, voices } }))}
 				/> */}
 				<MidiInput {...midiInputProps} paramPath="pitchDecay">
 					<KnobInput
@@ -35,7 +35,7 @@ class MembraneSynth extends Component<ThunkDispatchProp & InstrumentPropertiesPa
 						step={0.01}
 						value={pitchDecay}
 						defaultValue={defaultValue.instrument.pitchDecay}
-						onChange={pitchDecay => dispatch(updateInstrument(id, { instrument: { ...instrument, pitchDecay } }))}
+						onChange={pitchDecay => dispatch(updateInstrument(id!, { instrument: { ...instrument, pitchDecay } }))}
 					/>
 				</MidiInput>
 				<MidiInput {...midiInputProps} paramPath="octaves">
@@ -46,7 +46,7 @@ class MembraneSynth extends Component<ThunkDispatchProp & InstrumentPropertiesPa
 						step={1}
 						value={octaves}
 						defaultValue={defaultValue.instrument.octaves}
-						onChange={octaves => dispatch(updateInstrument(id, { instrument: { ...instrument, octaves } }))}
+						onChange={octaves => dispatch(updateInstrument(id!, { instrument: { ...instrument, octaves } }))}
 					/>
 				</MidiInput>
 
@@ -56,7 +56,7 @@ class MembraneSynth extends Component<ThunkDispatchProp & InstrumentPropertiesPa
 					defaultValue={defaultValue.instrument.oscillator.type}
 					options={['square', 'triangle', 'sine', 'sawtooth'].map(value => ({ value, text: value }))}
 					onChange={type =>
-						dispatch(updateInstrument(id, { instrument: { ...instrument, oscillator: { ...oscillator, type } } }))
+						dispatch(updateInstrument(id!, { instrument: { ...instrument, oscillator: { ...oscillator, type } } }))
 					}
 				/>
 
@@ -70,7 +70,7 @@ class MembraneSynth extends Component<ThunkDispatchProp & InstrumentPropertiesPa
 						valueDisplay={value => value + 's'}
 						defaultValue={defaultValue.instrument.envelope.attack}
 						onChange={attack =>
-							dispatch(updateInstrument(id, { instrument: { ...instrument, envelope: { ...envelope, attack } } }))
+							dispatch(updateInstrument(id!, { instrument: { ...instrument, envelope: { ...envelope, attack } } }))
 						}
 					/>
 				</MidiInput>
@@ -84,7 +84,7 @@ class MembraneSynth extends Component<ThunkDispatchProp & InstrumentPropertiesPa
 						valueDisplay={value => value + 's'}
 						defaultValue={defaultValue.instrument.envelope.decay}
 						onChange={decay =>
-							dispatch(updateInstrument(id, { instrument: { ...instrument, envelope: { ...envelope, decay } } }))
+							dispatch(updateInstrument(id!, { instrument: { ...instrument, envelope: { ...envelope, decay } } }))
 						}
 					/>
 				</MidiInput>
@@ -98,7 +98,7 @@ class MembraneSynth extends Component<ThunkDispatchProp & InstrumentPropertiesPa
 						valueDisplay={value => Math.round(value * 100) + '%'}
 						defaultValue={defaultValue.instrument.envelope.sustain}
 						onChange={sustain =>
-							dispatch(updateInstrument(id, { instrument: { ...instrument, envelope: { ...envelope, sustain } } }))
+							dispatch(updateInstrument(id!, { instrument: { ...instrument, envelope: { ...envelope, sustain } } }))
 						}
 					/>
 				</MidiInput>
@@ -112,7 +112,7 @@ class MembraneSynth extends Component<ThunkDispatchProp & InstrumentPropertiesPa
 						valueDisplay={value => value + 's'}
 						defaultValue={defaultValue.instrument.envelope.release}
 						onChange={release =>
-							dispatch(updateInstrument(id, { instrument: { ...instrument, envelope: { ...envelope, release } } }))
+							dispatch(updateInstrument(id!, { instrument: { ...instrument, envelope: { ...envelope, release } } }))
 						}
 					/>
 				</MidiInput>

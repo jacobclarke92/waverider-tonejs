@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import classnames from 'classnames'
 
-import { getFileByHash } from '../api/db'
+import { getFileByHash, FileEntity } from '../api/db'
 import { getWaveformFromFile } from '../api/waveform'
 import { checkDifferenceAny } from '../utils/lifecycleUtils'
 import { getInstrumentInstance } from '../instrumentsController'
@@ -18,7 +18,7 @@ interface Props {
 	height?: number | string
 	fileHash?: string
 	reverse?: boolean
-	trim?: TrimType
+	trim: TrimType
 	disableFileDrop?: boolean
 	onTrimChange?: (newTrim: TrimType, oldTrim: TrimType) => void
 	onPreviewAudio?: () => void // TODO
@@ -33,7 +33,7 @@ interface State {
 }
 
 export default class Waveform extends Component<Props, State> {
-	raf: number
+	raf: number | null
 
 	static defaultProps = {
 		width: 600,
@@ -50,7 +50,7 @@ export default class Waveform extends Component<Props, State> {
 		onReceivedFiles: () => {},
 	}
 
-	constructor(props) {
+	constructor(props: Props) {
 		super(props)
 		this.raf = null
 		this.animate = this.animate.bind(this)
@@ -71,18 +71,21 @@ export default class Waveform extends Component<Props, State> {
 		if (this.raf) window.cancelAnimationFrame(this.raf)
 	}
 
-	componentDidUpdate(prevProps) {
+	componentDidUpdate(prevProps: Props) {
 		if (this.props.fileHash != prevProps.fileHash) this.loadFileFromHash(this.props.fileHash)
 		if (checkDifferenceAny(this.props, prevProps, 'trim')) this.setState({ trim: this.props.trim })
 	}
 
-	loadFileFromHash(fileHash: string = this.props.fileHash) {
+	loadFileFromHash(fileHash: string | undefined = this.props.fileHash) {
+		if (!fileHash) return
 		getFileByHash(fileHash)
-			.then(file => {
-				this.setState({ fileName: file.filename })
+			.then((file: FileEntity) => {
+				this.setState({ fileName: file.filename! })
 				return getWaveformFromFile(file)
 			})
-			.then(waveformUrl => this.setState({ waveformUrl }))
+			.then((waveformUrl: string | false) => {
+				if (waveformUrl) this.setState({ waveformUrl })
+			})
 	}
 
 	animate() {
@@ -93,8 +96,8 @@ export default class Waveform extends Component<Props, State> {
 			const duration = trim.end - trim.start
 			const newNotePositions = instrument
 				.getPlaybackPositions()
-				.map(position => trim.start + duration * position)
-				.filter(position => position < trim.start + duration)
+				.map((position: number) => trim.start + duration * position)
+				.filter((position: number) => position < trim.start + duration)
 			this.setState({ notePositions: newNotePositions })
 		} else {
 			if (notePositions.length > 0) this.setState({ notePositions: [] })
@@ -107,7 +110,7 @@ export default class Waveform extends Component<Props, State> {
 		const { trim, waveformUrl, fileName, notePositions } = this.state
 
 		const waveformDom = (
-			<div className="waveform" style={{ width, height }} onClick={() => onPreviewAudio()}>
+			<div className="waveform" style={{ width, height }} onClick={() => onPreviewAudio && onPreviewAudio()}>
 				{waveformUrl && (
 					<div
 						className={classnames('waveform-graphic no-aliasing', { reverse })}
@@ -117,12 +120,12 @@ export default class Waveform extends Component<Props, State> {
 				{waveformUrl && (
 					<AudioTrim
 						trim={trim}
-						onChange={trim => this.setState({ trim })}
-						onAfterChange={(newPos, oldPos) => onTrimChange(newPos, oldPos)}
+						onChange={(trim: TrimType) => this.setState({ trim })}
+						onAfterChange={(newPos: TrimType, oldPos: TrimType) => onTrimChange && onTrimChange(newPos, oldPos)}
 					/>
 				)}
 				<div className="note-positions">
-					{notePositions.map((position, i) => (
+					{notePositions.map((position: number, i: number) => (
 						<div key={i} className="note-position" style={{ left: `${position * 100}%` }} />
 					))}
 				</div>

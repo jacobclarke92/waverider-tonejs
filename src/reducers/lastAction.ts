@@ -3,4 +3,4 @@ import { AnyAction } from 'redux'
 
 export interface State extends AnyAction {}
 
-export default (state = { type: null }, action) => action
+export default (state = { type: null }, action: AnyAction) => action

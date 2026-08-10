@@ -1,4 +1,6 @@
-import { State as ToneState, Sampler, PolySynth, Meter, now, BufferSource } from 'tone'
+import { Sampler, PolySynth, Meter, now } from 'tone'
+import { ToneAudioBuffer } from 'tone'
+import { BasicPlaybackState } from 'tone/build/esm/core/util/StateTimeline'
 import _debounce from 'lodash/throttle'
 import { paramUpdateDebounce, voicesUpdateDebounce } from '../constants/timings'
 
@@ -11,16 +13,17 @@ import { updateInstrument } from '../reducers/instruments'
 import SimplerEditor from '../components/propertyPanels/instruments/Simpler'
 import { allInstrumentDefaults, defaultEnvelope, envelopeParams, voicesParam } from '../constants/params'
 import BaseInstrument from './BaseInstrument'
-import { ParamsType, InstrumentType } from '../types'
+import { ParamsType, InstrumentType, ThunkDispatchType, Instrument } from '../types'
 import SimplerSynthDeskItem from '../components/desk/SimplerSynth'
 import { REINIT_INSTRUMENT_INSTANCE } from '../reducers/desk'
 
 export class SimplerInstrument extends BaseInstrument {
-	sampler: Sampler
+	sampler!: Sampler
 	reinitSampler: () => void
 	file: null | FileEntity
+	[key: string]: any
 
-	constructor(value = {}, dispatch) {
+	constructor(value: any = {}, dispatch: ThunkDispatchType) {
 		super()
 		console.log('Mounting simpler...')
 		this.mounted = false
@@ -36,8 +39,9 @@ export class SimplerInstrument extends BaseInstrument {
 		})
 	}
 
-	update(value, oldValue) {
-		Object.keys(value).forEach(key => (this[key] = value[key]))
+	update(value: Instrument, oldValue: Instrument) {
+		const val = value as any
+		Object.keys(val).forEach(key => (this[key] = val[key]))
 		if (checkDifferenceAny(value.instrument, oldValue.instrument, ['voices', 'reverse'])) {
 			this.reinitSampler()
 			this.dispatch({ type: REINIT_INSTRUMENT_INSTANCE, id: this.id })
@@ -52,7 +56,7 @@ export class SimplerInstrument extends BaseInstrument {
 		}
 		if (checkDifferenceAny(value, oldValue, 'instrument.fileHash')) {
 			this.loadAudioFile(value.instrument.fileHash as string, file => {
-				this.updateAudioFile(file.url, () => {
+				this.updateAudioFile(file!.url, () => {
 					console.log('Sample loaded', this.file)
 					this.triggerUpdateVoiceParams()
 				})
@@ -76,7 +80,6 @@ export class SimplerInstrument extends BaseInstrument {
 
 		if (this.sampler) {
 			this.sampler.dispose()
-			delete this.sampler
 		}
 		this.sampler = new Sampler({}) //PolySynth(voices, Sampler)
 		// @ts-ignore
@@ -85,7 +88,7 @@ export class SimplerInstrument extends BaseInstrument {
 
 		if (!fileHash) return callback()
 		this.loadAudioFile(fileHash, file => {
-			this.updateAudioFile(file.url, () => {
+			this.updateAudioFile(file!.url, () => {
 				console.log('Sample loaded', file)
 				this.updateVoiceParams()
 				callback()
@@ -108,7 +111,7 @@ export class SimplerInstrument extends BaseInstrument {
 						const { baseNote } = this.instrument
 						if (this.instrument.baseNote == defaultValue.instrument.baseNote) {
 							this.dispatch(
-								updateInstrument(this.id, {
+								updateInstrument(this.id!, {
 									instrument: {
 										...this.instrument,
 										calculatedBaseNote: note,
@@ -157,6 +160,8 @@ export class SimplerInstrument extends BaseInstrument {
 		if (!this.sampler) return this.initSampler()
 
 		const { reverse, loop, envelope } = this.instrument
+
+		// @ts-ignore
 		this.getAllBufferSources().forEach(bufferSource => (bufferSource.reverse = reverse))
 		// TODO
 		/*
@@ -183,17 +188,17 @@ export class SimplerInstrument extends BaseInstrument {
 
 	getAllBufferSources(): BufferSource[] {
 		const activeSources: { [k: number]: BufferSource } = (this.sampler as any)._activeSources
-		return Object.keys(activeSources).reduce((arr, key) => [...arr, ...activeSources[key]], [])
+		return Object.keys(activeSources).reduce((arr, key) => [...arr, activeSources[parseInt(key)]], [] as BufferSource[])
 	}
 
 	getPlaybackPositions(): number[] {
 		if (!this.mounted || !this.sampler /* || !this.sampler.voices*/) return []
 		const positions: number[] = []
 		this.getAllBufferSources().forEach(bufferSource => {
+			/*
 			// or ToneState.Started
-			if (bufferSource.state == 'started') {
+			if (bufferSource.state === 'started') {
 				console.log('sample is being played!', bufferSource)
-				/*
 				// @ts-ignore
 				const startedEvents = voice.player._state._timeline.filter(event => event.state == 'started')
 				if (startedEvents.length) {
@@ -207,8 +212,8 @@ export class SimplerInstrument extends BaseInstrument {
 					if (this.instrument.loop) durationPercent = durationPercent % 1
 					positions.push(durationPercent)
 				}
-				*/
 			}
+			*/
 		})
 		return positions
 	}

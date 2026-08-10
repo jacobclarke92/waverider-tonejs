@@ -14,8 +14,9 @@ export const parseNoteToNumber = (input: number | string): number | false => {
 	const scale = parseInt(matches[3] || '4')
 
 	const relativeNote = fixNote(letter + intonation)
+	if (!relativeNote) return false
 	const noteIndex = noteStrings.indexOf(relativeNote)
-	if (!relativeNote || noteIndex < 0) return false
+	if (noteIndex < 0) return false
 	return 12 * scale + noteIndex
 }
 

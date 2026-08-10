@@ -1,4 +1,4 @@
-import { InstrumentDefaultValueType, ParamsType, InstrumentType } from '../types'
+import { InstrumentDefaultValueType, ParamsType, InstrumentType, ThunkDispatchType, Instrument } from '../types'
 import { MembraneSynth, PolySynth, Meter, now } from 'tone'
 import _debounce from 'lodash/throttle'
 import { paramUpdateDebounce, voicesUpdateDebounce } from '../constants/timings'
@@ -10,9 +10,10 @@ import MembraneSynthDeskItem from '../components/desk/MembraneSynth'
 import BaseInstrument from './BaseInstrument'
 
 export class MembraneSynthInstrument extends BaseInstrument {
-	synth: MembraneSynth
+	synth!: MembraneSynth
+	[key: string]: any
 
-	constructor(value = {}, dispatch) {
+	constructor(value: any = {}, dispatch: ThunkDispatchType) {
 		super()
 		console.log('Mounting membraneSynth...')
 		this.mounted = false
@@ -27,8 +28,9 @@ export class MembraneSynthInstrument extends BaseInstrument {
 		})
 	}
 
-	update(value, oldValue) {
-		Object.keys(value).forEach(key => (this[key] = value[key]))
+	update(value: Instrument, oldValue: Instrument) {
+		const val = value as any
+		Object.keys(val).forEach(key => (this[key] = val[key]))
 		if (
 			checkDifferenceAny(value.instrument, oldValue.instrument, [
 				'pitchDecay',
@@ -48,7 +50,6 @@ export class MembraneSynthInstrument extends BaseInstrument {
 		const { voices } = this.instrument
 		if (this.synth) {
 			this.synth.dispose()
-			delete this.synth
 		}
 		// this.synth = new PolySynth(voices, MembraneSynth)
 		this.synth = new MembraneSynth()
@@ -64,19 +65,17 @@ export class MembraneSynthInstrument extends BaseInstrument {
 		const { pitchDecay, octaves, envelope, oscillator } = this.instrument
 		this.synth.pitchDecay = pitchDecay
 		this.synth.octaves = octaves
-		this.synth.oscillator.type = oscillator.type
-		Object.keys(envelope).forEach(key => (this.synth.envelope[key] = envelope[key]))
+		this.synth.oscillator.type = oscillator.type as any
+		Object.keys(envelope).forEach(key => ((this.synth.envelope as any)[key] = envelope[key]))
 		// this.synth.set({ pitchDecay, octaves, envelope, oscillator })
 	}
 
-	noteDown(note, velocity) {
-		// @ts-ignore
-		if (this.mounted && this.synth) this.synth.triggerAttack(noteNumberToName(note), now(), velocity / 2)
+	noteDown(note: number, velocity: number) {
+		if (this.mounted && this.synth) this.synth.triggerAttack(noteNumberToName(note) || 'C4', now(), velocity / 2)
 	}
 
-	noteUp(note) {
-		// @ts-ignore
-		if (this.mounted && this.synth) this.synth.triggerRelease(noteNumberToName(note), now())
+	noteUp(note: number) {
+		if (this.mounted && this.synth) this.synth.triggerRelease(now())
 	}
 
 	getToneSource() {

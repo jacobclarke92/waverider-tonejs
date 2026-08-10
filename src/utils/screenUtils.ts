@@ -46,8 +46,9 @@ function _resizeCallback() {
 const resizeCallback = _debounce(_resizeCallback, 100)
 window.addEventListener('resize', resizeCallback)
 
-export const getRect = <ElemType>(elem: ElemType): ClientRect | DOMRect => {
+export const getRect = <ElemType>(elem: ElemType): ClientRect | DOMRect | null => {
 	if (elem instanceof HTMLElement) return elem.getBoundingClientRect()
+	return null
 }
 
 export const getPositionWithinElem = (
@@ -60,6 +61,7 @@ export const getPositionWithinElem = (
 	if (isNumber(parentOrigin)) parentOrigin = { x: parentOrigin, y: parentOrigin } as PointObj
 	const childRect = getRect(child)
 	const parentRect = getRect(parent)
+	if (!childRect || !parentRect) return { x: 0, y: 0 }
 	return {
 		x:
 			childRect.left +
@@ -96,6 +98,7 @@ export const getRelativeMousePosition = <EventElemType, ElemType>(
 ): MousePosition => {
 	const rect = getRect<ElemType>(elem)
 	const mouse = getMousePosition<EventElemType>(e)
+	if (!rect) return { x: mouse.x, y: mouse.y, percent: { x: 0, y: 0 } }
 	const position = {
 		x: mouse.x - rect.left,
 		y: mouse.y - rect.top,
@@ -119,6 +122,7 @@ export const getRelativeMousePositionNative = <ElemType>(
 ): MousePosition => {
 	const rect = getRect<ElemType>(elem)
 	const mouse = getNativeMousePosition(e)
+	if (!rect) return { x: mouse.x, y: mouse.y, percent: { x: 0, y: 0 } }
 	const position = {
 		x: mouse.x - rect.left,
 		y: mouse.y - rect.top,

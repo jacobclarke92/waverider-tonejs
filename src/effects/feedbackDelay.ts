@@ -30,10 +30,6 @@ export const defaultValue: EffectDefaultValueType = {
 }
 
 export class FeedbackDelayEffect extends BaseEffect {
-	constructor(value = {}, dispatch, params) {
-		super(value, dispatch, params)
-	}
-
 	initEffect(callback = () => {}) {
 		if (this.instance) this.instance.dispose()
 		this.instance = new FeedbackDelay()

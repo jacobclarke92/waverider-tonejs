@@ -21,7 +21,9 @@ export default class MelodySequencerDeskItem extends Component<ThunkDispatchProp
 				<div className="desk-item melody-sequencer">
 					<MelodySequencer
 						{...sequencer}
-						updateData={data => this.props.dispatch(updateSequencer(owner.id, { sequencer: { ...sequencer, data } }))}
+						updateData={data =>
+							this.props.dispatch(updateSequencer(owner.id as number, { sequencer: { ...sequencer, data } }))
+						}
 					/>
 				</div>
 			</DeskItemWrapper>
@@ -53,7 +55,7 @@ interface State {
 	canvasWidth: number
 	canvasHeight: number
 	over: boolean
-	hoverCell: Coord
+	hoverCell: Coord | null
 	subdivisonIndex: number
 }
 
@@ -64,9 +66,9 @@ const strToCoord = (str: string): Coord => {
 }
 
 class MelodySequencer extends Component<Props, State> {
-	ctx: CanvasRenderingContext2D
-	canvas: HTMLCanvasElement
-	tickEvent: number
+	ctx!: CanvasRenderingContext2D
+	canvas!: HTMLCanvasElement
+	tickEvent!: number
 
 	static defaultProps = {
 		bars: 4,
@@ -111,12 +113,14 @@ class MelodySequencer extends Component<Props, State> {
 		const cols = props.subdivisions * props.bars
 		const notesInScale = 7 // TODO getNotesInScale(props.scale).length
 		const rows = notesInScale * props.octaves
+		const cellSize = props.cellSize || 16
+		const cellGap = props.cellGap || 4
 		return {
 			cols,
 			rows,
 			notesInScale,
-			canvasWidth: cols * props.cellSize + (cols - 1) * props.cellGap,
-			canvasHeight: rows * props.cellSize + (rows - 1) * props.cellGap,
+			canvasWidth: cols * cellSize + (cols - 1) * cellGap,
+			canvasHeight: rows * cellSize + (rows - 1) * cellGap,
 		}
 	}
 
@@ -126,7 +130,7 @@ class MelodySequencer extends Component<Props, State> {
 		this.setState({ subdivisonIndex })
 	}
 
-	handleCellToggle(coord: Coord = this.state.hoverCell) {
+	handleCellToggle(coord: Coord = this.state.hoverCell!) {
 		const { data, updateData } = this.props
 		const coordStr = coordToStr(coord)
 		if (data.indexOf(coordStr) >= 0) {
@@ -157,7 +161,8 @@ class MelodySequencer extends Component<Props, State> {
 
 	handleMouseMove(event: MouseEvent | TouchEvent) {
 		if (!this.state.over) return
-		const { cellSize, cellGap } = this.props
+		const cellSize = this.props.cellSize || 16
+		const cellGap = this.props.cellGap || 4
 		const mousePosition = getRelativeMousePositionNative(event, this.canvas)
 		const realCellSize = cellSize + cellGap
 		const col = Math.floor(mousePosition.x / realCellSize)
@@ -181,7 +186,9 @@ class MelodySequencer extends Component<Props, State> {
 	}
 
 	drawCanvas() {
-		const { cellSize, cellGap, bars, subdivisions, octaves, data } = this.props
+		const { bars, subdivisions, octaves, data } = this.props
+		const cellSize = this.props.cellSize || 16
+		const cellGap = this.props.cellGap || 4
 		const { cols, rows, notesInScale, canvasWidth, canvasHeight, hoverCell, subdivisonIndex } = this.state
 		const totalCellSize = cellSize + cellGap
 

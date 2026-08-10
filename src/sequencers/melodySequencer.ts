@@ -9,10 +9,11 @@ import { getCurrentSubdivisionIndex } from '../utils/timeUtils'
 import { NOTE_ON, MidiMessageAction, NOTE_OFF } from '../api/midi'
 
 export class MelodySequencer extends BaseSequencer {
-	constructor(value = {}, dispatch) {
+	constructor(value = {}, dispatch: Function) {
 		super()
 		this.mounted = false
 		this.dispatch = dispatch
+		// @ts-ignore
 		Object.keys(value).forEach(key => (this[key] = value[key]))
 		this.initSequencer(() => {
 			this.mounted = true
@@ -31,7 +32,9 @@ export class MelodySequencer extends BaseSequencer {
 		const { octave, subdivisions, bars, data = [] } = this.sequencer
 		const { subdivisonIndex } = getCurrentSubdivisionIndex(subdivisions, bars)
 		const noteIndexesToTrigger = _uniq<number>(
-			data.filter(str => str.indexOf(subdivisonIndex + '.') === 0).map(str => parseInt(str.split('.')[1]))
+			data
+				.filter((str: string) => str.indexOf(subdivisonIndex + '.') === 0)
+				.map((str: string) => parseInt(str.split('.')[1]))
 		)
 
 		// Here down is temporary and disgusting -- notes should be scheduled via Tone not trigger in runtime

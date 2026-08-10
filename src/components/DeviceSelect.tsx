@@ -21,10 +21,10 @@ class DeviceSelect extends Component<ThunkDispatchProp & StateProps & Props> {
 			...devices.map(({ id, name, disconnected }) => ({
 				value: id,
 				disabled: disconnected,
-				text: !type ? `[${type}] ${name}` : name,
+				text: !type ? `[${type}] ${name}` : name!,
 			})),
 		]
-		return <SelectInput {...rest} empty={false} defaultValue={null} options={deviceOptions} />
+		return <SelectInput<string | null> {...rest} empty={false} defaultValue={null} options={deviceOptions} />
 	}
 }
 

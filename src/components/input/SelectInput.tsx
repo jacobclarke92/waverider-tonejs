@@ -1,75 +1,85 @@
-import React, { Component } from 'react'
+import React, { useEffect } from 'react'
 
-type OptionValue = string | number // | boolean | null
-type OptionObj = {
-	value: OptionValue
+export type OptionValue = string | number | null
+export type OptionObj<Value extends OptionValue = OptionValue> = {
+	value: Value
 	text: string
 	disabled?: boolean
 }
-interface Props {
-	options: OptionObj[]
+
+export interface Props<Value extends OptionValue = OptionValue> {
+	options: OptionObj<Value>[]
 	empty?: string | false
-	value: OptionValue
-	defaultValue?: OptionValue
-	onChange: (val: OptionValue) => void
+	value: Value
+	defaultValue?: Value | null
+	onChange: (val: Value | null) => void
 	coerceValueToOptions?: boolean
 	readOnly?: boolean
 	className?: string
 }
 
-export default class SelectInput extends Component<Props> {
-	static defaultProps = {
-		options: [],
-		empty: 'Please select ...',
-		defaultValue: undefined,
-		coerceValueToOptions: true,
-	}
-
-	componentDidUpdate() {
-		if (this.props.coerceValueToOptions) this.coerceValueToOptions()
-	}
-
-	coerceValueToOptions() {
-		const selectedOption = this.props.options.find(({ value }) => value == this.props.value)
-		if (!selectedOption) {
-			if (this.props.options.length && this.props.empty === false) {
-				this.props.onChange(this.props.options[0].value)
-			} else if (this.props.value !== this.props.defaultValue) {
-				this.props.onChange(this.props.defaultValue)
+export default function SelectInput<Value extends OptionValue>({
+	options = [],
+	empty = 'Please select ...',
+	value,
+	defaultValue = null,
+	onChange,
+	coerceValueToOptions = true,
+	readOnly,
+	className,
+}: Props<Value>) {
+	useEffect(() => {
+		if (coerceValueToOptions) {
+			const selectedOption = options.find(opt => opt.value == value) // loose comparison intentional
+			if (!selectedOption) {
+				if (options.length && empty === false) {
+					onChange(options[0].value)
+				} else if (value !== defaultValue) {
+					onChange(defaultValue)
+				}
 			}
 		}
-	}
+	}, [value, options, coerceValueToOptions, empty, defaultValue, onChange])
 
-	renderOptions() {
-		const empty = this.props.empty !== false && (
-			<option value={this.props.defaultValue} key={0}>
-				{this.props.empty}
+	const renderOptions = () => {
+		const emptyOption = empty !== false && (
+			<option value={defaultValue ?? ''} key="empty">
+				{empty}
 			</option>
 		)
-		const options = this.props.options.map((option, i) => {
-			const value = typeof option == 'string' ? option : option.value
-			const text = typeof option == 'string' ? option : option.text
-			const disabled = typeof option == 'string' ? false : option.disabled || false
+		
+		const mappedOptions = options.map((option, i) => {
+			const optValue = option.value === null ? '' : option.value
 			return (
-				<option key={i + 1} value={value} disabled={disabled}>
-					{text}
+				<option key={`${i}-${optValue}`} value={optValue} disabled={option.disabled || false}>
+					{option.text}
 				</option>
 			)
 		})
-		return empty ? [empty, ...options] : options
+		
+		return emptyOption ? [emptyOption, ...mappedOptions] : mappedOptions
 	}
 
-	render() {
-		const { readOnly, onChange, value, className } = this.props
-		return (
-			<label className={`select ${className || ''}`}>
-				<select
-					value={value === null ? undefined : value}
-					disabled={readOnly}
-					onChange={event => onChange(event.target.value)}>
-					{this.renderOptions()}
-				</select>
-			</label>
-		)
-	}
+	// In HTML <select>, null needs to be mapped to empty string for React to handle the "empty/unselected" state properly
+	const selectValue = value === null ? '' : value
+
+	return (
+		<label className={`select ${className || ''}`}>
+			<select
+				value={selectValue}
+				disabled={readOnly}
+				onChange={event => {
+					// Need to find the exact typed value instead of passing string from event
+					const targetStr = event.target.value
+					if (targetStr === '' || (defaultValue === null && targetStr === String(defaultValue))) {
+						return onChange(defaultValue ?? null)
+					}
+					// Find original object by string comparison to avoid changing numbers to strings
+					const matched = options.find(opt => String(opt.value) === targetStr)
+					onChange(matched ? matched.value : targetStr as Value)
+				}}>
+				{renderOptions()}
+			</select>
+		</label>
+	)
 }

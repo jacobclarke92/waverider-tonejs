@@ -1,6 +1,4 @@
 node_modules
 npm_debug.log
-app/dist/*.css
-app/dist/*.js
-app/dist/*.map
+dist
 !.gitkeep

@@ -12,7 +12,7 @@ interface StateProps {
 }
 
 class MatrixWorkspace extends Component<ThunkDispatchProp & StateProps & Props> {
-	container: HTMLDivElement
+	container!: HTMLDivElement
 	render() {
 		const { mappings } = this.props
 		return (

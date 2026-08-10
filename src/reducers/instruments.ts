@@ -70,7 +70,8 @@ export const overwriteInstruments = (instruments: Instrument[]) => (dispatch: Th
 
 export const addInstrument = (type: string, position: PointObj = { x: 0, y: 0 }) => {
 	const instrumentDef = instrumentLibrary[type]
-	if (!instrumentDef) return null
+	if (!instrumentDef)
+		throw new Error(`Unable to add instrument of type ${type} - no definition found in instrumentLibrary`)
 
 	const newInstrument: Instrument = {
 		type,
@@ -79,14 +80,14 @@ export const addInstrument = (type: string, position: PointObj = { x: 0, y: 0 })
 		midiChannel: null,
 		..._cloneDeep(instrumentDef.defaultValue),
 	}
-	return dispatch =>
+	return (dispatch: ThunkDispatchType) =>
 		add<Instrument>('instruments', newInstrument)
 			.then(instrument => {
 				const newDeskItem: DeskItemType = {
 					name: instrumentDef.name,
 					slug: instrumentDef.slug,
 					ownerType: type,
-					ownerId: instrument.id,
+					ownerId: instrument.id!,
 					type: INSTRUMENT,
 					position,
 					...deskItemTypeDefaults[INSTRUMENT],
@@ -101,10 +102,10 @@ export const addInstrument = (type: string, position: PointObj = { x: 0, y: 0 })
 export const updateInstrument = (id: number, updates: KeyedObject) =>
 	({ type: UPDATE_INSTRUMENT, id, updates } as ActionObj)
 
-export const removeInstrument = (deskItem: DeskItemType) => dispatch =>
+export const removeInstrument = (deskItem: DeskItemType) => (dispatch: ThunkDispatchType) =>
 	removeById('instruments', deskItem.ownerId)
 		.then(() =>
-			removeById('desk', deskItem.id)
+			removeById('desk', deskItem.id!)
 				.then(() => defer(() => dispatch({ type: REMOVE_INSTRUMENT, id: deskItem.ownerId } as ActionObj)))
 				.catch(e => console.warn('Unable to remove desk item for instrument', deskItem, e))
 		)

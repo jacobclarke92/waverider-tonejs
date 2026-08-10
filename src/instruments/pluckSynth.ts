@@ -1,4 +1,4 @@
-import { InstrumentDefaultValueType, ParamsType, InstrumentType } from '../types'
+import { InstrumentDefaultValueType, ParamsType, InstrumentType, ThunkDispatchType, Instrument } from '../types'
 import { PluckSynth, PolySynth, Meter, now } from 'tone'
 import _debounce from 'lodash/throttle'
 import { paramUpdateDebounce, voicesUpdateDebounce } from '../constants/timings'
@@ -9,9 +9,10 @@ import PluckSynthDeskItem from '../components/desk/PluckSynth'
 import BaseInstrument from './BaseInstrument'
 
 export class PluckSynthInstrument extends BaseInstrument {
-	synth: PluckSynth
+	synth!: PluckSynth
+	[key: string]: any
 
-	constructor(value = {}, dispatch) {
+	constructor(value: any = {}, dispatch: ThunkDispatchType) {
 		super()
 		console.log('Mounting pluckSynth...')
 		this.mounted = false
@@ -26,8 +27,9 @@ export class PluckSynthInstrument extends BaseInstrument {
 		})
 	}
 
-	update(value, oldValue) {
-		Object.keys(value).forEach(key => (this[key] = value[key]))
+	update(value: Instrument, oldValue: Instrument) {
+		const val = value as any
+		Object.keys(val).forEach(key => (this[key] = val[key]))
 		if (checkDifferenceAny(value.instrument, oldValue.instrument, ['attackNoise', 'resonance', 'dampening'])) {
 			this.triggerUpdateVoiceParams()
 		}
@@ -37,7 +39,7 @@ export class PluckSynthInstrument extends BaseInstrument {
 		const { voices } = this.instrument
 		if (this.synth) {
 			this.synth.dispose()
-			delete this.synth
+			
 		}
 		// this.synth = new PolySynth(voices, PluckSynth)
 		this.synth = new PluckSynth(this.instrument)
@@ -53,15 +55,15 @@ export class PluckSynthInstrument extends BaseInstrument {
 		const { attackNoise, resonance, dampening } = this.instrument
 		// this.synth.set({ attackNoise, resonance, dampening })
 		this.synth.attackNoise = attackNoise
-		this.synth.resonance.value = resonance
-		this.synth.dampening.value = dampening
+		this.synth.resonance = resonance
+		this.synth.dampening = dampening
 	}
 
-	noteDown(note, velocity) {
+	noteDown(note: number, velocity: number) {
 		if (this.mounted && this.synth) this.synth.triggerAttack(note, now() /*, velocity / 2*/)
 	}
 
-	noteUp(note) {
+	noteUp(note: number) {
 		// if (this.mounted && this.synth) this.synth.triggerRelease(note, now())
 	}
 

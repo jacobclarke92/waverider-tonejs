@@ -40,8 +40,8 @@ interface State {
 }
 
 export default class KnobInput extends Component<Props, State> {
-	stepNotch: number
-	dragValue: number
+	dragValue: number = 0
+	stepNotch: number = 0
 	inputValidator: InputValidatorFunc
 
 	static defaultProps = {
@@ -69,25 +69,32 @@ export default class KnobInput extends Component<Props, State> {
 	constructor(props: Props) {
 		super(props)
 		const { value, min, max, step, dragSensitivity, inputValidator } = props
-		this.stepNotch = ((max - min) * step) / dragSensitivity
-		this.dragValue = value
+		const _min = min || 0
+		const _max = max || 127
+		const _step = step || 1
+		const _dragSens = dragSensitivity || 128
+		this.stepNotch = ((_max - _min) * _step) / _dragSens
+		this.dragValue = value || 0 || 0
 		this.setInputValue = this.setInputValue.bind(this)
 		this.handleMovement = _throttle(this.handleMovement.bind(this), 1000 / 60)
 		this.inputValidator = inputValidator || this.validateInput
 		this.state = {
 			editing: false,
-			inputValue: value,
+			inputValue: value || 0,
 		}
 	}
 
 	handleMouseDown(event: MouseEvent<HTMLElement>) {
 		const { value, defaultValue, onChange } = this.props
-		this.dragValue = value
-		if (isAltKeyPressed()) onChange(defaultValue)
+		if (value) this.dragValue = value
+		if (isAltKeyPressed() && defaultValue !== undefined) onChange(defaultValue)
 	}
 
 	handleMovement({ x, y }: PointObj) {
-		const { min, max, step, onChange } = this.props
+		const min = this.props.min || 0
+		const max = this.props.max || 127
+		const step = this.props.step || 1
+		const onChange = this.props.onChange
 		const amount = -y * this.stepNotch
 		this.dragValue += amount
 		let newValue = this.dragValue
@@ -97,7 +104,7 @@ export default class KnobInput extends Component<Props, State> {
 	}
 
 	handleDoubleClick(event: MouseEvent<HTMLElement>) {
-		const { inputValueIsDisplayValue, value, valueDisplay } = this.props
+		const { value = 0 } = this.props
 		this.setState(
 			{
 				editing: true,
@@ -109,8 +116,10 @@ export default class KnobInput extends Component<Props, State> {
 		)
 	}
 
-	validateInput(newValue) {
-		const { min, max, step } = this.props
+	validateInput(newValue: number): number {
+		const min = this.props.min || 0
+		const max = this.props.max || 127
+		const step = this.props.step || 1
 		if (newValue % step !== 0) newValue = roundToMultiple(newValue, step)
 		newValue = clamp(newValue, min, max)
 		return newValue
@@ -129,11 +138,6 @@ export default class KnobInput extends Component<Props, State> {
 	render() {
 		const { editing, inputValue } = this.state
 		const {
-			min,
-			max,
-			step,
-			value,
-			extraValues,
 			valueDisplay,
 			signed,
 			label,
@@ -144,9 +148,17 @@ export default class KnobInput extends Component<Props, State> {
 			trackRotate,
 			inputProps,
 		} = this.props
+		const { value = 0 } = this.props
+		const min = this.props.min || 0
+		const max = this.props.max || 127
+		const step = this.props.step || 1
+		const extraValues = this.props.extraValues || []
 
-		const valuePercent = (value - min) / (max - min)
-		const extraValuePercents = extraValues.map(val => (val - min) / (max - min))
+		const _val = value || 0
+		const _min = min || 0
+		const _max = max || 127
+		const valuePercent = (_val - _min) / (_max - _min)
+		const extraValuePercents = (extraValues || []).map(val => (val - _min) / (_max - _min))
 
 		let knobStyles: CSSProperties = {}
 		if (labelPosition == 'top' || labelPosition == 'bottom') knobStyles = { ...knobStyles, width: trackSize }

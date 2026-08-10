@@ -18,28 +18,28 @@ interface Props {
 interface StateProps {
 	value: number
 	// effect?: Effect
-	// instrument?: Instrument
+	instrument?: Instrument
 }
 
 class MappingRow extends Component<ThunkDispatchProp & StateProps & Props> {
-	constructor(props) {
+	constructor(props: ThunkDispatchProp & StateProps & Props) {
 		super(props)
 		this.onRangeChange = _throttle(this.onRangeChange, ccMappingDebounce)
 	}
 	onRangeChange = (trim: TrimType) => {
 		const { dispatch, mapping } = this.props
 		dispatch(
-			updateMapping(mapping.id, {
-				min: scale(trim.start, 0, 1, mapping.actualMin, mapping.actualMax),
-				max: scale(trim.end, 0, 1, mapping.actualMin, mapping.actualMax),
+			updateMapping(mapping.id!, {
+				min: scale(trim.start, 0, 1, mapping.actualMin || 0, mapping.actualMax || 1),
+				max: scale(trim.end, 0, 1, mapping.actualMin || 0, mapping.actualMax || 1),
 			})
 		)
 	}
 	render() {
 		const { mapping, value } = this.props
 		const trim: TrimType = {
-			start: scale(mapping.min, mapping.actualMin, mapping.actualMax, 0, 1),
-			end: scale(mapping.max, mapping.actualMin, mapping.actualMax, 0, 1),
+			start: scale(mapping.min || 0, mapping.actualMin || 0, mapping.actualMax || 1, 0, 1),
+			end: scale(mapping.max || 1, mapping.actualMin || 0, mapping.actualMax || 1, 0, 1),
 		}
 		return (
 			<div className={cn('mapping-row flex')}>
@@ -67,9 +67,9 @@ class MappingRow extends Component<ThunkDispatchProp & StateProps & Props> {
 
 export default connect(
 	({ instruments, effects }: ReduxStoreType, { mapping }: Props): StateProps => {
-		let value: number = null
-		let effect: Effect = null
-		let instrument: Instrument = null
+		let value: number = 0
+		let effect: Effect | undefined
+		let instrument: Instrument | undefined
 		if (mapping.type == 'instrument') {
 			instrument = instruments.find(
 				instrument => instrument.id === mapping.ownerId && instrument.type === mapping.ownerType

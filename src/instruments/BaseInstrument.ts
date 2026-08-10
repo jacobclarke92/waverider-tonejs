@@ -1,5 +1,5 @@
 import { InstrumentDefaultValueType, GenericProps, ThunkDispatchType, Instrument } from '../types'
-import { Meter, Source, AudioNode } from 'tone'
+import { Meter } from 'tone'
 
 export interface BaseInstrumentConstructor {
 	new (value: GenericProps, dispatch: ThunkDispatchType): BaseInstrument
@@ -7,12 +7,12 @@ export interface BaseInstrumentConstructor {
 
 export default class BaseInstrument implements InstrumentDefaultValueType {
 	id?: number
-	midiDeviceId: null
-	midiChannel: null
+	midiDeviceId?: string
+	midiChannel?: number
 	instrument: any
-	mounted: boolean
-	dispatch: Function
-	meter: Meter
+	mounted!: boolean
+	dispatch!: Function
+	meter!: Meter
 	reinitSynth(): void {}
 	triggerUpdateVoiceParams(): void {}
 	noteDown(note: number, velocity: number): void {}

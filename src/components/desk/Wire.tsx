@@ -1,6 +1,6 @@
 import React, { Component, CSSProperties } from 'react'
 import { connect } from 'react-redux'
-import cn from 'classname'
+import cn from 'classnames'
 import _find from 'lodash/find'
 import Point, { PointObj } from '../../utils/Point'
 import { Wire, ReduxStoreType, ThunkDispatchProp, WireType } from '../../types'
@@ -13,8 +13,8 @@ interface Props {
 	onSelect?: () => void
 	type?: WireType
 	wireFrom: Wire
-	wireTo: Wire
-	stagePointer: Point
+	wireTo: Wire | null
+	stagePointer?: Point
 }
 
 interface StateProps {
@@ -31,7 +31,7 @@ class WireComponent extends Component<ThunkDispatchProp & StateProps & Props> {
 
 	handleClick() {
 		if (!this.props.active) {
-			this.props.onSelect()
+			if (this.props.onSelect) this.props.onSelect()
 		}
 	}
 
@@ -58,7 +58,9 @@ class WireComponent extends Component<ThunkDispatchProp & StateProps & Props> {
 
 		// Absolute positions in stage
 		const fromPos = new Point(fromDeskItem.position).add(new Point(wireFrom.relativePosition))
-		const toPos = wireTo ? new Point(toDeskItem.position).add(new Point(wireTo.relativePosition)) : stagePointer
+		const toPos = toDeskItem
+			? new Point(toDeskItem.position).add(new Point(wireTo!.relativePosition))
+			: stagePointer || new Point(0, 0)
 
 		// Get SVG width and height from point position difference
 		const diffX = toPos.x - fromPos.x
@@ -99,9 +101,7 @@ class WireComponent extends Component<ThunkDispatchProp & StateProps & Props> {
 			y: vertical ? pathEnd.y - diffY / curve : pathEnd.y - diffY * bend,
 		}
 
-		const path: string = `M${pathStart.x},${pathStart.y} C${ctrlPt1.x},${ctrlPt1.y} ${ctrlPt2.x},${ctrlPt2.y} ${
-			pathEnd.x
-		},${pathEnd.y}`
+		const path: string = `M${pathStart.x},${pathStart.y} C${ctrlPt1.x},${ctrlPt1.y} ${ctrlPt2.x},${ctrlPt2.y} ${pathEnd.x},${pathEnd.y}`
 
 		const styles: CSSProperties = {
 			width,

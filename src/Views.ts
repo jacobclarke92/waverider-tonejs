@@ -6,9 +6,9 @@ import DeskNavbar from './components/view/DeskNavbar'
 import MatrixWorkspace from './components/view/MatrixWorkspace'
 
 export interface UiViewType {
-	Workspace: ComponentType
-	Navbar: ComponentType
-	Sidebar: ComponentType
+	Workspace: ComponentType | null
+	Navbar: ComponentType | null
+	Sidebar: ComponentType | null
 }
 
 const views: { [k: string]: UiViewType } = {

@@ -65,8 +65,8 @@ export default function(state: State = initialState, action: ReducerAction) {
 		case UPDATE_VIEW:
 			return { ...state, view: action.view }
 		case UPDATE_VIEW_UI_STATE:
-			const newViewState = _merge(_cloneDeep(state.viewStates[action.view]), action.updates)
-			return _merge(state, { viewState: { [action.view]: newViewState } })
+			const newViewState = _merge(_cloneDeep(state.viewStates[action.view!]), action.updates)
+			return _merge(state, { viewStates: { [action.view!]: newViewState } })
 		case CLEAR_ACTIVE_ELEMENT:
 			return { ...state, activeElement: null }
 		case UPDATE_ACTIVE_ELEMENT:

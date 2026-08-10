@@ -9,13 +9,14 @@ export interface BaseEffectConstructor {
 export default class BaseEffect {
 	id?: number
 	mounted: boolean
-	type: string
+	type!: string
 	dispatch: Function
 	params: AnyParamType[]
 	meter: Meter
 	effect: any
 	instance: any
 	analyser?: Waveform
+	[key: string]: any
 
 	constructor(value: GenericProps = {}, dispatch: Function, params: AnyParamType[]) {
 		Object.keys(value).forEach(key => (this[key] = value[key]))

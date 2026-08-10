@@ -22,7 +22,13 @@ export default class Donut extends Component<Props> {
 	}
 
 	render() {
-		const { size, thickness, rotate, span, percent, extraValues, signed } = this.props
+		const size = this.props.size || 50
+		const thickness = this.props.thickness || 5
+		const rotate = this.props.rotate || 0
+		const span = this.props.span || 234
+		const percent = this.props.percent || 0.5
+		const extraValues = this.props.extraValues || []
+		const signed = this.props.signed || false
 		const strokeWidth = thickness * (100 / size)
 		const radius = size - strokeWidth / 2
 

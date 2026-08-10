@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import _throttle from 'lodash/throttle'
 import _find from 'lodash/find'
-import classname from 'classname'
+import classname from 'classnames'
 import { connect } from 'react-redux'
 
 import Point, { PointObj } from '../../utils/Point'
@@ -65,12 +65,12 @@ interface State {
 	overPin: boolean
 	ioType: null | IOType
 	wireType: null | WireType
-	wireToValid: boolean
-	wireFrom: Wire
-	wireTo: Wire
-	selectedWire: WireJoin
-	selectedDeskItem: DeskItemType
-	dragTarget: DeskItemType
+	wireToValid: boolean | null
+	wireFrom: Wire | null
+	wireTo: Wire | null
+	selectedWire: WireJoin | null
+	selectedDeskItem: DeskItemType | null
+	dragTarget: DeskItemType | null
 	mouseDownTargetOffset?: MousePosition
 	mouseDownPosition?: PointObj
 	mouseDownPan?: PointObj
@@ -80,11 +80,11 @@ interface State {
 }
 
 class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, State> {
-	container: HTMLDivElement
-	interface: HTMLDivElement
+	container!: HTMLDivElement
+	interface!: HTMLDivElement
 	deskItemRefs: NumericObject
 
-	constructor(props) {
+	constructor(props: ThunkDispatchProp & StateProps & Props) {
 		super(props)
 		this.clearActiveItem = this.clearActiveItem.bind(this)
 		this.removeActiveItem = this.removeActiveItem.bind(this)
@@ -146,13 +146,13 @@ class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, St
 
 		// enforce a minimum distance before allowing any kind of movement
 		if (!mouseMoved) {
-			if (mouseDown && pointer.distance(mouseDownPosition) < 10) return true
+			if (mouseDown && pointer.distance(mouseDownPosition!) < 10) return true
 			else this.setState({ mouseMoved: true })
 		}
 
 		if (mouseDown) {
 			if (dragTarget) {
-				let placementPosition = new Point(stagePointer).subtract(mouseDownTargetOffset)
+				let placementPosition = new Point(stagePointer).subtract(mouseDownTargetOffset!)
 
 				if (overIO) {
 					console.log('mousemove IO')
@@ -163,8 +163,8 @@ class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, St
 			} else {
 				this.setState({
 					pan: {
-						x: mouseDownPan.x + (pointer.x - mouseDownPosition.x),
-						y: mouseDownPan.y + (pointer.y - mouseDownPosition.y),
+						x: mouseDownPan!.x + (pointer.x - mouseDownPosition!.x),
+						y: mouseDownPan!.y + (pointer.y - mouseDownPosition!.y),
 					},
 				})
 			}
@@ -241,7 +241,7 @@ class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, St
 			const wireToValid = this.state.wireType == wireType && this.state.ioType != ioType
 			const wireTo: Wire = {
 				param,
-				deskItemId: deskItem.id,
+				deskItemId: deskItem.id!,
 				position: pinStagePosition,
 				relativePosition: pinDeskItemPosition,
 			}
@@ -266,7 +266,7 @@ class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, St
 		const pinDeskItemPosition = new Point(pinStagePosition).subtract(new Point(deskItem.position))
 		const wireFrom: Wire = {
 			param,
-			deskItemId: deskItem.id,
+			deskItemId: deskItem.id!,
 			position: pinStagePosition,
 			relativePosition: pinDeskItemPosition,
 		}
@@ -285,8 +285,8 @@ class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, St
 			console.log('params', { wireType, ioType })
 			console.log('wireFrom', wireFrom)
 			console.log('wireTo', wireTo)
-			if (validateConnection(wireType, wireFrom, wireTo)) {
-				this.props.dispatch(connectWire(desk, wireFrom, wireTo, { wireType }))
+			if (validateConnection(wireType, wireFrom!, wireTo!)) {
+				this.props.dispatch(connectWire(desk, wireFrom!, wireTo!, { wireType }))
 			}
 		}
 		this.setState({
@@ -352,7 +352,7 @@ class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, St
 							wireFrom={{ ...wire.wireFrom, deskItem: _find(desk, { id: wire.wireFrom.deskItemId }) }}
 							wireTo={{ ...wire.wireTo, deskItem: _find(desk, { id: wire.wireTo.deskItemId }) }}
 							stagePointer={stagePointer}
-							selected={selectedWire && selectedWire.id === wire.id}
+							selected={!!selectedWire && selectedWire.id === wire.id}
 							onSelect={() => this.setState({ selectedWire: wire })}
 						/>
 					))}
@@ -360,16 +360,16 @@ class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, St
 					{desk.map(deskItem => (
 						<DeskItem
 							key={deskItem.id}
-							ref={elem => (this.deskItemRefs[deskItem.id] = elem)}
+							ref={elem => (this.deskItemRefs[deskItem.id!] = elem)}
 							dispatch={dispatch}
 							deskItem={deskItem}
 							owner={getOwnerByDeskItem(deskItem)}
 							wiring={!!wireFrom}
-							validWire={wireToValid}
+							validWire={!!wireToValid}
 							editable={deskItem.editable}
 							removable={deskItem.removable}
-							selected={selectedDeskItem && selectedDeskItem.id === deskItem.id}
-							dragging={dragTarget && dragTarget.id === deskItem.id}
+							selected={!!selectedDeskItem && selectedDeskItem.id === deskItem.id}
+							dragging={!!dragTarget && dragTarget.id === deskItem.id}
 							onRemove={() => this.handleRemoveDeskItem(deskItem)}
 							onPointerDown={(e, elem) => this.handleItemPointerDown(e, elem, deskItem)}
 							onPointerUp={(e, elem) => this.handleItemPointerUp(e, elem, deskItem)}
@@ -381,7 +381,13 @@ class DeskWorkspace extends Component<ThunkDispatchProp & StateProps & Props, St
 					))}
 
 					{wireFrom && (
-						<WireComponent active valid={wireToValid} wireFrom={wireFrom} wireTo={wireTo} stagePointer={stagePointer} />
+						<WireComponent
+							active
+							valid={!!wireToValid}
+							wireFrom={wireFrom}
+							wireTo={wireTo}
+							stagePointer={stagePointer}
+						/>
 					)}
 				</div>
 			</div>

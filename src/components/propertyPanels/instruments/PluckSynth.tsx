@@ -12,10 +12,10 @@ class PluckSynth extends Component<ThunkDispatchProp & InstrumentPropertiesPanel
 	render() {
 		const { dispatch, id, type, instrument, midiDeviceId, midiChannel } = this.props
 		const { voices, attackNoise, dampening, resonance } = instrument
-		const midiInputProps = { id, type: 'instrument', slug: type }
+		const midiInputProps = { id: id!, type: 'instrument', slug: type }
 		return (
 			<div className="pluck-synth">
-				<DeviceAndChannel instrumentId={id} deviceId={midiDeviceId} midiChannel={midiChannel} type="input" />
+				<DeviceAndChannel instrumentId={id!} deviceId={midiDeviceId!} midiChannel={midiChannel!} type="input" />
 				{/* <KnobInput
 					label="Voices"
 					min={1}
@@ -23,7 +23,7 @@ class PluckSynth extends Component<ThunkDispatchProp & InstrumentPropertiesPanel
 					step={1}
 					value={voices}
 					defaultValue={defaultValue.instrument.voices}
-					onChange={voices => dispatch(updateInstrument(id, { instrument: { ...instrument, voices } }))}
+					onChange={voices => dispatch(updateInstrument(id!, { instrument: { ...instrument, voices } }))}
 				/> */}
 				<MidiInput {...midiInputProps} paramPath="attackNoise">
 					<KnobInput
@@ -33,7 +33,7 @@ class PluckSynth extends Component<ThunkDispatchProp & InstrumentPropertiesPanel
 						step={0.1}
 						value={attackNoise}
 						defaultValue={defaultValue.instrument.attackNoise}
-						onChange={attackNoise => dispatch(updateInstrument(id, { instrument: { ...instrument, attackNoise } }))}
+						onChange={attackNoise => dispatch(updateInstrument(id!, { instrument: { ...instrument, attackNoise } }))}
 					/>
 				</MidiInput>
 				<MidiInput {...midiInputProps} paramPath="resonance">
@@ -44,7 +44,7 @@ class PluckSynth extends Component<ThunkDispatchProp & InstrumentPropertiesPanel
 						step={0.1}
 						value={resonance}
 						defaultValue={defaultValue.instrument.resonance}
-						onChange={resonance => dispatch(updateInstrument(id, { instrument: { ...instrument, resonance } }))}
+						onChange={resonance => dispatch(updateInstrument(id!, { instrument: { ...instrument, resonance } }))}
 					/>
 				</MidiInput>
 				<MidiInput {...midiInputProps} paramPath="dampening">
@@ -55,7 +55,7 @@ class PluckSynth extends Component<ThunkDispatchProp & InstrumentPropertiesPanel
 						step={10}
 						value={dampening}
 						defaultValue={defaultValue.instrument.dampening}
-						onChange={dampening => dispatch(updateInstrument(id, { instrument: { ...instrument, dampening } }))}
+						onChange={dampening => dispatch(updateInstrument(id!, { instrument: { ...instrument, dampening } }))}
 					/>
 				</MidiInput>
 			</div>

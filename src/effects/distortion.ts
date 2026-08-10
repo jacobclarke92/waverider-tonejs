@@ -1,5 +1,5 @@
 import BaseEffect from './BaseEffect'
-import { Distortion, OversamplingType } from 'tone'
+import { Distortion } from 'tone'
 import { EffectType, EffectDefaultValueType, ParamsType } from '../types'
 
 export const params: ParamsType = [
@@ -14,8 +14,8 @@ export const params: ParamsType = [
 	{
 		label: 'Oversample',
 		path: 'oversample',
-		defaultValue: 'none' as OversamplingType,
-		options: ['none', '2x', '4x'] as OversamplingType[],
+		defaultValue: 'none' as OverSampleType,
+		options: ['none', '2x', '4x'] as OverSampleType[],
 	},
 ]
 
@@ -24,10 +24,6 @@ export const defaultValue: EffectDefaultValueType = {
 }
 
 export class DistortionEffect extends BaseEffect {
-	constructor(value = {}, dispatch, params) {
-		super(value, dispatch, params)
-	}
-
 	initEffect(callback = () => {}) {
 		if (this.instance) this.instance.dispose()
 		this.instance = new Distortion()

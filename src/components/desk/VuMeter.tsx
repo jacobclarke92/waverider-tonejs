@@ -16,10 +16,10 @@ interface State {
 }
 
 export default class VuMeterSmart extends Component<Props, State> {
-	raf: number
-	instance: BaseEffect | BaseInstrument
+	raf: number | null
+	instance: BaseEffect | BaseInstrument | null
 
-	constructor(props) {
+	constructor(props: Props) {
 		super(props)
 		this.instance = null
 		this.raf = null
@@ -32,7 +32,7 @@ export default class VuMeterSmart extends Component<Props, State> {
 		if (this.raf) cancelAnimationFrame(this.raf)
 	}
 
-	componentDidUpdate(prevProps) {
+	componentDidUpdate(prevProps: Props) {
 		if (prevProps.id != this.props.id || prevProps.type != this.props.type) this.getInstance()
 	}
 
@@ -53,8 +53,9 @@ export default class VuMeterSmart extends Component<Props, State> {
 		if (!this.instance) this.getInstance()
 		if (this.instance && this.instance.meter) {
 			// console.log(this.instance.meter.getLevel(), this.instance.meter.getValue())
-			const level = this.instance.meter.getLevel()
-			this.setState({ level })
+			let level = this.instance.meter.getValue()
+			if (typeof level !== 'number') level = level[0]
+			this.setState({ level: level as number })
 		}
 		this.raf = requestAnimationFrame(this.monitorLevel)
 	}

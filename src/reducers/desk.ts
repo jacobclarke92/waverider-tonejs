@@ -54,7 +54,7 @@ export default function(state: State = initialState, action: ActionObj) {
 			return state.map(item => (item.id == action.id ? { ...item, position: action.position } : item))
 		case DESK_CONNECT_WIRE:
 		case DESK_DISCONNECT_WIRE:
-			return state.map(item => (item.id == action.deskItem.id ? action.deskItem : item))
+			return state.map(item => (item.id == action.deskItem!.id ? action.deskItem : item))
 		case ADD_INSTRUMENT:
 		case ADD_EFFECT:
 			return [...state, action.deskItem]
@@ -65,8 +65,9 @@ export default function(state: State = initialState, action: ActionObj) {
 			return state
 				.filter(deskItem => !(deskItem.ownerId == action.id && deskItem.type === deskItemType))
 				.map(deskItem => {
-					if (deskItem.audioOutput && outputKey in deskItem.audioOutputs) {
+					if (deskItem.audioOutput && outputKey in deskItem.audioOutputs!) {
 						console.log('severing output to deleted effect from', deskItem)
+						// @ts-ignore
 						delete deskItem.audioOutput[outputKey]
 					}
 					return deskItem
@@ -100,13 +101,14 @@ export const moveDeskItem = (deskItem: DeskItemType, position: PointObj) =>
 export const connectWire = (desk: State, wireFrom: Wire, wireTo: Wire, { wireType }: { wireType: WireType }) => {
 	const fromDeskItem = _find(desk, { id: wireFrom.deskItemId })
 	const toDeskItem = _find(desk, { id: wireTo.deskItemId })
-	const outputs = fromDeskItem[wireType + 'Outputs'] || {}
+	if (!fromDeskItem || !toDeskItem) return (dispatch: ThunkDispatchType) => Promise.resolve()
+	const outputs = (fromDeskItem as any)[wireType + 'Outputs'] || {}
 	const newDeskItem = {
 		[wireType + 'Outputs']: {
 			...outputs,
 			[`${toDeskItem.type}${toDeskItem.ownerId}`]: {
 				type: wireType,
-				id: `${fromDeskItem.type + fromDeskItem.ownerId}___${toDeskItem.type + toDeskItem.ownerId}`,
+				id: `${fromDeskItem.type + (fromDeskItem.ownerId || '')}___${toDeskItem.type + (toDeskItem.ownerId || '')}`,
 				wireFrom,
 				wireTo,
 			},
@@ -120,12 +122,13 @@ export const connectWire = (desk: State, wireFrom: Wire, wireTo: Wire, { wireTyp
 
 export const disconnectWire = (desk: State, wireJoin: WireJoin) => {
 	const { type, wireFrom, wireTo } = wireJoin
-	const fromDeskItem = _find(desk, { id: wireFrom.deskItemId })
-	const toDeskItem = _find(desk, { id: wireTo.deskItemId })
+	const fromDeskItem = _find(desk, { id: wireFrom.deskItemId })!
+	const toDeskItem = _find(desk, { id: wireTo.deskItemId })!
 
 	const outputGroupKey = `${type}Outputs`
 	const outputKey = `${toDeskItem.type}${toDeskItem.ownerId}`
 
+	// @ts-ignore
 	const outputs = fromDeskItem[outputGroupKey] || {}
 	if (outputKey in outputs) delete outputs[outputKey]
 	const newDeskItem = { [outputGroupKey]: outputs }

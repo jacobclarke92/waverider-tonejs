@@ -18,7 +18,7 @@ import { State as TransportState } from './reducers/transport'
 
 declare global {
 	interface Navigator {
-		webkitTemporaryStorage: any
+		// webkitTemporaryStorage: any
 		webkitPersistentStorage: any
 	}
 	interface Document {
@@ -213,7 +213,7 @@ export interface EffectType {
 	name: string
 	slug: string
 	Effect: BaseEffectConstructor
-	Editor: ElementType
+	Editor: ElementType | null
 	DeskItem?: ElementType
 	defaultValue: EffectDefaultValueType
 	params: ParamsType

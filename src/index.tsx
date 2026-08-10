@@ -1,10 +1,11 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client'
 import { getContext } from 'tone'
+import './css/styles.css'
 import thunk from 'redux-thunk'
 import StartAudioContext from 'startaudiocontext'
 import { createStore, applyMiddleware, Store } from 'redux'
-import { composeWithDevTools } from 'redux-devtools-extension'
+import { composeWithDevTools } from '@redux-devtools/extension'
 import { Provider } from 'react-redux'
 
 import reducers from './reducers'
@@ -60,9 +61,9 @@ initKeyListeners()
 ;(store.dispatch as ThunkDispatchType)(loadDesk())
 ;(store.dispatch as ThunkDispatchType)(loadMappings())
 
-ReactDOM.render(
+const root = createRoot(document.getElementById('app') as HTMLElement)
+root.render(
 	<Provider store={store}>
 		<App />
-	</Provider>,
-	document.getElementById('app')
+	</Provider>
 )

@@ -31,12 +31,12 @@ interface State {
 }
 
 export default class CurveCreator extends Component<Props, State> {
-	container: HTMLDivElement
-	canvas: HTMLCanvasElement
-	ctx: CanvasRenderingContext2D
+	container!: HTMLDivElement | null
+	canvas!: HTMLCanvasElement | null
+	ctx!: CanvasRenderingContext2D | null
 	capturingMouseMove: boolean
-	currentPointId: number
-	lastMousePosition: PointObj
+	currentPointId: number | null
+	lastMousePosition: PointObj | null
 
 	static defaultProps = {
 		size: 400,
@@ -49,18 +49,24 @@ export default class CurveCreator extends Component<Props, State> {
 
 	constructor(props: Props) {
 		super(props)
+		this.container = null
+		this.canvas = null
 		this.ctx = null
 		this.currentPointId = null
 		this.lastMousePosition = null
 		this.capturingMouseMove = false
-		this.handleCallback = _throttle(this.handleCallback, props.throttle)
+		this.handleCallback = _throttle(this.handleCallback, props.throttle || 20)
+
+		const size = props.size || 400
+		const outputSize = props.outputSize || 255
+
 		const points: CurvePoint[] = props.defaultValue
 			? props.defaultValue.map(point => ({
 					id: ++counter,
-					x: (point[0] / props.outputSize) * props.size,
-					y: ((props.outputSize - point[1]) / props.outputSize) * props.size,
+					x: ((point[0] || 0) / outputSize) * size,
+					y: ((outputSize - (point[1] || 0)) / outputSize) * size,
 			  }))
-			: [{ id: ++counter, x: 0, y: props.size }, { id: ++counter, x: props.size, y: 0 }]
+			: [{ id: ++counter, x: 0, y: size }, { id: ++counter, x: size, y: 0 }]
 		this.state = { points }
 	}
 
@@ -76,13 +82,14 @@ export default class CurveCreator extends Component<Props, State> {
 	}
 
 	// Resets state points if points change, e.g. reset button pressed
-	componentWillReceiveProps(nextProps) {
+	componentWillReceiveProps(nextProps: Props) {
 		if (!this.capturingMouseMove && !deepEqual(this.props.defaultValue, nextProps.defaultValue)) {
-			const { size, outputSize } = this.props
-			const points: CurvePoint[] = nextProps.defaultValue.map(point => ({
+			const size = this.props.size || 400
+			const outputSize = this.props.outputSize || 255
+			const points: CurvePoint[] = (nextProps.defaultValue || []).map(point => ({
 				id: ++counter,
-				x: (point[0] / outputSize) * size,
-				y: ((outputSize - point[1]) / outputSize) * size,
+				x: ((point[0] || 0) / outputSize) * size,
+				y: ((outputSize - (point[1] || 0)) / outputSize) * size,
 			}))
 			this.setState({ points })
 		}
@@ -99,16 +106,19 @@ export default class CurveCreator extends Component<Props, State> {
 
 			// check if shift key is down for fine-precision adjustments
 			if (isShiftKeyPressed()) {
-				const oldPointPosition = _find(this.state.points, { id: this.currentPointId })
-				newPointPosition.x = oldPointPosition.x + (mousePosition.x - this.lastMousePosition.x) / 5
-				newPointPosition.y = oldPointPosition.y + (mousePosition.y - this.lastMousePosition.y) / 5
+				const oldPointPosition = _find(this.state.points, { id: this.currentPointId }) as CurvePoint | undefined
+				if (oldPointPosition && this.lastMousePosition) {
+					newPointPosition.x = oldPointPosition.x + (mousePosition.x - this.lastMousePosition.x) / 5
+					newPointPosition.y = oldPointPosition.y + (mousePosition.y - this.lastMousePosition.y) / 5
+				}
 			}
 
 			this.lastMousePosition = mousePosition
 
+			const size = this.props.size || 400
 			// clamp point position inside grid
-			newPointPosition.x = clamp(newPointPosition.x, 0, this.props.size)
-			newPointPosition.y = clamp(newPointPosition.y, 0, this.props.size)
+			newPointPosition.x = clamp(newPointPosition.x, 0, size)
+			newPointPosition.y = clamp(newPointPosition.y, 0, size)
 
 			const points = this.state.points.map(point =>
 				point.id == this.currentPointId ? { ...point, ...newPointPosition } : point
@@ -145,20 +155,24 @@ export default class CurveCreator extends Component<Props, State> {
 	}
 
 	handleCallback(points: ArrayPoint[]) {
-		const { size, outputSize } = this.props
+		const size = this.props.size || 400
+		const outputSize = this.props.outputSize || 255
 		const newPoints = points.map<ArrayPoint>(point => [
 			(point[0] / size) * outputSize,
 			((size - point[1]) / size) * outputSize,
 		])
-		this.props.onChange(newPoints)
+		if (this.props.onChange) this.props.onChange(newPoints)
 	}
 
 	handleCurveDraw(_points: CurvePoint[]) {
-		const { size, strokeStyle, lineWidth } = this.props
+		const size = this.props.size || 400
+		const strokeStyle = this.props.strokeStyle || '#333c47'
+		const lineWidth = this.props.lineWidth || 4
 		const points = _points.map<[number, number]>(point => [point.x, point.y])
 		const hashTable = curvesHashTable(points, 0, size)
 
-		if (!this.ctx) this.ctx = this.canvas.getContext('2d')
+		if (!this.ctx && this.canvas) this.ctx = this.canvas.getContext('2d')
+		if (!this.ctx) return
 		this.ctx.clearRect(0, 0, size, size)
 		this.ctx.beginPath()
 		this.ctx.strokeStyle = strokeStyle
@@ -180,7 +194,8 @@ export default class CurveCreator extends Component<Props, State> {
 	}
 
 	render() {
-		const { size, outputSize } = this.props
+		const size = this.props.size || 400
+		const outputSize = this.props.outputSize || 255
 		const { points } = this.state
 
 		return (

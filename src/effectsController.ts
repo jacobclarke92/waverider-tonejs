@@ -33,18 +33,19 @@ function handleUpdate() {
 	const { lastAction, effects } = store.getState() as ReduxStoreType
 	switch (lastAction.type) {
 		case RELOAD_EFFECTS:
-			effects.forEach(effect => removeEffectInstance(effect.id))
+			effects.forEach(effect => removeEffectInstance(effect.id!))
+			break
 		case LOAD_EFFECTS:
 			initEffects(effects)
 			break
 		case UPDATE_EFFECT:
-			updateEffect((lastAction as EffectsActionObj).id, effects)
+			updateEffect((lastAction as EffectsActionObj).id!, effects)
 			break
 		case ADD_EFFECT:
-			initEffect((lastAction as EffectsActionObj).effect)
+			initEffect((lastAction as EffectsActionObj).effect!)
 			break
 		case REMOVE_EFFECT:
-			removeEffectInstance((lastAction as EffectsActionObj).id)
+			removeEffectInstance((lastAction as EffectsActionObj).id!)
 			break
 	}
 	oldEffects = _cloneDeep(effects)
@@ -58,13 +59,13 @@ function initEffects(effects: EffectsStore) {
 function initEffect(effect: Effect) {
 	const effectConstructor = effectLibrary[effect.type]
 	const Effect = effectConstructor.Effect
-	instances[effect.id] = new Effect(effect, store.dispatch, effectConstructor.params)
+	instances[effect.id!] = new Effect(effect, store.dispatch, effectConstructor.params)
 }
 
 function updateEffect(id: number, effects: EffectsStore) {
 	if (!id) return
-	const effect = _find(effects, { id })
-	const oldEffect = _find(oldEffects, { id })
+	const effect = _find(effects, { id })!
+	const oldEffect = _find(oldEffects, { id })!
 	if (!(id in instances)) initEffect(effect)
 	else instances[id].update(effect, oldEffect)
 }

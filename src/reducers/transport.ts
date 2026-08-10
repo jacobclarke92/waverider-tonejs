@@ -1,6 +1,6 @@
-import { Encoding } from 'tone'
 import { Action } from 'redux'
 import { KeyedObject, TimeSignature } from '../types'
+import { Time } from 'tone/build/esm/core/type/Units'
 
 export const TRANSPORT_PLAY: string = 'TRANSPORT_PLAY'
 export const TRANSPORT_PAUSE: string = 'TRANSPORT_PAUSE'
@@ -19,9 +19,9 @@ export type State = {
 	playing: boolean
 	bpm: number
 	swing: number
-	swingSubdivision: Encoding.Time
+	swingSubdivision: Time
 	timeSignature: TimeSignature
-	pausedTime?: Encoding.Time
+	pausedTime?: Time
 }
 
 const initialState: State = {

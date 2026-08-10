@@ -54,6 +54,8 @@ const getNoteLetter = (note: number): string => {
 			return ';'
 		case 17:
 			return "'"
+		default:
+			return ''
 	}
 }
 
@@ -77,7 +79,7 @@ class PianoKey extends Component<ThunkDispatchProp & Props, State> {
 		noteIndex: 0,
 		velocity: 127,
 	}
-	constructor(props) {
+	constructor(props: ThunkDispatchProp & Props) {
 		super(props)
 		this.state = {
 			notePlaying: false,
@@ -89,7 +91,7 @@ class PianoKey extends Component<ThunkDispatchProp & Props, State> {
 		addNoteDownListener(this.handleMidiNoteDown)
 		addNoteUpListener(this.handleMidiNoteUp)
 	}
-	componentDidUpdate(prevProps, prevState) {
+	componentDidUpdate(prevProps: ThunkDispatchProp & Props, prevState: State) {
 		this.autoBindKeyListeners(prevProps, prevState)
 	}
 	componentWillUnmount() {

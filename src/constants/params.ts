@@ -8,8 +8,8 @@ export const defaultEnvelope: EnvelopeType = {
 }
 
 export const allInstrumentDefaults = {
-	midiDeviceId: null,
-	midiChannel: null,
+	midiDeviceId: undefined,
+	midiChannel: undefined,
 }
 
 export const voicesParam: NumberParamType = {

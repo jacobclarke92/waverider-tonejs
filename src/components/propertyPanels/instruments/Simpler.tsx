@@ -15,7 +15,7 @@ import DeviceAndChannel from '../../DeviceAndChannel'
 import Waveform from '../../Waveform'
 
 class Simpler extends Component<ThunkDispatchProp & InstrumentPropertiesPanelProps> {
-	constructor(props) {
+	constructor(props: ThunkDispatchProp & InstrumentPropertiesPanelProps) {
 		super(props)
 		this.handleFilesDrop = this.handleFilesDrop.bind(this)
 	}
@@ -23,12 +23,13 @@ class Simpler extends Component<ThunkDispatchProp & InstrumentPropertiesPanelPro
 	handleFilesDrop(item: GenericProps, monitor: DropTargetMonitor) {
 		const { dispatch, id, instrument } = this.props
 		if (monitor) {
+			// @ts-ignore
 			const droppedFiles = monitor.getItem().files
 			if (droppedFiles.length > 0) {
 				console.log(droppedFiles)
 				addFile(droppedFiles[0])
 					.then(file =>
-						defer(() => dispatch(updateInstrument(id, { instrument: { ...instrument, fileHash: file.hash } })))
+						defer(() => dispatch(updateInstrument(id!, { instrument: { ...instrument, fileHash: file.hash } })))
 					)
 					.catch(e => console.warn('Unable to store dropped file', e))
 			}
@@ -39,7 +40,7 @@ class Simpler extends Component<ThunkDispatchProp & InstrumentPropertiesPanelPro
 		const { dispatch, id, instrument } = this.props
 		const { trim } = instrument
 		dispatch(
-			updateInstrument(id, {
+			updateInstrument(id!, {
 				instrument: {
 					...instrument,
 					reverse,
@@ -61,7 +62,7 @@ class Simpler extends Component<ThunkDispatchProp & InstrumentPropertiesPanelPro
 			<div className="simpler">
 				<div className="flex">
 					<div className="flex-column">
-						<DeviceAndChannel instrumentId={id} deviceId={midiDeviceId} midiChannel={midiChannel} type="input" />
+						<DeviceAndChannel instrumentId={id!} deviceId={midiDeviceId!} midiChannel={midiChannel!} type="input" />
 						<br />
 						<KnobInput
 							label="Voices"
@@ -70,7 +71,7 @@ class Simpler extends Component<ThunkDispatchProp & InstrumentPropertiesPanelPro
 							min={1}
 							max={12}
 							step={1}
-							onChange={voices => dispatch(updateInstrument(id, { instrument: { ...instrument, voices } }))}
+							onChange={voices => dispatch(updateInstrument(id!, { instrument: { ...instrument, voices } }))}
 						/>
 						<KnobInput
 							label="Note"
@@ -81,10 +82,10 @@ class Simpler extends Component<ThunkDispatchProp & InstrumentPropertiesPanelPro
 							step={1}
 							signed={true}
 							inputValueIsDisplayValue
-							inputProps={{ type: 'text', beforeOnChange: e => e.target.value }}
+							inputProps={{ type: 'text', beforeOnChange: (e: React.ChangeEvent<HTMLInputElement>) => e.target.value }}
 							inputValidator={value => parseNoteToNumber(value)}
 							valueDisplay={value => noteNumberToName(value)}
-							onChange={baseNote => dispatch(updateInstrument(id, { instrument: { ...instrument, baseNote } }))}
+							onChange={baseNote => dispatch(updateInstrument(id!, { instrument: { ...instrument, baseNote } }))}
 						/>
 						<KnobInput
 							label="Cents"
@@ -94,25 +95,25 @@ class Simpler extends Component<ThunkDispatchProp & InstrumentPropertiesPanelPro
 							max={100}
 							step={1}
 							valueDisplay={value => (value === 0 ? '0' : value + 'c')}
-							onChange={cents => dispatch(updateInstrument(id, { instrument: { ...instrument, cents } }))}
+							onChange={cents => dispatch(updateInstrument(id!, { instrument: { ...instrument, cents } }))}
 						/>
 					</div>
 					<div className="flex-column flex-grow margin-h-xs">
 						<Waveform
 							width="100%"
 							height={140}
-							instrumentId={id}
+							instrumentId={id!}
 							fileHash={fileHash}
 							trim={trim}
 							reverse={reverse}
 							onReceivedFiles={this.handleFilesDrop}
-							onTrimChange={trim => dispatch(updateInstrument(id, { instrument: { ...instrument, trim } }))}
+							onTrimChange={trim => dispatch(updateInstrument(id!, { instrument: { ...instrument, trim } }))}
 						/>
 
 						<Checkbox
 							value={loop}
 							text="Loop"
-							onChange={loop => dispatch(updateInstrument(id, { instrument: { ...instrument, loop } }))}
+							onChange={loop => dispatch(updateInstrument(id!, { instrument: { ...instrument, loop } }))}
 						/>
 						<Checkbox value={reverse} text="Reverse" onChange={reverse => this.handleReverse(reverse)} />
 					</div>
@@ -126,7 +127,7 @@ class Simpler extends Component<ThunkDispatchProp & InstrumentPropertiesPanelPro
 							valueDisplay={value => value + 's'}
 							defaultValue={defaultValue.instrument.envelope.attack}
 							onChange={attack =>
-								dispatch(updateInstrument(id, { instrument: { ...instrument, envelope: { ...envelope, attack } } }))
+								dispatch(updateInstrument(id!, { instrument: { ...instrument, envelope: { ...envelope, attack } } }))
 							}
 						/>
 						<KnobInput
@@ -138,7 +139,7 @@ class Simpler extends Component<ThunkDispatchProp & InstrumentPropertiesPanelPro
 							valueDisplay={value => value + 's'}
 							defaultValue={defaultValue.instrument.envelope.decay}
 							onChange={decay =>
-								dispatch(updateInstrument(id, { instrument: { ...instrument, envelope: { ...envelope, decay } } }))
+								dispatch(updateInstrument(id!, { instrument: { ...instrument, envelope: { ...envelope, decay } } }))
 							}
 						/>
 						<KnobInput
@@ -150,7 +151,7 @@ class Simpler extends Component<ThunkDispatchProp & InstrumentPropertiesPanelPro
 							valueDisplay={value => Math.round(value * 100) + '%'}
 							defaultValue={defaultValue.instrument.envelope.sustain}
 							onChange={sustain =>
-								dispatch(updateInstrument(id, { instrument: { ...instrument, envelope: { ...envelope, sustain } } }))
+								dispatch(updateInstrument(id!, { instrument: { ...instrument, envelope: { ...envelope, sustain } } }))
 							}
 						/>
 						<KnobInput
@@ -162,7 +163,7 @@ class Simpler extends Component<ThunkDispatchProp & InstrumentPropertiesPanelPro
 							valueDisplay={value => value + 's'}
 							defaultValue={defaultValue.instrument.envelope.release}
 							onChange={release =>
-								dispatch(updateInstrument(id, { instrument: { ...instrument, envelope: { ...envelope, release } } }))
+								dispatch(updateInstrument(id!, { instrument: { ...instrument, envelope: { ...envelope, release } } }))
 							}
 						/>
 					</div>

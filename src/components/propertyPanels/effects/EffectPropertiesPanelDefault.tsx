@@ -17,9 +17,9 @@ class EffectPropertiesPanelDefault extends Component<ThunkDispatchProp & EffectP
 						params={params}
 						defaultValue={defaultValue}
 						value={effect}
-						onChange={(path, value) => dispatch(updateEffect(id, { effect: _set({ ...effect }, path, value) }))}>
+						onChange={(path, value) => dispatch(updateEffect(id!, { effect: _set({ ...effect }, path, value) }))}>
 						{(element, param, index) => (
-							<MidiInput key={`param${index}`} id={id} type="effect" slug={type} paramPath={param.path}>
+							<MidiInput key={`param${index}`} id={id!} type="effect" slug={type} paramPath={param.path}>
 								{element}
 							</MidiInput>
 						)}

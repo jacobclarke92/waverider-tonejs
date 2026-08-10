@@ -37,10 +37,6 @@ export const defaultValue: EffectDefaultValueType = {
 }
 
 export class AutoWahEffect extends BaseEffect {
-	constructor(value = {}, dispatch, params) {
-		super(value, dispatch, params)
-	}
-
 	initEffect(callback = () => {}) {
 		if (this.instance) this.instance.dispose()
 		this.instance = new AutoWah()

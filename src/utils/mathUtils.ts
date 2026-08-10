@@ -45,7 +45,7 @@ export function curvesHashTable(points: [number, number][] = [[0, 0], [255, 255]
 	return curvesHashTable
 }
 
-const gcd = (a: number, b: number) => {
+const gcd = (a: number, b: number): number => {
 	if (b < 0.0000001) return a
 	return gcd(b, Math.floor(a % b))
 }

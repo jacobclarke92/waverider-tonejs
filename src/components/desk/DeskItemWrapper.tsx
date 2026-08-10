@@ -14,9 +14,11 @@ import sequencerLibrary from '../../sequencerLibrary'
 
 export type DeskItemPointerEventType = React.MouseEvent<HTMLDivElement, MouseEvent> | React.TouchEvent<HTMLDivElement>
 
-export default class DeskItemWrapper extends Component<ThunkDispatchProp & PinMouseEventProps & DeskItemProps> {
-	deskItemElem: HTMLElement
-	rect: ClientRect | DOMRect
+type WrapperProps = ThunkDispatchProp & PinMouseEventProps & DeskItemProps & { children?: React.ReactNode }
+
+export default class DeskItemWrapper extends Component<WrapperProps> {
+	deskItemElem: HTMLElement | null
+	rect: ClientRect | DOMRect | null
 
 	static defaultProps = {
 		deskItem: {},
@@ -32,14 +34,14 @@ export default class DeskItemWrapper extends Component<ThunkDispatchProp & PinMo
 		onPointerUp: () => {},
 	}
 
-	constructor(props) {
+	constructor(props: WrapperProps) {
 		super(props)
 		this.deskItemElem = null
 		this.rect = null
 	}
 
 	gotRef(elem: HTMLElement) {
-		if (elem && elem != this.deskItemElem) {
+		if (elem && elem != (this.deskItemElem as HTMLElement)) {
 			this.deskItemElem = elem
 			this.rect = elem.getBoundingClientRect()
 			this.forceUpdate()
@@ -48,11 +50,11 @@ export default class DeskItemWrapper extends Component<ThunkDispatchProp & PinMo
 
 	handlePointerDown(event: DeskItemPointerEventType, childProps: GenericProps) {
 		event.preventDefault()
-		this.props.onPointerDown(event, this.deskItemElem)
+		this.props.onPointerDown(event, this.deskItemElem as HTMLElement)
 	}
 
 	handlePointerUp(event: DeskItemPointerEventType, childProps: GenericProps) {
-		this.props.onPointerUp(event, this.deskItemElem)
+		this.props.onPointerUp(event, this.deskItemElem as HTMLElement)
 	}
 
 	handleRemove(event: DeskItemPointerEventType) {
@@ -63,8 +65,8 @@ export default class DeskItemWrapper extends Component<ThunkDispatchProp & PinMo
 
 	toggleActiveState() {
 		const { dispatch, owner } = this.props
-		const enabled = !owner.enabled
-		dispatch(updateInstrument(owner.id, { enabled }))
+		const enabled = owner ? !owner.enabled : false
+		if (owner && owner.id) dispatch(updateInstrument(owner.id, { enabled }))
 	}
 
 	render() {
@@ -97,12 +99,14 @@ export default class DeskItemWrapper extends Component<ThunkDispatchProp & PinMo
 
 		const pinProps = { wiring, valid: validWire, onPinOver, onPinOut, onPinPointerDown, onPinPointerUp }
 
-		const disabled = !owner.enabled
+		const disabled = owner ? !owner.enabled : false
 
 		let params: ParamsType = []
-		if (deskItem.type === INSTRUMENT) params = instrumentLibrary[owner.type].params
-		else if (deskItem.type === EFFECT) params = effectLibrary[owner.type].params
-		else if (deskItem.type === SEQUENCER) params = sequencerLibrary[owner.type].params
+		if (owner) {
+			if (deskItem.type === INSTRUMENT) params = instrumentLibrary[owner.type].params || []
+			else if (deskItem.type === EFFECT) params = effectLibrary[owner.type].params || []
+			else if (deskItem.type === SEQUENCER) params = sequencerLibrary[owner.type].params || []
+		}
 
 		return (
 			<div
@@ -142,7 +146,7 @@ export default class DeskItemWrapper extends Component<ThunkDispatchProp & PinMo
 						<Icon name={owner && owner.enabled ? 'volume-up' : 'volume-off'} size={16} />
 					</div>
 					<div className="desk-item-title">{name}</div>
-					{editable && (
+					{editable && onEdit && (
 						<div className="desk-item-icon" onClick={e => onEdit()}>
 							<Icon name="edit" size={16} />
 						</div>

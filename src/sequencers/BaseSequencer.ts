@@ -9,9 +9,9 @@ export interface BaseSequencerConstructor {
 export default class BaseSequencer implements SequencerDefaultValueType {
 	id?: number
 	sequencer: any // TODO
-	mounted: boolean
-	dispatch: Function
-	tickEvent: number
+	mounted!: boolean
+	dispatch!: Function
+	tickEvent!: number
 
 	triggerNoteDown(note: number, velocity: number): void {}
 	triggerNoteUp(note: number): void {}
@@ -21,7 +21,7 @@ export default class BaseSequencer implements SequencerDefaultValueType {
 	getSubdivisionFromTime(time: number): number {
 		const timeSignature = getFractionFromDecimal(Transport.timeSignature as number)
 		const { subdivisions } = this.sequencer
-		const measuresStr: string = new Time(time).toBarsBeatsSixteenths()
+		const measuresStr: string = Time(time).toBarsBeatsSixteenths()
 		const measures: number[] = measuresStr
 			.split(':')
 			.map(parseFloat)

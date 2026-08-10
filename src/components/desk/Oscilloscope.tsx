@@ -7,12 +7,12 @@ interface Props {
 	id: number
 }
 export default class Oscilloscope extends Component<Props> {
-	raf: number
-	canvas: HTMLCanvasElement
-	ctx: CanvasRenderingContext2D
-	instance: OscilloscopeEffect
+	raf: number | null
+	canvas!: HTMLCanvasElement
+	ctx!: CanvasRenderingContext2D
+	instance: OscilloscopeEffect | null
 
-	constructor(props) {
+	constructor(props: Props) {
 		super(props)
 		this.instance = null
 		this.raf = null
@@ -25,7 +25,7 @@ export default class Oscilloscope extends Component<Props> {
 		if (this.raf) cancelAnimationFrame(this.raf)
 	}
 
-	componentWillReceiveProps(nextProps) {
+	componentWillReceiveProps(nextProps: Props) {
 		if (nextProps.id != this.props.id) this.getInstance(nextProps)
 	}
 
@@ -34,7 +34,7 @@ export default class Oscilloscope extends Component<Props> {
 		this.canvas = ref
 		this.canvas.width = 2 * this.canvas.clientWidth
 		this.canvas.height = 2 * this.canvas.clientHeight
-		this.ctx = this.canvas.getContext('2d')
+		this.ctx = this.canvas.getContext('2d')!
 	}
 
 	getInstance(props = this.props) {
@@ -52,8 +52,8 @@ export default class Oscilloscope extends Component<Props> {
 			if (this.instance.effect.zeroCrossing) {
 				// this snippet attempts to snap to zero-crossing point
 				let found = false
-				let prev = null
-				values = values.filter(v => {
+				let prev: number | null = null
+				values = (values as Float32Array).filter(v => {
 					if (found) return true
 					if (Math.abs(v) < 0.05 && prev != null && prev > v) {
 						found = true

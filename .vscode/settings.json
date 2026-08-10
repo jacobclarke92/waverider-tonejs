@@ -1,5 +1,15 @@
 {
 	"files.associations": {
 		"*.css": "postcss"
+	},
+	"chat.tools.terminal.autoApprove": {
+		"/^source ~/\\.zshrc \\|\\| source ~/\\.bashrc \\|\\| true && npx tsc --noEmit$/": {
+			"approve": true,
+			"matchCommandLine": true
+		},
+		"/^source ~/\\.zshrc \\|\\| source ~/\\.bashrc \\|\\| true && npx tsc --noEmit > ts_errors\\.txt \\|\\| true && head -n 30 ts_errors\\.txt$/": {
+			"approve": true,
+			"matchCommandLine": true
+		}
 	}
 }
